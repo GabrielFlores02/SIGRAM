@@ -1,0 +1,1672 @@
+{
+  "catalog_version": "2026-07-30-top-medications-v1",
+  "source_file": "top_meds_list_beers_stopp_start_v3-20260730.xlsx",
+  "source_sha256": "96912d52ed3ff8e30d8c5cc4545dd6bdcc5422e35b971448725b9b1073bed05f",
+  "population": {
+    "pilot_min_age": 60,
+    "beers_original_min_age": 65,
+    "beers_60_64_is_protocol_adaptation": true
+  },
+  "medication_count": 54,
+  "criterion_count": 97,
+  "medications": [
+    {
+      "order": 1,
+      "medication": "PARACETAMOL 500 MG",
+      "pharmacologic_group": "Analgésico y antipirético no opioide",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-L6"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 2,
+      "medication": "TIAMINA CLORHIDRATO 100 MG",
+      "pharmacologic_group": "Vitamina hidrosoluble (vitamina B1)",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 3,
+      "medication": "DICLOFENACO SÓDICO 25 MG / ML X 3 ML",
+      "pharmacologic_group": "Antiinflamatorio no esteroideo (AINE)",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-B17",
+        "STOPP-B19",
+        "STOPP-C10",
+        "STOPP-E4",
+        "STOPP-H1",
+        "STOPP-H2",
+        "STOPP-H3",
+        "STOPP-H7"
+      ],
+      "start_codes": [
+        "START-F3"
+      ],
+      "beers_codes": [
+        "B05",
+        "B06",
+        "B07",
+        "B08"
+      ]
+    },
+    {
+      "order": 4,
+      "medication": "LOSARTAN 50 MG",
+      "pharmacologic_group": "Antihipertensivo: antagonista del receptor de angiotensina II (ARA-II)",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-B12",
+        "STOPP-B13"
+      ],
+      "start_codes": [
+        "START-B1",
+        "START-E4",
+        "START-J1"
+      ],
+      "beers_codes": [
+        "B21",
+        "B22"
+      ]
+    },
+    {
+      "order": 5,
+      "medication": "OMEPRAZOL 20 MG DE LIBERACIÓN RETARDADA",
+      "pharmacologic_group": "Antiulceroso: inhibidor de la bomba de protones",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-F2"
+      ],
+      "start_codes": [
+        "START-F1",
+        "START-F2",
+        "START-F3"
+      ],
+      "beers_codes": [
+        "B04"
+      ]
+    },
+    {
+      "order": 6,
+      "medication": "HIDROXOCOBALAMINA 1 MG / ML X 1 ML",
+      "pharmacologic_group": "Vitamina hidrosoluble (vitamina B12)",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 7,
+      "medication": "GABAPENTINA 300 MG",
+      "pharmacologic_group": "Anticonvulsivante y modulador del dolor neuropático",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-K5",
+        "STOPP-L5"
+      ],
+      "start_codes": [],
+      "beers_codes": [
+        "B14",
+        "B16",
+        "B17",
+        "B19"
+      ]
+    },
+    {
+      "order": 8,
+      "medication": "HIPROMELOSA 0.3% X 10 ML SOLUCIÓN OFTÁLMICA",
+      "pharmacologic_group": "Lubricante ocular (lágrima artificial)",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 9,
+      "medication": "METFORMINA CLORHIDRATO 850 MG",
+      "pharmacologic_group": "Antidiabético: biguanida",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-E6"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 10,
+      "medication": "NAPROXENO 500 MG (BASE) Ó 550 MG (SAL SÓDICA)",
+      "pharmacologic_group": "Antiinflamatorio no esteroideo (AINE)",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-B17",
+        "STOPP-B19",
+        "STOPP-C10",
+        "STOPP-E4",
+        "STOPP-H1",
+        "STOPP-H2",
+        "STOPP-H3",
+        "STOPP-H7"
+      ],
+      "start_codes": [
+        "START-F3"
+      ],
+      "beers_codes": [
+        "B05",
+        "B06",
+        "B07",
+        "B08"
+      ]
+    },
+    {
+      "order": 11,
+      "medication": "ACIDO ACETILSALICILICO 100 MG",
+      "pharmacologic_group": "Antiagregante plaquetario",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-C1",
+        "STOPP-C2",
+        "STOPP-C4",
+        "STOPP-C5",
+        "STOPP-C7",
+        "STOPP-C16"
+      ],
+      "start_codes": [
+        "START-C2",
+        "START-F2"
+      ],
+      "beers_codes": [
+        "B09",
+        "B07"
+      ]
+    },
+    {
+      "order": 12,
+      "medication": "ACETILCISTEINA 200 MG",
+      "pharmacologic_group": "Mucolítico",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 13,
+      "medication": "CETIRIZINA 10 MG",
+      "pharmacologic_group": "Antihistamínico H1 de segunda generación",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 14,
+      "medication": "ATORVASTATINA (COMO SAL CALCICA) 20 MG",
+      "pharmacologic_group": "Hipolipemiante: estatina",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-B16"
+      ],
+      "start_codes": [
+        "START-B2"
+      ],
+      "beers_codes": []
+    },
+    {
+      "order": 15,
+      "medication": "ACIDO FOLICO 0.5 MG",
+      "pharmacologic_group": "Vitamina hidrosoluble (ácido fólico, vitamina B9)",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [
+        "START-H9"
+      ],
+      "beers_codes": []
+    },
+    {
+      "order": 16,
+      "medication": "ORFENADRINA CITRATO 100 MG (LIBERACIÓN PROLONGADA)",
+      "pharmacologic_group": "Relajante muscular de acción central",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-D13",
+        "STOPP-D14",
+        "STOPP-M1"
+      ],
+      "start_codes": [],
+      "beers_codes": [
+        "B02",
+        "B03",
+        "B12",
+        "B13",
+        "B14",
+        "B18",
+        "B17"
+      ]
+    },
+    {
+      "order": 17,
+      "medication": "DIMETICONA ACTIVADA (SIMETICONA) 80 MG Ó MÁS/ML GOTAS ORALES X 10 ML A 15 ML",
+      "pharmacologic_group": "Antiflatulento",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 18,
+      "medication": "ALPRAZOLAM 0.5 MG",
+      "pharmacologic_group": "Ansiolítico: benzodiacepina",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-D8",
+        "STOPP-D9",
+        "STOPP-D10",
+        "STOPP-G4",
+        "STOPP-K1"
+      ],
+      "start_codes": [],
+      "beers_codes": [
+        "B01",
+        "B12",
+        "B13",
+        "B14",
+        "B15",
+        "B17"
+      ]
+    },
+    {
+      "order": 19,
+      "medication": "HIDROCLOROTIAZIDA 25 MG",
+      "pharmacologic_group": "Diurético tiazídico y antihipertensivo",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-B9"
+      ],
+      "start_codes": [
+        "START-B1"
+      ],
+      "beers_codes": [
+        "B11"
+      ]
+    },
+    {
+      "order": 20,
+      "medication": "ATORVASTATINA 10 MG",
+      "pharmacologic_group": "Hipolipemiante: estatina",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-B16"
+      ],
+      "start_codes": [
+        "START-B2"
+      ],
+      "beers_codes": []
+    },
+    {
+      "order": 21,
+      "medication": "IRBESARTÁN 150 MG",
+      "pharmacologic_group": "Antihipertensivo: antagonista del receptor de angiotensina II (ARA-II)",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-B12",
+        "STOPP-B13"
+      ],
+      "start_codes": [
+        "START-B1",
+        "START-E4",
+        "START-J1"
+      ],
+      "beers_codes": [
+        "B21",
+        "B22"
+      ]
+    },
+    {
+      "order": 22,
+      "medication": "HIDRÓXIDO DE ALUMINIO + HIDRÓXIDO DE MAGNESIO C/S DIMETICONA 400 MG + 400 MG/5ML SUSPENSIÓN ORAL 150",
+      "pharmacologic_group": "Antiácido combinado con antiflatulento",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-F3"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 23,
+      "medication": "DEXAMETASONA (BASE Ó EQUIVALENTE) 2 MG / ML X 2 ML",
+      "pharmacologic_group": "Corticoide sistémico: glucocorticoide",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-B19",
+        "STOPP-F5",
+        "STOPP-G2",
+        "STOPP-H7"
+      ],
+      "start_codes": [
+        "START-H2"
+      ],
+      "beers_codes": [
+        "B12"
+      ]
+    },
+    {
+      "order": 24,
+      "medication": "CARBONATO DE CALCIO 500 MG Ó MÁS DE IÓN CA",
+      "pharmacologic_group": "Suplemento mineral de calcio",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [
+        "START-H2"
+      ],
+      "beers_codes": []
+    },
+    {
+      "order": 25,
+      "medication": "TAMSULOSINA 0.4 MG (LIBERACIÓN PROLONGADA)",
+      "pharmacologic_group": "Urológico: antagonista alfa-1 adrenérgico",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-I5",
+        "STOPP-K10"
+      ],
+      "start_codes": [
+        "START-I1"
+      ],
+      "beers_codes": [
+        "B23"
+      ]
+    },
+    {
+      "order": 26,
+      "medication": "DEXTROMETORFANO BROMHIDRATO 15 MG / 5 ML X 120 ML JARABE",
+      "pharmacologic_group": "Antitusígeno",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 27,
+      "medication": "ALENDRONICO ÁCIDO (SAL SÓDICA) 70 MG",
+      "pharmacologic_group": "Antirresortivo óseo: bisfosfonato",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-E9",
+        "STOPP-H8"
+      ],
+      "start_codes": [
+        "START-H2",
+        "START-H4"
+      ],
+      "beers_codes": []
+    },
+    {
+      "order": 28,
+      "medication": "ORFENADRINA CITRATO 30 MG/ML X 2 ML",
+      "pharmacologic_group": "Relajante muscular de acción central",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-D13",
+        "STOPP-D14",
+        "STOPP-M1"
+      ],
+      "start_codes": [],
+      "beers_codes": [
+        "B02",
+        "B03",
+        "B12",
+        "B13",
+        "B14",
+        "B18",
+        "B17"
+      ]
+    },
+    {
+      "order": 29,
+      "medication": "CLOTRIMAZOL 1 % CREMA X 20 A 30 G",
+      "pharmacologic_group": "Antifúngico azólico tópico",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 30,
+      "medication": "BISOPROLOL FUMARATO 5 MG",
+      "pharmacologic_group": "Antihipertensivo: betabloqueador selectivo",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-B3",
+        "STOPP-B4",
+        "STOPP-B5"
+      ],
+      "start_codes": [
+        "START-B1",
+        "START-B4",
+        "START-B6",
+        "START-B10"
+      ],
+      "beers_codes": []
+    },
+    {
+      "order": 31,
+      "medication": "PIRIDOXINA CLORHIDRATO 50 MG",
+      "pharmacologic_group": "Vitamina hidrosoluble (vitamina B6)",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 32,
+      "medication": "LEVOTIROXINA SÓDICA 0.1 MG",
+      "pharmacologic_group": "Hormona tiroidea",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-J9"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 33,
+      "medication": "BETAMETASONA (DIPROPIONATO) 0.05 % CREMA X 20 A 30 G",
+      "pharmacologic_group": "Corticoide tópico: glucocorticoide",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 34,
+      "medication": "HIPROMELOSA 0.3% X 15 ML SOLUCIÓN OFTALM",
+      "pharmacologic_group": "Lubricante ocular (lágrima artificial)",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 35,
+      "medication": "POMADA SALICILADA X 30 G",
+      "pharmacologic_group": "Queratolítico tópico",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 36,
+      "medication": "AMLODIPINO (COMO BESILATO) 10 MG",
+      "pharmacologic_group": "Antihipertensivo: bloqueador de los canales de calcio",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-K3"
+      ],
+      "start_codes": [
+        "START-B1"
+      ],
+      "beers_codes": []
+    },
+    {
+      "order": 37,
+      "medication": "CALCITRIOL 0.25 µG",
+      "pharmacologic_group": "Vitamina D activa y regulador del metabolismo calcio-fósforo",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [
+        "START-E1",
+        "START-H3"
+      ],
+      "beers_codes": []
+    },
+    {
+      "order": 38,
+      "medication": "NAPROXENO 250 MG (BASE) O 275 MG (SAL SODICA)",
+      "pharmacologic_group": "Antiinflamatorio no esteroideo (AINE)",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-B17",
+        "STOPP-B19",
+        "STOPP-C10",
+        "STOPP-E4",
+        "STOPP-H1",
+        "STOPP-H2",
+        "STOPP-H3",
+        "STOPP-H7"
+      ],
+      "start_codes": [
+        "START-F3"
+      ],
+      "beers_codes": [
+        "B05",
+        "B06",
+        "B07",
+        "B08"
+      ]
+    },
+    {
+      "order": 39,
+      "medication": "IBUPROFENO 400 MG",
+      "pharmacologic_group": "Antiinflamatorio no esteroideo (AINE)",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-B17",
+        "STOPP-B19",
+        "STOPP-C10",
+        "STOPP-E4",
+        "STOPP-H1",
+        "STOPP-H2",
+        "STOPP-H3",
+        "STOPP-H7"
+      ],
+      "start_codes": [
+        "START-F3"
+      ],
+      "beers_codes": [
+        "B05",
+        "B06",
+        "B07",
+        "B08"
+      ]
+    },
+    {
+      "order": 40,
+      "medication": "TRAMADOL (CLORHIDRATO) 50 MG",
+      "pharmacologic_group": "Analgésico opioide",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-H9",
+        "STOPP-K7",
+        "STOPP-L1",
+        "STOPP-L2"
+      ],
+      "start_codes": [
+        "START-K2"
+      ],
+      "beers_codes": [
+        "B11",
+        "B12",
+        "B14",
+        "B15",
+        "B16",
+        "B17",
+        "B20"
+      ]
+    },
+    {
+      "order": 41,
+      "medication": "LATANOPROST 0.005 % X 2.5 ML GOTAS OFTÁLMICAS",
+      "pharmacologic_group": "Antiglaucomatoso: análogo de prostaglandina",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 42,
+      "medication": "BISACODILO 5 MG (LIBERACIÓN RETARDADA)",
+      "pharmacologic_group": "Laxante estimulante",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 43,
+      "medication": "METAMIZOL SÓDICO 500 MG / ML X 2 ML",
+      "pharmacologic_group": "Analgésico y antipirético no opioide (pirazolona)",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 44,
+      "medication": "ENALAPRIL MALEATO 10 MG",
+      "pharmacologic_group": "Antihipertensivo: inhibidor de la enzima convertidora de angiotensina (IECA)",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-B12",
+        "STOPP-B13"
+      ],
+      "start_codes": [
+        "START-B1",
+        "START-B3",
+        "START-B5",
+        "START-E4",
+        "START-J1"
+      ],
+      "beers_codes": [
+        "B21",
+        "B22"
+      ]
+    },
+    {
+      "order": 45,
+      "medication": "BISMUTO SUBSALICILATO 87.33-87.50 MG/5 ML SUSPENSIÓN ORAL X 240 A 340 ML",
+      "pharmacologic_group": "Antidiarreico y protector gastrointestinal",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 46,
+      "medication": "TIMOLOL (COMO MALEATO) 0.5% X 5 ML GOTAS OFTÁLMICAS",
+      "pharmacologic_group": "Antiglaucomatoso: betabloqueador oftálmico",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 47,
+      "medication": "LORATADINA 10 MG",
+      "pharmacologic_group": "Antihistamínico H1 de segunda generación",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 48,
+      "medication": "LACTULOSA 3,3 G/5 ML JARABE X 240 ML",
+      "pharmacologic_group": "Laxante osmótico",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [
+        "START-F5"
+      ],
+      "beers_codes": []
+    },
+    {
+      "order": 49,
+      "medication": "DORZOLAMIDA 2% X 5 ML SOLUCIÓN OFTÁLMICA",
+      "pharmacologic_group": "Antiglaucomatoso: inhibidor de la anhidrasa carbónica",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 50,
+      "medication": "GLIBENCLAMIDA 5 MG",
+      "pharmacologic_group": "Antidiabético: sulfonilurea",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-J1"
+      ],
+      "start_codes": [],
+      "beers_codes": [
+        "B10"
+      ]
+    },
+    {
+      "order": 51,
+      "medication": "OMEPRAZOL 20 MG (LIBERACIÓN RETARDADA)",
+      "pharmacologic_group": "Antiulceroso: inhibidor de la bomba de protones",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-F2"
+      ],
+      "start_codes": [
+        "START-F1",
+        "START-F2",
+        "START-F3"
+      ],
+      "beers_codes": [
+        "B04"
+      ]
+    },
+    {
+      "order": 52,
+      "medication": "AMOXICILINA/ACIDO CLAVULANICO 500 MG/125 MG",
+      "pharmacologic_group": "Antibacteriano: penicilina con inhibidor de betalactamasa",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    },
+    {
+      "order": 53,
+      "medication": "ATORVASTATINA (COMO SAL CALCICA) 40 MG",
+      "pharmacologic_group": "Hipolipemiante: estatina",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-B16"
+      ],
+      "start_codes": [
+        "START-B2"
+      ],
+      "beers_codes": []
+    },
+    {
+      "order": 54,
+      "medication": "AZITROMICINA 500 MG",
+      "pharmacologic_group": "Antibacteriano: macrólido",
+      "stopp_codes": [
+        "STOPP-A1",
+        "STOPP-A2",
+        "STOPP-A3",
+        "STOPP-B15",
+        "STOPP-C14"
+      ],
+      "start_codes": [],
+      "beers_codes": []
+    }
+  ],
+  "criteria": [
+    {
+      "code": "B01",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "Benzodiacepinas",
+      "statement": "Evitar benzodiacepinas en adultos mayores, salvo indicaciones específicas justificadas. Aumentan el riesgo de deterioro cognitivo, delirium, caídas y fracturas; además, existe mayor sensibilidad y riesgo de dependencia.",
+      "location": "p. 9 del PDF (página del artículo: 9)"
+    },
+    {
+      "code": "B02",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "Relajantes musculares esqueléticos",
+      "statement": "Evitar los relajantes musculares usados para molestias musculoesqueléticas, incluida la orfenadrina: suelen tolerarse mal por sus efectos anticolinérgicos, sedación y mayor riesgo de fracturas, y su eficacia a dosis tolerables es incierta.",
+      "location": "p. 12 del PDF (página del artículo: 12)"
+    },
+    {
+      "code": "B03",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "Fármacos con propiedades anticolinérgicas intensas",
+      "statement": "Considerar la orfenadrina como medicamento con propiedades anticolinérgicas intensas.",
+      "location": "p. 23 del PDF (página del artículo: 23)"
+    },
+    {
+      "code": "B04",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "Inhibidores de la bomba de protones",
+      "statement": "Evitar el uso programado de inhibidores de la bomba de protones durante más de 8 semanas, excepto cuando exista una indicación de mantenimiento justificada, como esofagitis erosiva, esófago de Barrett, hipersecreción patológica, necesidad demostrada de mantenimiento o protección gastrointestinal por alto riesgo.",
+      "location": "p. 11 del PDF (página del artículo: 11)"
+    },
+    {
+      "code": "B05",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "AINE no selectivos de COX-2 por vía oral",
+      "statement": "Evitar el uso crónico de AINE orales salvo que otras alternativas no sean eficaces y pueda administrarse gastroprotección. En pacientes de alto riesgo, evitar también su uso programado a corto plazo con corticoides sistémicos, anticoagulantes o antiagregantes, salvo ausencia de alternativas y con gastroprotección.",
+      "location": "pp. 11–12 del PDF (páginas del artículo: 11–12)"
+    },
+    {
+      "code": "B06",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "Insuficiencia cardiaca",
+      "statement": "En insuficiencia cardiaca asintomática, usar los AINE con precaución; en insuficiencia cardiaca sintomática, evitarlos porque pueden promover retención de líquidos o exacerbar el cuadro.",
+      "location": "p. 14 del PDF (página del artículo: 14)"
+    },
+    {
+      "code": "B07",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "Antecedente de úlcera gástrica o duodenal",
+      "statement": "Evitar ácido acetilsalicílico y AINE no selectivos en pacientes con antecedente de úlcera gástrica o duodenal, salvo que otras alternativas no sean eficaces y pueda proporcionarse gastroprotección.",
+      "location": "p. 16 del PDF (página del artículo: 16)"
+    },
+    {
+      "code": "B08",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "AINE y función renal",
+      "statement": "Evitar AINE orales o parenterales cuando la depuración de creatinina sea menor de 30 mL/min, por riesgo de lesión renal aguda y mayor deterioro de la función renal.",
+      "location": "p. 22 del PDF (página del artículo: 22)"
+    },
+    {
+      "code": "B09",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "Ácido acetilsalicílico en prevención primaria",
+      "statement": "Evitar iniciar ácido acetilsalicílico para prevención primaria cardiovascular. En quienes ya lo reciben con ese propósito, considerar su deprescripción. Este criterio no se aplica a la prevención secundaria con enfermedad cardiovascular establecida.",
+      "location": "p. 6 del PDF (página del artículo: 6)"
+    },
+    {
+      "code": "B10",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "Sulfonilureas",
+      "statement": "Evitar las sulfonilureas como monoterapia o tratamiento añadido de primera o segunda línea, salvo barreras importantes para usar alternativas más seguras y eficaces. Si se requiere una, preferir una de acción corta; evitar glibenclamida por su mayor riesgo de hipoglucemia prolongada.",
+      "location": "p. 10 del PDF (página del artículo: 10)"
+    },
+    {
+      "code": "B11",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "Medicamentos asociados con SIADH o hiponatremia",
+      "statement": "Usar diuréticos y tramadol con precaución; controlar estrechamente el sodio al iniciar el tratamiento o modificar la dosis, porque pueden causar o agravar SIADH o hiponatremia.",
+      "location": "p. 17 del PDF (página del artículo: 17)"
+    },
+    {
+      "code": "B12",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "Delirium",
+      "statement": "En pacientes con delirium o alto riesgo, evitar benzodiacepinas, fármacos anticolinérgicos y opioides. Si un corticoide sistémico es necesario, usar la menor dosis durante el menor tiempo posible y vigilar delirium.",
+      "location": "p. 15 del PDF (página del artículo: 15)"
+    },
+    {
+      "code": "B13",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "Demencia o deterioro cognitivo",
+      "statement": "Evitar fármacos anticolinérgicos intensos y benzodiacepinas en pacientes con demencia o deterioro cognitivo por sus efectos adversos sobre el sistema nervioso central.",
+      "location": "p. 15 del PDF (página del artículo: 15)"
+    },
+    {
+      "code": "B14",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "Antecedentes de caídas o fracturas",
+      "statement": "En pacientes con antecedentes de caídas o fracturas, evitar anticolinérgicos, antiepilépticos, benzodiacepinas y opioides salvo que no existan alternativas más seguras; para opioides, la excepción señalada es el dolor agudo intenso. Si se usan, reducir otros medicamentos del sistema nervioso central que aumenten el riesgo.",
+      "location": "pp. 15–16 del PDF (páginas del artículo: 15–16)"
+    },
+    {
+      "code": "B15",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "Opioides con benzodiacepinas",
+      "statement": "Evitar la combinación de un opioide con una benzodiacepina por mayor riesgo de sobredosis y otros eventos adversos.",
+      "location": "p. 19 del PDF (página del artículo: 19)"
+    },
+    {
+      "code": "B16",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "Opioides con gabapentinoides",
+      "statement": "Evitar combinar opioides con gabapentina o pregabalina por eventos adversos graves relacionados con sedación. Se exceptúan la transición desde opioides o el uso para reducir su dosis, manteniendo precaución.",
+      "location": "p. 19 del PDF (página del artículo: 19)"
+    },
+    {
+      "code": "B17",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "Tres o más medicamentos activos sobre el SNC",
+      "statement": "Evitar el uso concurrente de tres o más medicamentos activos sobre el sistema nervioso central de las clases señaladas —antiepilépticos, antidepresivos, antipsicóticos, benzodiacepinas, hipnóticos Z, opioides y relajantes musculares—; minimizar su número por mayor riesgo de caídas y fracturas.",
+      "location": "p. 19 del PDF (página del artículo: 19)"
+    },
+    {
+      "code": "B18",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "Carga anticolinérgica",
+      "statement": "Evitar la combinación de dos o más medicamentos con propiedades anticolinérgicas y minimizar su número, por mayor riesgo de deterioro cognitivo, delirium, caídas y fracturas.",
+      "location": "p. 19 del PDF (página del artículo: 19; remite a Tabla 7)"
+    },
+    {
+      "code": "B19",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "Gabapentina y función renal",
+      "statement": "Reducir la dosis de gabapentina cuando la función renal estimada sea menor de 60 mL/min, por mayor riesgo de efectos adversos del sistema nervioso central.",
+      "location": "p. 22 del PDF (página del artículo: 22)"
+    },
+    {
+      "code": "B20",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "Tramadol y función renal",
+      "statement": "Cuando la depuración de creatinina sea menor de 30 mL/min, reducir la dosis de tramadol de liberación inmediata y evitar la formulación de liberación prolongada.",
+      "location": "p. 22 del PDF (página del artículo: 22)"
+    },
+    {
+      "code": "B21",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "Inhibidores del sistema renina-angiotensina en ERC",
+      "statement": "En enfermedad renal crónica estadio 3a o superior, evitar el uso rutinario simultáneo de dos o más inhibidores del sistema renina-angiotensina, o de uno de ellos con un diurético ahorrador de potasio, por riesgo de hiperpotasemia.",
+      "location": "p. 19 del PDF (página del artículo: 19)"
+    },
+    {
+      "code": "B22",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "Litio con IECA, ARA-II o ARNI",
+      "statement": "Evitar la combinación de litio con un IECA, ARA-II o ARNI; si se usa, vigilar las concentraciones de litio por mayor riesgo de toxicidad.",
+      "location": "pp. 19–20 del PDF (páginas del artículo: 19–20)"
+    },
+    {
+      "code": "B23",
+      "system": "beers",
+      "type": "BEERS",
+      "section": "Síncope y bloqueadores alfa-1 selectivos",
+      "statement": "En pacientes con síncope, considerar que los datos son limitados para bloqueadores alfa-1 periféricos selectivos como tamsulosina, pero el criterio de hipotensión ortostática podría ser aplicable; requiere evaluación clínica individual.",
+      "location": "p. 16 del PDF (página del artículo: 16)"
+    },
+    {
+      "code": "STOPP-A1",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección A, criterio 1",
+      "statement": "Evitar cualquier medicamento que carezca de una indicación clínica vigente.",
+      "location": "p. 1 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-A2",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección A, criterio 2",
+      "statement": "Evitar mantener un medicamento más allá de la duración recomendada cuando esta esté claramente definida.",
+      "location": "p. 1 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-A3",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección A, criterio 3",
+      "statement": "Evitar la duplicidad regular de una misma clase farmacológica; optimizar primero la monoterapia.",
+      "location": "p. 1 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-B3",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección B, criterio 3",
+      "statement": "Evitar combinar un betabloqueador con verapamilo o diltiazem por riesgo de bloqueo cardiaco.",
+      "location": "p. 1 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-B4",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección B, criterio 4",
+      "statement": "Evitar fármacos que reducen la frecuencia ventricular, incluidos betabloqueadores, cuando exista frecuencia menor de 50/min, bloqueo AV de segundo grado o bloqueo completo.",
+      "location": "p. 1 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-B5",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección B, criterio 5",
+      "statement": "Evitar un betabloqueador como monoterapia de hipertensión no complicada cuando no exista angina, aneurisma aórtico u otra indicación específica.",
+      "location": "p. 1 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-B9",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección B, criterio 9",
+      "statement": "Evitar un diurético tiazídico con potasio <3,0 mmol/L, sodio <130 mmol/L, calcio corregido >2,65 mmol/L o antecedente de gota.",
+      "location": "p. 2 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-B12",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección B, criterio 12",
+      "statement": "Evitar IECA o ARA-II cuando el potasio sérico sea mayor de 5,5 mmol/L.",
+      "location": "p. 2 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-B13",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección B, criterio 13",
+      "statement": "Evitar antagonistas de aldosterona combinados con IECA, ARA-II u otro ahorrador de potasio sin vigilancia periódica del potasio sérico.",
+      "location": "p. 2 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-B15",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección B, criterio 15",
+      "statement": "Evitar medicamentos que prolongan previsiblemente el QTc —entre ellos macrólidos— cuando exista QTc demostrado >450 ms en hombres o >470 ms en mujeres.",
+      "location": "p. 2 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-B16",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección B, criterio 16",
+      "statement": "Evitar estatinas para prevención cardiovascular primaria en personas de 85 años o más con fragilidad establecida y expectativa de vida probablemente menor de tres años.",
+      "location": "p. 2 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-B17",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección B, criterio 17",
+      "statement": "Evitar AINE sistémicos a largo plazo con antecedente de enfermedad coronaria, cerebral o vascular periférica.",
+      "location": "p. 2 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-B19",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección B, criterio 19",
+      "statement": "Evitar AINE o corticoides sistémicos en insuficiencia cardiaca que requiere diurético de asa, por riesgo de exacerbación.",
+      "location": "p. 2 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-C1",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección C, criterio 1",
+      "statement": "Evitar ácido acetilsalicílico a largo plazo en dosis superiores a 100 mg/día.",
+      "location": "p. 3 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-C2",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección C, criterio 2",
+      "statement": "Evitar antiagregantes o anticoagulantes cuando exista riesgo importante de hemorragia mayor, como hipertensión grave no controlada, diátesis hemorrágica o sangrado espontáneo reciente relevante.",
+      "location": "p. 3 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-C4",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección C, criterio 4",
+      "statement": "Evitar combinar antiagregantes con anticoagulantes en fibrilación auricular crónica, salvo stent coronario concurrente o estenosis coronaria >50% demostrada.",
+      "location": "p. 3 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-C5",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección C, criterio 5",
+      "statement": "Evitar antiagregante más anticoagulante en enfermedad coronaria, cerebrovascular o arterial periférica estable.",
+      "location": "p. 3 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-C7",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección C, criterio 7",
+      "statement": "No usar antiagregantes como sustitutos de anticoagulantes para prevenir ictus en fibrilación auricular crónica.",
+      "location": "p. 3 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-C10",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección C, criterio 10",
+      "statement": "Evitar la combinación de AINE con anticoagulantes por riesgo de hemorragia gastrointestinal mayor.",
+      "location": "p. 3 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-C14",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección C, criterio 14",
+      "statement": "Evitar o revisar estrechamente la combinación de azitromicina u otros inhibidores de P-gp con apixabán, dabigatrán, edoxabán o rivaroxabán, por mayor riesgo de sangrado.",
+      "location": "p. 4 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-C16",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección C, criterio 16",
+      "statement": "Evitar ácido acetilsalicílico para prevención cardiovascular primaria por falta de beneficio demostrado.",
+      "location": "p. 4 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-D8",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección D, criterio 8",
+      "statement": "Evitar benzodiacepinas durante cuatro semanas o más; si se han usado por ese tiempo, retirarlas gradualmente.",
+      "location": "pp. 4–5 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-D9",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección D, criterio 9",
+      "statement": "Evitar benzodiacepinas para agitación o síntomas psicóticos de la demencia.",
+      "location": "p. 5 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-D10",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección D, criterio 10",
+      "statement": "Evitar benzodiacepinas para insomnio durante dos semanas o más por dependencia y mayor riesgo de caídas y fracturas.",
+      "location": "p. 5 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-D13",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección D, criterio 13",
+      "statement": "Evitar orfenadrina u otros anticolinérgicos para tratar efectos extrapiramidales inducidos por antipsicóticos.",
+      "location": "p. 5 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-D14",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección D, criterio 14",
+      "statement": "Evitar fármacos con potente efecto anticolinérgico en pacientes con delirium o demencia.",
+      "location": "p. 5 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-E4",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección E, criterio 4",
+      "statement": "Evitar AINE cuando la TFGe sea menor de 50 mL/min/1,73 m².",
+      "location": "p. 6 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-E6",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección E, criterio 6",
+      "statement": "Evitar metformina cuando la TFGe sea menor de 30 mL/min/1,73 m².",
+      "location": "p. 6 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-E9",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección E, criterio 9",
+      "statement": "Evitar bisfosfonatos cuando la TFGe sea menor de 30 mL/min/1,73 m².",
+      "location": "p. 6 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-F2",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección F, criterio 2",
+      "statement": "Evitar un inhibidor de la bomba de protones a dosis terapéutica completa durante más de ocho semanas para úlcera péptica no complicada; considerar reducción o suspensión.",
+      "location": "pp. 6–7 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-F3",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección F, criterio 3",
+      "statement": "Evitar fármacos que favorecen estreñimiento —como opioides o antiácidos de aluminio— en pacientes con estreñimiento crónico si existen alternativas.",
+      "location": "p. 7 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-F5",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección F, criterio 5",
+      "statement": "Evitar corticoides en pacientes con antecedente de úlcera péptica o esofagitis erosiva, salvo coprescripción de un inhibidor de la bomba de protones.",
+      "location": "p. 7 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-G2",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección G, criterio 2",
+      "statement": "Evitar corticoides sistémicos como mantenimiento de EPOC moderada-grave cuando pueden utilizarse corticoides inhalados.",
+      "location": "p. 7 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-G4",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección G, criterio 4",
+      "statement": "Evitar benzodiacepinas en insuficiencia respiratoria aguda o crónica definida por hipoxemia con o sin hipercapnia.",
+      "location": "p. 7 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-H1",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección H, criterio 1",
+      "statement": "Evitar AINE no selectivos de COX-2 con antecedente de úlcera péptica o sangrado gastrointestinal, salvo protección con IBP o antagonista H2.",
+      "location": "p. 7 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-H2",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección H, criterio 2",
+      "statement": "Evitar AINE con hipertensión grave persistente: presión sistólica >170 mmHg o diastólica >100 mmHg.",
+      "location": "pp. 7–8 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-H3",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección H, criterio 3",
+      "statement": "Evitar AINE durante más de tres meses para artrosis si antes no se ha probado paracetamol.",
+      "location": "p. 8 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-H7",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección H, criterio 7",
+      "statement": "Evitar AINE junto con corticoides para artritis o reumatismo por mayor riesgo de enfermedad ulcerosa péptica.",
+      "location": "p. 8 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-H8",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección H, criterio 8",
+      "statement": "Evitar bisfosfonatos orales con enfermedad gastrointestinal alta actual o reciente, como disfagia, esofagitis, gastritis, duodenitis, úlcera o sangrado.",
+      "location": "p. 8 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-H9",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección H, criterio 9",
+      "statement": "Evitar opioides a largo plazo para artrosis.",
+      "location": "p. 8 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-I5",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección I, criterio 5",
+      "statement": "Evitar tamsulosina y otros antagonistas alfa-1 distintos de silodosina con hipotensión ortostática sintomática o antecedente de síncope.",
+      "location": "p. 8 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-J1",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección J, criterio 1",
+      "statement": "Evitar sulfonilureas de vida media prolongada, como glibenclamida, en diabetes tipo 2 por riesgo de hipoglucemia prolongada.",
+      "location": "p. 9 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-J9",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección J, criterio 9",
+      "statement": "Evitar levotiroxina en hipotiroidismo subclínico con T4 libre normal y TSH elevada pero menor de 10 mU/L.",
+      "location": "p. 9 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-K1",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección K, criterio 1",
+      "statement": "Evitar benzodiacepinas en pacientes con caídas recurrentes.",
+      "location": "p. 9 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-K3",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección K, criterio 3",
+      "statement": "Evitar vasodilatadores en pacientes con caídas recurrentes e hipotensión postural persistente.",
+      "location": "p. 9 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-K5",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección K, criterio 5",
+      "statement": "Evitar antiepilépticos en pacientes con caídas recurrentes cuando deterioren el estado sensorial o la función cerebelosa.",
+      "location": "p. 9 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-K7",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección K, criterio 7",
+      "statement": "Evitar opioides en pacientes con caídas recurrentes.",
+      "location": "p. 10 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-K10",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección K, criterio 10",
+      "statement": "Evitar antagonistas alfa para síntomas prostáticos, excepto silodosina, en pacientes con caídas recurrentes.",
+      "location": "p. 10 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-L1",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección L, criterio 1",
+      "statement": "Evitar tramadol u otro opioide potente oral o transdérmico como primera línea para dolor leve.",
+      "location": "p. 10 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-L2",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección L, criterio 2",
+      "statement": "Evitar opioides de uso diario regular sin un laxante concomitante.",
+      "location": "p. 10 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-L5",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección L, criterio 5",
+      "statement": "Evitar gabapentinoides para dolor no neuropático.",
+      "location": "p. 10 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-L6",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección L, criterio 6",
+      "statement": "Evitar paracetamol en dosis totales de 3 g/día o más en pacientes con IMC <18 o enfermedad hepática crónica.",
+      "location": "p. 10 del apéndice STOPP"
+    },
+    {
+      "code": "STOPP-M1",
+      "system": "stopp_start",
+      "type": "STOPP",
+      "section": "Sección M, criterio 1",
+      "statement": "Evitar el uso simultáneo de dos o más fármacos con propiedades anticolinérgicas por toxicidad acumulativa.",
+      "location": "pp. 10–11 del apéndice STOPP"
+    },
+    {
+      "code": "START-B1",
+      "system": "stopp_start",
+      "type": "START",
+      "section": "Sección B, criterio 1",
+      "statement": "Considerar tratamiento antihipertensivo con presión >140/90 mmHg; si existe fragilidad física moderada o grave, usar el umbral >150/90 mmHg.",
+      "location": "p. 11 del apéndice START"
+    },
+    {
+      "code": "START-B2",
+      "system": "stopp_start",
+      "type": "START",
+      "section": "Sección B, criterio 2",
+      "statement": "Considerar una estatina con antecedente documentado de enfermedad coronaria, cerebral o vascular periférica, salvo final de vida o fragilidad moderada-grave.",
+      "location": "p. 11 del apéndice START"
+    },
+    {
+      "code": "START-B3",
+      "system": "stopp_start",
+      "type": "START",
+      "section": "Sección B, criterio 3",
+      "statement": "Considerar un IECA en enfermedad coronaria.",
+      "location": "p. 11 del apéndice START"
+    },
+    {
+      "code": "START-B4",
+      "system": "stopp_start",
+      "type": "START",
+      "section": "Sección B, criterio 4",
+      "statement": "Considerar un betabloqueador en enfermedad coronaria sintomática.",
+      "location": "p. 11 del apéndice START"
+    },
+    {
+      "code": "START-B5",
+      "system": "stopp_start",
+      "type": "START",
+      "section": "Sección B, criterio 5",
+      "statement": "Considerar un IECA en insuficiencia cardiaca con fracción de eyección reducida.",
+      "location": "p. 11 del apéndice START"
+    },
+    {
+      "code": "START-B6",
+      "system": "stopp_start",
+      "type": "START",
+      "section": "Sección B, criterio 6",
+      "statement": "Considerar bisoprolol u otro betabloqueador cardioselectivo indicado en insuficiencia cardiaca estable con fracción de eyección reducida.",
+      "location": "p. 11 del apéndice START"
+    },
+    {
+      "code": "START-B10",
+      "system": "stopp_start",
+      "type": "START",
+      "section": "Sección B, criterio 10",
+      "statement": "Considerar un betabloqueador en fibrilación auricular crónica con frecuencia cardiaca no controlada.",
+      "location": "p. 11 del apéndice START"
+    },
+    {
+      "code": "START-C2",
+      "system": "stopp_start",
+      "type": "START",
+      "section": "Sección C, criterio 2",
+      "statement": "Considerar tratamiento antiagregante con antecedente documentado de enfermedad coronaria, cerebral o vascular periférica.",
+      "location": "p. 12 del apéndice START"
+    },
+    {
+      "code": "START-E1",
+      "system": "stopp_start",
+      "type": "START",
+      "section": "Sección E, criterio 1",
+      "statement": "Considerar calcitriol en enfermedad renal crónica grave con hipocalcemia e hiperparatiroidismo secundario asociado.",
+      "location": "p. 12 del apéndice START"
+    },
+    {
+      "code": "START-E4",
+      "system": "stopp_start",
+      "type": "START",
+      "section": "Sección E, criterio 4",
+      "statement": "Considerar un IECA o ARA-II en enfermedad renal crónica con proteinuria >300 mg/24 h.",
+      "location": "pp. 12–13 del apéndice START"
+    },
+    {
+      "code": "START-F1",
+      "system": "stopp_start",
+      "type": "START",
+      "section": "Sección F, criterio 1",
+      "statement": "Considerar un inhibidor de la bomba de protones en reflujo gastroesofágico grave o estenosis péptica esofágica que requiere dilatación.",
+      "location": "p. 13 del apéndice START"
+    },
+    {
+      "code": "START-F2",
+      "system": "stopp_start",
+      "type": "START",
+      "section": "Sección F, criterio 2",
+      "statement": "Considerar un inhibidor de la bomba de protones al iniciar ácido acetilsalicílico en dosis baja si hay antecedente de úlcera péptica o esofagitis por reflujo.",
+      "location": "p. 13 del apéndice START"
+    },
+    {
+      "code": "START-F3",
+      "system": "stopp_start",
+      "type": "START",
+      "section": "Sección F, criterio 3",
+      "statement": "Considerar un inhibidor de la bomba de protones durante tratamiento con AINE, sea menor o mayor de dos semanas.",
+      "location": "p. 13 del apéndice START"
+    },
+    {
+      "code": "START-F5",
+      "system": "stopp_start",
+      "type": "START",
+      "section": "Sección F, criterio 5",
+      "statement": "Considerar un laxante osmótico, como lactulosa, en estreñimiento crónico persistente idiopático o secundario benigno.",
+      "location": "p. 13 del apéndice START"
+    },
+    {
+      "code": "START-H2",
+      "system": "stopp_start",
+      "type": "START",
+      "section": "Sección H, criterio 2",
+      "statement": "Considerar bisfosfonato, vitamina D y calcio en tratamiento sistémico prolongado con corticoides para prevenir osteoporosis inducida.",
+      "location": "p. 13 del apéndice START"
+    },
+    {
+      "code": "START-H3",
+      "system": "stopp_start",
+      "type": "START",
+      "section": "Sección H, criterio 3",
+      "statement": "Considerar vitamina D en osteoporosis conocida, fractura por fragilidad o densidad mineral ósea con T ≤−2,5.",
+      "location": "p. 13 del apéndice START"
+    },
+    {
+      "code": "START-H4",
+      "system": "stopp_start",
+      "type": "START",
+      "section": "Sección H, criterio 4",
+      "statement": "Considerar terapia antirresortiva o anabólica en osteoporosis documentada o antecedente de fractura por fragilidad, si no existe contraindicación.",
+      "location": "pp. 13–14 del apéndice START"
+    },
+    {
+      "code": "START-H9",
+      "system": "stopp_start",
+      "type": "START",
+      "section": "Sección H, criterio 9",
+      "statement": "Considerar ácido fólico en pacientes tratados con metotrexato.",
+      "location": "p. 14 del apéndice START"
+    },
+    {
+      "code": "START-I1",
+      "system": "stopp_start",
+      "type": "START",
+      "section": "Sección I, criterio 1",
+      "statement": "Considerar tamsulosina u otro bloqueador alfa-1 selectivo para síntomas urinarios por hiperplasia prostática cuando la prostatectomía no sea necesaria, apropiada o segura.",
+      "location": "p. 14 del apéndice START"
+    },
+    {
+      "code": "START-J1",
+      "system": "stopp_start",
+      "type": "START",
+      "section": "Sección J, criterio 1",
+      "statement": "Considerar un IECA o ARA-II en diabetes con proteinuria o microalbuminuria >30 mg/24 h, salvo enfermedad renal grave con TFGe <30.",
+      "location": "pp. 14–15 del apéndice START"
+    },
+    {
+      "code": "START-K2",
+      "system": "stopp_start",
+      "type": "START",
+      "section": "Sección K, criterio 2",
+      "statement": "Considerar un laxante en pacientes que reciben opioides regularmente.",
+      "location": "p. 15 del apéndice START"
+    }
+  ]
+}

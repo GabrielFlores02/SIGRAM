@@ -1,0 +1,425 @@
+{
+  "created_at": "2026-08-07T15:39:08.637269+00:00",
+  "package": "SIGRAM_AM_BACKEND_V1_20260805.zip",
+  "included_files": 83,
+  "large_institutional_parquets_included": false,
+  "local_sqlite_database_included": false,
+  "virtual_environment_included": false,
+  "files": [
+    {
+      "path": ".env.example",
+      "bytes": 740,
+      "sha256": "e58c57f5f8580edf8bea00cb9522f2c89476fda0d4749bef3346098fea238740"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 751,
+      "sha256": "b57f305db158e400740d45b8afa3cb20a12064dcfcf14c4eafd33901c7cf7f38"
+    },
+    {
+      "path": "BACKEND_HANDOFF.md",
+      "bytes": 3331,
+      "sha256": "81a9679d00f781172d6ad93cbc10adcbc06940b3a2f3bd4bbf5880802a33a146"
+    },
+    {
+      "path": "HANDOFF_V1.md",
+      "bytes": 6948,
+      "sha256": "440c329a7611417c5ced66a050324706aff80ffb69cfef7bb1a3db5ddbd70bfe"
+    },
+    {
+      "path": "README.md",
+      "bytes": 6263,
+      "sha256": "a9a1f25465e6b817a6c0df57aeefaecb454c46d6ceb23c43f1f95e986c14d382"
+    },
+    {
+      "path": "backend/.gitkeep",
+      "bytes": 17,
+      "sha256": "4858659afe00c6157450412c52fe281dd5bb3dc5c9a7d17b79cc263c34d60e3c"
+    },
+    {
+      "path": "backend/README.md",
+      "bytes": 5302,
+      "sha256": "50da14a9bf5625722eabd299edccb50950d3115731430007641561eee0ea4b94"
+    },
+    {
+      "path": "backend/app/__init__.py",
+      "bytes": 24,
+      "sha256": "b3f2a47c857aee565d78e1df3534a22dcd796f8e711cdc88ee6e1f3e961704f0"
+    },
+    {
+      "path": "backend/app/api/__init__.py",
+      "bytes": 21,
+      "sha256": "bae8072ac20dd31b1048333afe4b03f1e9d5d85a9796d2ed97ca228181bd3688"
+    },
+    {
+      "path": "backend/app/api/cases.py",
+      "bytes": 2272,
+      "sha256": "9c9e739d0623e4e9ae20ab54811e4d9998ed99bfcadb0747da83abb36209f3c7"
+    },
+    {
+      "path": "backend/app/api/catalog.py",
+      "bytes": 2567,
+      "sha256": "4c2546dc6bf578f5c7a3764824618c16c446fcfd450df75e9d695c5a39ec106d"
+    },
+    {
+      "path": "backend/app/api/evaluations.py",
+      "bytes": 2833,
+      "sha256": "0a0697291e17ebd3d18867f4641f0adea5717bf737914abd0711e13787149e72"
+    },
+    {
+      "path": "backend/app/api/health.py",
+      "bytes": 1429,
+      "sha256": "0e84155571bafb813d2889431593dd7f0ec6627a39d83c80f1f5b7e2616ce69c"
+    },
+    {
+      "path": "backend/app/api/pilot.py",
+      "bytes": 1289,
+      "sha256": "b6427298ca71c55ad19153ca1f371a4515f7b3c85c700be8f7277256eb9cdd00"
+    },
+    {
+      "path": "backend/app/config.py",
+      "bytes": 1554,
+      "sha256": "a18c46f3eb47164bd02ceb099eb7722c35ee69351f2b6ea7a728568b104267e9"
+    },
+    {
+      "path": "backend/app/database.py",
+      "bytes": 2430,
+      "sha256": "b0282ddd1a2817ea04f5ab88028ab019dbc837b0df56f0ba1047edf40591eec4"
+    },
+    {
+      "path": "backend/app/main.py",
+      "bytes": 1322,
+      "sha256": "95f16b499a33b9c58055472027d7974ff9c3acf77c5385d0855029c948ba750b"
+    },
+    {
+      "path": "backend/app/models/__init__.py",
+      "bytes": 165,
+      "sha256": "58bf56b4c949246ba9b3c951a124de35c14075fa1f15cac42138b89fd4925d46"
+    },
+    {
+      "path": "backend/app/models/models.py",
+      "bytes": 4834,
+      "sha256": "59fc0e4369623d7ae6797d3c12daffad9aae34e3a626c6ff8a2a4d3af3f0a14d"
+    },
+    {
+      "path": "backend/app/repositories/__init__.py",
+      "bytes": 28,
+      "sha256": "a64c96dce9fa8fb9815f395d70b95883e25e11ab386c7e18a32554edac997eb1"
+    },
+    {
+      "path": "backend/app/repositories/case_repository.py",
+      "bytes": 1926,
+      "sha256": "de28cc4d1d07fcffaaf2f973553ed0804d28cef48986a4ddaf3d965477f89987"
+    },
+    {
+      "path": "backend/app/repositories/evaluation_repository.py",
+      "bytes": 3280,
+      "sha256": "8aadc0b9f11defda8b18afaf73c36a31d233b482a8d2827e3bab2d8444dae8fd"
+    },
+    {
+      "path": "backend/app/schemas/__init__.py",
+      "bytes": 880,
+      "sha256": "a772638b5d3c6c2d997cdbb0ac52c5c7d7b82c2250dd39499f41f9b9c612b7f3"
+    },
+    {
+      "path": "backend/app/schemas/cases.py",
+      "bytes": 6415,
+      "sha256": "637235061bcb1a580a100b3e676738773b2af978b0071ea61cce435c4f53ca02"
+    },
+    {
+      "path": "backend/app/schemas/evaluations.py",
+      "bytes": 6639,
+      "sha256": "d58a775feb52d679f08fe1f053ebc63a2b25cb81bb4f8b190c30319ce32bd2d5"
+    },
+    {
+      "path": "backend/app/schemas/pilot.py",
+      "bytes": 3195,
+      "sha256": "1f6e2908756f1991d251199be831f7515d656c35e8c7446de48a24c0dcc153fd"
+    },
+    {
+      "path": "backend/app/schemas/responses.py",
+      "bytes": 924,
+      "sha256": "382b2c63cd4313500aa7036b80773d8003f6453d1ee8a1a58a43f19c8526f929"
+    },
+    {
+      "path": "backend/app/services/__init__.py",
+      "bytes": 408,
+      "sha256": "1bdad8f3393a3eeb20e83ce93b97e524bf2939308e91f1d4e0f9abf5ef47c477"
+    },
+    {
+      "path": "backend/app/services/case_service.py",
+      "bytes": 3408,
+      "sha256": "94cae35422286fac7136b67b0e9d219e894eebbb2b88da1cdd4597966c19408a"
+    },
+    {
+      "path": "backend/app/services/clinical_catalog_service.py",
+      "bytes": 56927,
+      "sha256": "89e87704c5a2c1fa1fcb5803f59081b55c41239b8afc625b466f43a9208fbeb2"
+    },
+    {
+      "path": "backend/app/services/ddinter_csv_provider.py",
+      "bytes": 6598,
+      "sha256": "61225eb0a0b212c4771760347638df700fdce0eebae5ad9049198fb411c31fac"
+    },
+    {
+      "path": "backend/app/services/demo_interaction_provider.py",
+      "bytes": 2096,
+      "sha256": "a2dbb99d9ae8e0885b7bb6894aaff5bb15e622fc1070ee688fc926ce9e281b63"
+    },
+    {
+      "path": "backend/app/services/diagnosis_context_service.py",
+      "bytes": 7624,
+      "sha256": "87e02ddd5d168dd0406e2552a581f5c6d584afdd5a93eeb8f49f8f4f3318848b"
+    },
+    {
+      "path": "backend/app/services/evaluation_service.py",
+      "bytes": 6574,
+      "sha256": "c8e3b8d61b8c9be0c0441852ededa4a6107322b14057edf57878ff38e2f81c75"
+    },
+    {
+      "path": "backend/app/services/interaction_provider.py",
+      "bytes": 399,
+      "sha256": "7c6349134fafd8a39832819991931b7cebafe04b13153b387a2a4e2880a40795"
+    },
+    {
+      "path": "backend/app/services/lab_context_service.py",
+      "bytes": 10954,
+      "sha256": "2778dd801bab1f3664723780adbb4164730977b6605df57f0c76fc9f6af08cd4"
+    },
+    {
+      "path": "backend/app/services/medication_normalizer.py",
+      "bytes": 561,
+      "sha256": "6e784d4b13dccdcf78d7262599c9af77f56224b0332ca7b6345b6515b306b8b6"
+    },
+    {
+      "path": "backend/app/services/pilot_sample_service.py",
+      "bytes": 17450,
+      "sha256": "573bd478428ab4df1fb4fe1f3ba271ea5df6cf3257afb3ff2080cb04f9b01f95"
+    },
+    {
+      "path": "backend/app/services/rule_engine.py",
+      "bytes": 6755,
+      "sha256": "11c85b0f36d0c7ff60863cbd71e6745c3ebcc1adef4c4ca9b08afa73b739e206"
+    },
+    {
+      "path": "backend/requirements.txt",
+      "bytes": 150,
+      "sha256": "b4259d69e3ee2b06e50ebd3336e089dd6a9210f7fe5c2182b64d48697383c1ba"
+    },
+    {
+      "path": "backend/tests/__init__.py",
+      "bytes": 29,
+      "sha256": "9d281764c87fc1cfa02ac77bb504829ef0f92961bcc6b48c09d4f6f77555b169"
+    },
+    {
+      "path": "backend/tests/conftest.py",
+      "bytes": 3583,
+      "sha256": "6db1ee417f46b2338b0c084c3e27e37edfbae9908fb164c0d877125cb722d425"
+    },
+    {
+      "path": "backend/tests/test_cases.py",
+      "bytes": 8175,
+      "sha256": "96837a1e20293219245c90e4a1de261c9ecf2e2face4e3921947bf182514816b"
+    },
+    {
+      "path": "backend/tests/test_clinical_catalog_v1.py",
+      "bytes": 9889,
+      "sha256": "7e6b67ab43571c5ab9ff156c134794e74bdca7fbf15e70b4790a71c08478b656"
+    },
+    {
+      "path": "backend/tests/test_ddinter2_profiler.py",
+      "bytes": 4212,
+      "sha256": "f39b73153224ca4bfe48609d38315d51dc943a835c9eaf9e134ff162291a6a18"
+    },
+    {
+      "path": "backend/tests/test_ddinter_csv_provider.py",
+      "bytes": 1962,
+      "sha256": "6592abe7336bd828ccf27278dd336d1f9ee0f41d8322a8cceae46eeb98be2903"
+    },
+    {
+      "path": "backend/tests/test_diagnosis_context_service.py",
+      "bytes": 3949,
+      "sha256": "06297928bcccb6d1140be69ec4cd03488f191a72d18257e0cd1c4975608dcb87"
+    },
+    {
+      "path": "backend/tests/test_evaluation_api.py",
+      "bytes": 11508,
+      "sha256": "95a7aaae19aec455669d8b0517c39eefc20729f975bae8818b2e91498dfe0ac6"
+    },
+    {
+      "path": "backend/tests/test_evaluation_persistence.py",
+      "bytes": 9525,
+      "sha256": "b906352fc9b32c574ed44525ed272926e1c25015a9b166b9241e3b4f858e1794"
+    },
+    {
+      "path": "backend/tests/test_hardening.py",
+      "bytes": 7868,
+      "sha256": "8a99067bd4bf5a1127ef8b4206331e7c07327eb6e21cd3b4e698547ab29aef18"
+    },
+    {
+      "path": "backend/tests/test_health.py",
+      "bytes": 1049,
+      "sha256": "41c6b30976b1d057175cf5ab5ce1737728d1aefb8f0c0c9ed7c7299a093abb7b"
+    },
+    {
+      "path": "backend/tests/test_lab_context_service.py",
+      "bytes": 6016,
+      "sha256": "07f7295f521c841349359a1184f0dbe7ebfaffbf69fb0f06fda5d83015379890"
+    },
+    {
+      "path": "backend/tests/test_pilot_sample_api.py",
+      "bytes": 5804,
+      "sha256": "48be3e580b7410f1ba28ee522831cf94542f84d838b0df853e09f1051617ed9e"
+    },
+    {
+      "path": "backend/tests/test_rule_engine.py",
+      "bytes": 4893,
+      "sha256": "7f83870ab2ca788797c3c07b33d6ff319b0ecd0545190c6ab917a0a150c471f5"
+    },
+    {
+      "path": "data/catalogs/v1/README.md",
+      "bytes": 619,
+      "sha256": "a4c44b32a05d4ec7ef9a7cbf611432e07853def1d1bc58380ce62fd40e94dac6"
+    },
+    {
+      "path": "data/catalogs/v1/clinical_catalog_v1.json",
+      "bytes": 54074,
+      "sha256": "99bbf09012501502dddd7c82137a0f3326b487615cc19ed739c9349af6624b87"
+    },
+    {
+      "path": "data/catalogs/v1/top_medications_v1.csv",
+      "bytes": 7840,
+      "sha256": "65f00e79d13096b10e7a71cdb4ba638266f7914686939053e789f6c5b952dbe2"
+    },
+    {
+      "path": "data/mappings/cie10_clinical_context_v1.json",
+      "bytes": 5634,
+      "sha256": "7a8492c4f325beea6988f0945577bbd145c66ddb08931a09aa937678c24f0fef"
+    },
+    {
+      "path": "data/mappings/ddinter_name_aliases.csv",
+      "bytes": 473,
+      "sha256": "00b3ec560e3152f0d24eab417c587950d128f05a1628c4fbb3d224b0ce55a9c2"
+    },
+    {
+      "path": "data/processed/v1_handoff/README.md",
+      "bytes": 571,
+      "sha256": "3fd4e0defbfe239f9227e249c67e06198bb27858aa9457d209f4801cb8dae8da"
+    },
+    {
+      "path": "data/processed/v1_handoff/manifest.json",
+      "bytes": 1229,
+      "sha256": "d4d96a9d57668c58bbca08bee2d3eacfaef6567cda75da264319158d2f3c6def"
+    },
+    {
+      "path": "data/processed/v1_handoff/sample_criterion_reports.json",
+      "bytes": 1030904,
+      "sha256": "90bb0b084d33d33df7c584f75b98f2d0fa8eff1e4ea9d814a3bd8079fd86d386"
+    },
+    {
+      "path": "data/processed/v1_handoff/sample_diagnoses_2025.parquet",
+      "bytes": 1685,
+      "sha256": "0b6648775422706a92ded604e3d0fe121cd5c6b1f643b3b928464f639d306b2c"
+    },
+    {
+      "path": "data/processed/v1_handoff/sample_labs_2025.parquet",
+      "bytes": 11914,
+      "sha256": "89c0fb4a876fbf457d38a550126c646e7870d3e1ebc6d71ff383e1ef07ab8548"
+    },
+    {
+      "path": "data/processed/v1_handoff/sample_medications.parquet",
+      "bytes": 8255,
+      "sha256": "83b90ffe77a5efcaae82a94422b2e648a922f7228f48b6c56fa8ef3f41d2ba27"
+    },
+    {
+      "path": "data/processed/v1_handoff/sample_patients.parquet",
+      "bytes": 817,
+      "sha256": "0d71145865bd76731286057dc897af89d0521d676aa2ae0c8d36d8b21c23939e"
+    },
+    {
+      "path": "data/processed/v1_handoff/sample_summary.csv",
+      "bytes": 642,
+      "sha256": "9d047790d926600dd522d5eecbd911ddd78ba6c938e001c3d83fcee0adaf0826"
+    },
+    {
+      "path": "data/raw/ddinter2/ddinter_downloads_code_A.csv",
+      "bytes": 3343434,
+      "sha256": "a22ca451d2b755ca2331886f7e00540c86f555f9f55704a59a19c691251f52e0"
+    },
+    {
+      "path": "data/raw/ddinter2/ddinter_downloads_code_B.csv",
+      "bytes": 867726,
+      "sha256": "76de5115a55587f0e822e1096b684fd3ddde058fbefcbb19896df58820ace130"
+    },
+    {
+      "path": "data/raw/ddinter2/ddinter_downloads_code_D.csv",
+      "bytes": 1520704,
+      "sha256": "c0627ec39965dbe27829e4934cd20d71eb079f4e373287678737bba9423a306a"
+    },
+    {
+      "path": "data/raw/ddinter2/ddinter_downloads_code_H.csv",
+      "bytes": 705088,
+      "sha256": "f0f925f0ba1ee68c4668d3e7a6732719b34623b22a0f5d017f9090e59f63c88e"
+    },
+    {
+      "path": "data/raw/ddinter2/ddinter_downloads_code_L.csv",
+      "bytes": 3885702,
+      "sha256": "f54f4486cc00344f8c86508c31c2ca3fad6d1d37ec3af5bcf609b4bbda5507ef"
+    },
+    {
+      "path": "data/raw/ddinter2/ddinter_downloads_code_P.csv",
+      "bytes": 317460,
+      "sha256": "83f8c0edb20d09ef29b8500b48f9623e208379525688ade9e70a7df2d8749d55"
+    },
+    {
+      "path": "data/raw/ddinter2/ddinter_downloads_code_R.csv",
+      "bytes": 1793766,
+      "sha256": "1c39c3d4a6e41659b7a988538d7f363867592abc6f41a815de8746f6e2150574"
+    },
+    {
+      "path": "data/raw/ddinter2/ddinter_downloads_code_V.csv",
+      "bytes": 700777,
+      "sha256": "353973fb300453946aea95733e8fb52338e4b59426d2ce6ca318363d4f84f10a"
+    },
+    {
+      "path": "docs/backend/DOCUMENTACION_BACKEND.md",
+      "bytes": 39796,
+      "sha256": "98be85d9e32d768153b6d90ce49dc0dae25d7d09731ccc7f9ed2db658de2fd2c"
+    },
+    {
+      "path": "docs/frontend/INTEGRACION_RESULTADOS_CLINICOS.md",
+      "bytes": 5526,
+      "sha256": "813f580c9304325be791040fc4351497b591f8dd7f79d1b865ffc19716b46a32"
+    },
+    {
+      "path": "docs/pilot/probar_prototipo_backend.md",
+      "bytes": 5476,
+      "sha256": "bcebcc8f14dc6dc7a96d09c7bb18ef4e8cdc15fcd604f350961ef71731421e84"
+    },
+    {
+      "path": "reports/v1_criteria_data_coverage.md",
+      "bytes": 4186,
+      "sha256": "6017d309265fe16d7081ab5675753022f7bc4888ea44db70ea98eb87a4e2779a"
+    },
+    {
+      "path": "scripts/profile_ddinter2.py",
+      "bytes": 18509,
+      "sha256": "7baaa6fc794fb374e0eaa10ecb60a3d71efca2ed0f7b33f51ea0cbff4e1b56b8"
+    },
+    {
+      "path": "scripts/refresh_sample_reports.py",
+      "bytes": 6181,
+      "sha256": "01229a1f18fecd5ed54051a28d2ca8892bc13b92b270eaaf19e45875379199a8"
+    },
+    {
+      "path": "scripts/start_backend.ps1",
+      "bytes": 757,
+      "sha256": "1652560e08402d0726265db01b63b40c3535dc9455a7976b59f0179ca48c4e4f"
+    },
+    {
+      "path": "scripts/try_sample_patients.py",
+      "bytes": 3796,
+      "sha256": "24777c44e1847e073211a9ebe4629ad1d0ccc9bf501c679fade6e892ac0a8bb3"
+    }
+  ]
+}

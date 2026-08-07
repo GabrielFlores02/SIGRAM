@@ -1,0 +1,52 @@
+# Entorno virtual de Python
+.venv/
+.venv-local/
+
+# Cache de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Cache de herramientas de pruebas
+.pytest_cache/
+
+# Variables de entorno locales
+.env
+.env.local
+.env.*.local
+
+# Bases de datos SQLite locales
+*.db
+*.sqlite
+*.sqlite3
+
+# Dependencias y compilaciones de Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Datos (fuentes crudas y procesadas)
+data/processed/
+data/raw/
+backend/data/sigram_poc.db
+
+# Documentación de referencia pesada o binaria
+docs/references/*.docx
+docs/references/*.pptx
+
+# Archivos temporales de Windows
+[Dd]esktop.ini
+[Tt]humbs.db
+ehthumbs.db
+$RECYCLE.BIN/
+*~
+~$*
+
+# Configuraciones locales de editores/IDE (VS Code, PyCharm, etc.)
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp

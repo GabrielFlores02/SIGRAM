@@ -1,0 +1,26 @@
+# Dependencias y artefactos de compilación
+**/node_modules/
+**/__pycache__/
+**/*.py[cod]
+**/.venv/
+**/dist/
+
+# Estado local de la aplicación
+**/runtime/
+*.sqlite
+*.sqlite3
+*.db
+.env
+.env.*
+
+# Salidas y versiones históricas no utilizadas por compose.yaml
+/outputs/
+/07 SIGRAM/
+/SIGRAM/
+/SIGRAM_AM_BACKEND_V1_20260731/
+/SIGRAM_AM_BACKEND_V1_20260731_V2/
+
+# Archivos del sistema/editor
+.DS_Store
+Thumbs.db
+.vscode/
