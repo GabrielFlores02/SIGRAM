@@ -441,6 +441,7 @@ class ClinicalCatalogService:
             output.append(
                 {
                     **criterion,
+                    "criterion_type": criterion["type"],
                     "automation_status": (
                         "automated_v1"
                         if criterion["code"] in AUTOMATED_CODES

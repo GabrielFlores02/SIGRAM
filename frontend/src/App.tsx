@@ -172,7 +172,6 @@ function Shell({ page, onNavigate, children }: { page: Page; onNavigate: (page: 
             <span className="brand-divider" />
             <span className="product-name">SIGRAM-AM | Piloto de investigación</span>
           </div>
-          <span className="institution">IETSI · Red Asistencial Rebagliati</span>
         </div>
         <nav className="main-nav" aria-label="Navegación principal">
           <button className={`research-nav ${page === "cases" ? "active" : ""}`} onClick={() => onNavigate("cases")}>Casos del piloto</button>

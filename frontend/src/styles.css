@@ -65,7 +65,7 @@ h2 { font-size: 16px; }
 .simulation-zone strong { text-transform: uppercase; font-size: 11px; letter-spacing: .05em; }
 .toolbar-actions { display: flex; align-items: center; gap: 12px; }
 .sample-label { padding: 8px 12px; color: #005d82; background: #e7f7fd; border: 1px solid #9fd9ef; border-radius: 4px; font-size: 12px; font-weight: 700; }
-.search-field { display: flex; align-items: center; gap: 8px; padding: 0 10px; min-height: 38px; background: white; border: 1px solid var(--outline-soft); border-radius: 4px; }
+.search-field { display: flex; flex-direction: row; align-items: center; gap: 8px; padding: 0 10px; min-height: 38px; background: white; border: 1px solid var(--outline-soft); border-radius: 4px; }
 .search-field input { border: 0; outline: 0; background: transparent; min-width: 180px; color: inherit; }
 .primary-button, .small-primary { color: white; background: var(--primary-dark); border: 1px solid var(--primary-dark); border-radius: 4px; font-weight: 700; box-shadow: var(--shadow-sm); }
 .primary-button { min-height: 40px; padding: 0 16px; }
