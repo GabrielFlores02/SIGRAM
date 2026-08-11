@@ -100,6 +100,7 @@ class ClinicalContext(BaseModel):
     ppi_maintenance_indication: Optional[bool] = None
     safer_alternatives_ineffective: Optional[bool] = None
     lithium_level_monitoring: Optional[bool] = None
+    tramadol_release_formulation: Optional[str] = None
     medication_facts: List[MedicationClinicalFacts] = Field(default_factory=list)
     lab_provenance: List[dict] = Field(default_factory=list)
     diagnosis_codes: List[str] = Field(default_factory=list)

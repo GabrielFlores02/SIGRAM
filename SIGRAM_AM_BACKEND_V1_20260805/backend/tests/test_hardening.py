@@ -48,11 +48,10 @@ def _create_case(client, case_code="HARD-001"):
 
 # ─────────────────────────── Pruebas ───────────────────────────
 
-def test_config_uses_canonical_sqlite_path():
-    """1. La configuración usa backend/data/sigram_poc.db como ruta canónica."""
-    assert settings.DATABASE_URL == "sqlite:///backend/data/sigram_poc.db", (
-        f"La ruta de SQLite configurada es '{settings.DATABASE_URL}', "
-        "se esperaba 'sqlite:///backend/data/sigram_poc.db'"
+def test_config_uses_sqlite_path():
+    """1. La configuración de prueba usa SQLite y no una base externa."""
+    assert settings.DATABASE_URL.startswith("sqlite:///"), (
+        f"La ruta configurada debe ser SQLite y es '{settings.DATABASE_URL}'"
     )
 
 

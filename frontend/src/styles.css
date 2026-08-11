@@ -198,15 +198,36 @@ textarea { min-height: 84px; resize: vertical; }
 .results-table td:nth-child(5) > span { display: block; color: var(--text-muted); }
 .severity-bar { display: block; width: 9px; height: 38px; border-radius: 6px; background: var(--primary); }
 .severity-bar.alert { background: var(--error); }
-.severity-bar.manual_review { background: var(--warning); }
-.severity-bar.not_evaluable { background: #c0c7d3; }
-.severity-bar.no_alert { background: var(--success); }
+.severity-bar.activated { background: var(--error); }
+.severity-bar.manual_review { background: #7a4b9b; }
+.severity-bar.not_evaluable { background: #d18700; }
+.severity-bar.no_alert { background: #78909c; }
+.severity-bar.out_of_scope { background: #9aa2a8; }
+.severity-bar.supporting_classification { background: #607d8b; }
 .status-pill { display: inline-flex; align-items: center; padding: 5px 9px; border-radius: 999px; border: 1px solid rgba(0,122,201,.22); color: var(--primary-dark); background: rgba(0,122,201,.1); font-size: 11px; font-weight: 700; white-space: nowrap; }
 .status-pill.alert { color: #9f1717; border-color: rgba(186,26,26,.32); background: #ffe7e6; }
-.status-pill.manual_review { color: #8f4c00; border-color: rgba(245,135,31,.32); background: #fff0df; }
-.status-pill.not_evaluable { color: #4b555c; border-color: #c5cbcf; background: #e6e9ea; }
-.status-pill.no_alert { color: #00733c; border-color: rgba(0,165,87,.22); background: rgba(0,165,87,.1); }
-.no-alert-row { background: rgba(0,165,87,.08); }
+.status-pill.activated { color: #9f1717; border-color: rgba(186,26,26,.32); background: #ffe7e6; }
+.status-pill.manual_review { color: #633a80; border-color: #b99acf; background: #f2eafa; }
+.status-pill.not_evaluable { color: #8f4c00; border-color: rgba(245,135,31,.42); background: #fff0df; }
+.status-pill.no_alert { color: #455a64; border-color: #c4cdd2; background: #eef1f2; }
+.status-pill.out_of_scope { color: #5e6368; border-color: #d2d5d8; background: #f0f1f2; }
+.status-pill.supporting_classification { color: #405a6b; border-color: #bfced6; background: #e7eef2; }
+.no-alert-row { background: #f8fafb; }
+.beers-recommendation { display: inline-flex; padding: 5px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; line-height: 1.2; }
+.beers-recommendation.avoid { color: #9f1717; background: #ffe7e6; border: 1px solid #efaaa4; }
+.beers-recommendation.use_with_caution { color: #8f4c00; background: #fff0df; border: 1px solid #f0c185; }
+.beers-recommendation.reduce_dose { color: #075a8a; background: #e6f3fa; border: 1px solid #9fcde3; }
+.beers-recommendation.monitor { color: #006d70; background: #e1f5f5; border: 1px solid #9bd6d6; }
+.beers-recommendation.conditional { color: #613b83; background: #f3eafb; border: 1px solid #d5bee7; }
+.beers-recommendation.classification_only { color: #405a6b; background: #e7eef2; border: 1px solid #bfced6; }
+.evidence-neutral { display: inline-flex; padding: 5px 9px; border-radius: 999px; color: #405a6b; background: #eef2f4; border: 1px solid #c7d1d6; font-size: 12px; font-weight: 700; }
+.coverage-note { margin: 8px 0 0; color: var(--text-muted); font-size: 12px; }
+.analysis-section { margin: 18px 0; }
+.analysis-section h3 { margin: 0 0 8px; font-size: 13px; color: #405a6b; }
+.analysis-section h3.activated { color: #9f1717; }
+.analysis-section h3.not_evaluable { color: #8f4c00; }
+.analysis-section h3.manual_review { color: #633a80; }
+.analysis-section h3.supporting_classification { color: #405a6b; }
 .missing-label { display: block; color: #d23831; font-size: 10px; text-transform: uppercase; margin-bottom: 2px; }
 .ddinter-level { display: inline-flex; align-items: center; justify-content: center; min-width: 76px; padding: 5px 9px; border-radius: 999px; border: 1px solid rgba(0,122,201,.22); color: var(--primary-dark); background: rgba(0,122,201,.1); font-size: 11px; font-weight: 700; white-space: nowrap; }
 .ddinter-level.ddinter-major { color: #9f1717; border-color: rgba(186,26,26,.28); background: #ffe7e6; }
@@ -226,9 +247,12 @@ textarea { min-height: 84px; resize: vertical; }
 .detail-drawer header button { border: 0; background: transparent; font-size: 24px; }
 .status-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--primary); }
 .status-dot.alert { background: var(--error); }
-.status-dot.manual_review { background: var(--warning); }
-.status-dot.not_evaluable { background: var(--outline-soft); }
-.status-dot.no_alert { background: var(--success); }
+.status-dot.activated { background: var(--error); }
+.status-dot.manual_review { background: #7a4b9b; }
+.status-dot.not_evaluable { background: #d18700; }
+.status-dot.no_alert { background: #78909c; }
+.status-dot.out_of_scope { background: #9aa2a8; }
+.status-dot.supporting_classification { background: #607d8b; }
 .status-dot.ddinter-major { background: var(--error); }
 .status-dot.ddinter-moderate { background: var(--warning); }
 .status-dot.ddinter-minor, .status-dot.ddinter-unknown, .status-dot.ddinter-unspecified { background: var(--primary); }

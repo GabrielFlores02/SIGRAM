@@ -1,5 +1,5 @@
 export type AnalysisSystem = "beers" | "stopp_start" | "ddinter";
-export type CriterionStatus = "alert" | "no_alert" | "not_evaluable" | "manual_review";
+export type CriterionStatus = "alert" | "activated" | "no_alert" | "not_evaluable" | "manual_review" | "out_of_scope" | "supporting_classification";
 
 export interface MedicationInput {
   entered_name: string;
@@ -73,6 +73,24 @@ export interface CriterionResult {
   recommended_actions: string[];
   logic_summary: string;
   medication_coverage_note: string;
+  source_name?: string;
+  source_year?: number;
+  source_version?: string;
+  source_table?: string;
+  source_section?: string;
+  beers_category?: string;
+  operational_formulation?: string;
+  evaluated_situation?: string;
+  rationale?: string;
+  recommendation_type?: string;
+  recommendation_text?: string;
+  quality_of_evidence?: string;
+  strength_of_recommendation?: string;
+  evidence_profiles: Record<string, unknown>[];
+  exceptions: Record<string, unknown>[];
+  automation_mode?: string;
+  counts_as_clinical_finding?: boolean;
+  trigger_facts: Record<string, unknown>;
 }
 
 export interface EvidenceTrace {
@@ -144,6 +162,7 @@ export interface AnalysisMethodResult {
   status: string;
   alert_count: number;
   evaluated_count: number;
+  out_of_scope_count: number;
   not_evaluable_count: number;
   manual_review_count: number;
   catalog: string;
@@ -183,6 +202,13 @@ export interface CatalogCriterion {
   source_location: string;
   automation_status: string;
   required_data: RequiredData[];
+  source_name?: string;
+  source_year?: number;
+  source_table?: string;
+  source_section?: string;
+  operational_formulation?: string;
+  recommendation_type?: string;
+  recommendation_text?: string;
 }
 
 export interface CatalogMedication {
