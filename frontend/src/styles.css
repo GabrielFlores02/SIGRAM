@@ -204,6 +204,7 @@ textarea { min-height: 84px; resize: vertical; }
 .severity-bar.no_alert { background: #78909c; }
 .severity-bar.out_of_scope { background: #9aa2a8; }
 .severity-bar.supporting_classification { background: #607d8b; }
+.severity-bar.not_applicable { background: #9aa2a8; }
 .status-pill { display: inline-flex; align-items: center; padding: 5px 9px; border-radius: 999px; border: 1px solid rgba(0,122,201,.22); color: var(--primary-dark); background: rgba(0,122,201,.1); font-size: 11px; font-weight: 700; white-space: nowrap; }
 .status-pill.alert { color: #9f1717; border-color: rgba(186,26,26,.32); background: #ffe7e6; }
 .status-pill.activated { color: #9f1717; border-color: rgba(186,26,26,.32); background: #ffe7e6; }
@@ -212,6 +213,7 @@ textarea { min-height: 84px; resize: vertical; }
 .status-pill.no_alert { color: #455a64; border-color: #c4cdd2; background: #eef1f2; }
 .status-pill.out_of_scope { color: #5e6368; border-color: #d2d5d8; background: #f0f1f2; }
 .status-pill.supporting_classification { color: #405a6b; border-color: #bfced6; background: #e7eef2; }
+.status-pill.not_applicable { color: #5e6368; border-color: #d2d5d8; background: #f0f1f2; }
 .no-alert-row { background: #f8fafb; }
 .beers-recommendation { display: inline-flex; padding: 5px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; line-height: 1.2; }
 .beers-recommendation.avoid { color: #9f1717; background: #ffe7e6; border: 1px solid #efaaa4; }
@@ -253,6 +255,11 @@ textarea { min-height: 84px; resize: vertical; }
 .status-dot.no_alert { background: #78909c; }
 .status-dot.out_of_scope { background: #9aa2a8; }
 .status-dot.supporting_classification { background: #607d8b; }
+.status-dot.not_applicable { background: #9aa2a8; }
+.triage-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--outline-soft); }
+.triage-grid small { grid-column: 1 / -1; color: var(--text-muted); }
+.suggested-actions { border-left: 4px solid #7a4b9b; background: #f5effa; padding-left: 12px; }
+@media (max-width: 700px) { .triage-grid { grid-template-columns: 1fr; } }
 .status-dot.ddinter-major { background: var(--error); }
 .status-dot.ddinter-moderate { background: var(--warning); }
 .status-dot.ddinter-minor, .status-dot.ddinter-unknown, .status-dot.ddinter-unspecified { background: var(--primary); }

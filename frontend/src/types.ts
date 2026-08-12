@@ -1,5 +1,5 @@
 export type AnalysisSystem = "beers" | "stopp_start" | "ddinter";
-export type CriterionStatus = "alert" | "activated" | "no_alert" | "not_evaluable" | "manual_review" | "out_of_scope" | "supporting_classification";
+export type CriterionStatus = "alert" | "activated" | "no_alert" | "not_evaluable" | "manual_review" | "out_of_scope" | "supporting_classification" | "not_applicable";
 
 export interface MedicationInput {
   entered_name: string;
@@ -165,6 +165,7 @@ export interface AnalysisMethodResult {
   out_of_scope_count: number;
   not_evaluable_count: number;
   manual_review_count: number;
+  not_applicable_count: number;
   catalog: string;
   note: string;
 }

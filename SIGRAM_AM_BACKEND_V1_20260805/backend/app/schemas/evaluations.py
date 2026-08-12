@@ -37,6 +37,7 @@ class AnalysisMethodResult(BaseModel):
     out_of_scope_count: int = 0
     not_evaluable_count: int = 0
     manual_review_count: int = 0
+    not_applicable_count: int = 0
     catalog: str
     note: str
 
@@ -140,6 +141,7 @@ class EvaluationExecutionRead(BaseModel):
                 "out_of_scope": 0,
                 "not_evaluable": 0,
                 "manual_review": 0,
+                "not_applicable": 0,
             }
             for system in ("beers", "stopp_start")
         }
@@ -154,6 +156,8 @@ class EvaluationExecutionRead(BaseModel):
                 status_counts[criterion.system]["not_evaluable"] += 1
             elif criterion.status == "manual_review":
                 status_counts[criterion.system]["manual_review"] += 1
+            elif criterion.status == "not_applicable":
+                status_counts[criterion.system]["not_applicable"] += 1
         return [
             AnalysisMethodResult(
                 system="beers",
@@ -164,6 +168,7 @@ class EvaluationExecutionRead(BaseModel):
                 out_of_scope_count=status_counts["beers"]["out_of_scope"],
                 not_evaluable_count=status_counts["beers"]["not_evaluable"],
                 manual_review_count=status_counts["beers"]["manual_review"],
+                not_applicable_count=status_counts["beers"]["not_applicable"],
                 catalog="top de medicamentos validado por el equipo médico, 2026-07-30",
                 note=(
                     "El alcance canónico AGS Beers es 65+; los casos fuera de "

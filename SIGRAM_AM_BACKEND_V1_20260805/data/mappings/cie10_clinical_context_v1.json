@@ -149,6 +149,14 @@
       "related_fields": ["egfr_ml_min_1_73m2"]
     },
     {
+      "field": "chronic_kidney_disease_stage_3a_or_higher",
+      "value": true,
+      "patterns": ["N18.3*", "N18.4*", "N18.5*", "N18.6*"],
+      "label": "Enfermedad renal crónica estadio 3a o mayor documentada",
+      "satisfies_context_field": true,
+      "related_fields": []
+    },
+    {
       "field": "hypertension_diagnosis",
       "value": true,
       "patterns": ["I10*", "I11*", "I12*", "I13*", "I15*"],

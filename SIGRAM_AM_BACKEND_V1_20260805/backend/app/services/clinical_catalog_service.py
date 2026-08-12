@@ -19,6 +19,7 @@ CATALOG_STATUS_NOT_EVALUABLE = "not_evaluable"
 CATALOG_STATUS_MANUAL_REVIEW = "manual_review"
 CATALOG_STATUS_OUT_OF_SCOPE = "out_of_scope"
 CATALOG_STATUS_SUPPORTING_CLASSIFICATION = "supporting_classification"
+CATALOG_STATUS_NOT_APPLICABLE = "not_applicable"
 
 
 FIELD_LABELS = {
@@ -28,7 +29,8 @@ FIELD_LABELS = {
     "gastroprotection": "presencia o indicación de gastroprotección",
     "heart_failure_status": "presencia y estado sintomático de insuficiencia cardiaca",
     "peptic_ulcer_history": "antecedente de úlcera o sangrado gastrointestinal",
-    "egfr_ml_min_1_73m2": "TFGe/depuración renal",
+    "egfr_ml_min_1_73m2": "TFGe reportada",
+    "creatinine_clearance_ml_min": "depuración de creatinina (CrCl)",
     "primary_prevention": "indicación como prevención primaria o secundaria",
     "sodium_mmol_l": "sodio sérico",
     "delirium": "delirium o riesgo alto de delirium",
@@ -79,6 +81,7 @@ FIELD_LABELS = {
     "safer_alternatives_ineffective": "alternativas mas seguras ineficaces",
     "lithium_level_monitoring": "monitorizacion de concentraciones de litio",
     "tramadol_release_formulation": "formulacion de tramadol (liberacion inmediata o prolongada)",
+    "chronic_kidney_disease_stage_3a_or_higher": "enfermedad renal crónica estadio 3a o mayor confirmada",
 }
 
 
@@ -87,15 +90,15 @@ REQUIREMENTS: dict[str, tuple[str, ...]] = {
     "B05": ("medication_duration_days", "gastroprotection", "safer_alternatives_ineffective"),
     "B06": ("heart_failure_status",),
     "B07": ("peptic_ulcer_history", "gastroprotection"),
-    "B08": ("egfr_ml_min_1_73m2",),
+    "B08": ("creatinine_clearance_ml_min",),
     "B09": ("primary_prevention",),
     "B11": ("sodium_mmol_l",),
     "B12": ("delirium",),
     "B13": ("cognitive_impairment",),
     "B14": ("falls_history",),
-    "B19": ("egfr_ml_min_1_73m2",),
-    "B20": ("egfr_ml_min_1_73m2", "tramadol_release_formulation"),
-    "B21": ("egfr_ml_min_1_73m2",),
+    "B19": ("creatinine_clearance_ml_min",),
+    "B20": ("creatinine_clearance_ml_min", "tramadol_release_formulation"),
+    "B21": ("chronic_kidney_disease_stage_3a_or_higher",),
     "B23": ("syncope_history", "orthostatic_hypotension"),
     "STOPP-A1": ("indication_confirmed",),
     "STOPP-A2": ("medication_duration_days",),
@@ -721,8 +724,9 @@ class ClinicalCatalogService:
                 "Se encontraron menos de dos medicamentos anticolinergicos en el catalogo V1.",
             ),
             "B21": (
-                raas >= 2,
-                "Se encontraron menos de dos inhibidores del sistema renina-angiotensina.",
+                raas >= 2
+                or count_names("AMILORIDA", "TRIAMTERENO") >= 1 and raas >= 1,
+                "No se encontró doble inhibición del sistema renina-angiotensina ni combinación de un inhibidor del SRA con amilorida o triamtereno.",
             ),
             "B22": (
                 count_names("LITIO") >= 1 and raas >= 1,
@@ -804,7 +808,7 @@ class ClinicalCatalogService:
             "B16": (("OPIOIDE",), ("GABAPENTINA", "PREGABALINA")),
             "B17": (CNS_GROUP_TERMS, ()),
             "B18": (("RELAJANTE MUSCULAR", "ANTICOLINERGICO"), ()),
-            "B21": (("ARA II", "IECA", "ARNI"), ()),
+            "B21": (("ARA II", "IECA", "ARNI"), ("AMILORIDA", "TRIAMTERENO")),
             "B22": (("ARA II", "IECA", "ARNI"), ("LITIO",)),
             "STOPP-B3": (("BETABLOQUEADOR",), ("VERAPAMILO", "DILTIAZEM")),
             "STOPP-B13": (("ANTAGONISTA DE ALDOSTERONA", "ARA II", "IECA"), ()),
@@ -1063,7 +1067,7 @@ class ClinicalCatalogService:
             )
             return bool(context["peptic_ulcer_history"]) and not exception_complete
         if code == "B08":
-            return has_aine and context["egfr_ml_min_1_73m2"] < 30
+            return has_aine and context["creatinine_clearance_ml_min"] < 30
         if code == "B15":
             return has_opioid and has_benzo
         if code == "B16":
@@ -1085,11 +1089,15 @@ class ClinicalCatalogService:
         if code in {"B18", "STOPP-M1"}:
             return count_group("RELAJANTE MUSCULAR") >= 2
         if code == "B19":
-            return has_name("GABAPENTINA") and context["egfr_ml_min_1_73m2"] < 60
+            return has_name("GABAPENTINA") and context["creatinine_clearance_ml_min"] < 60
         if code == "B20":
-            return has_name("TRAMADOL") and context["egfr_ml_min_1_73m2"] < 30
+            return has_name("TRAMADOL") and context["creatinine_clearance_ml_min"] < 30
         if code == "B21":
-            return context["egfr_ml_min_1_73m2"] < 60 and has_raas() >= 2
+            has_potassium_sparing_diuretic = has_name("AMILORIDA", "TRIAMTERENO")
+            has_beers_combination = has_raas() >= 2 or (
+                has_raas() >= 1 and has_potassium_sparing_diuretic
+            )
+            return bool(context["chronic_kidney_disease_stage_3a_or_higher"]) and has_beers_combination
         if code == "B22":
             return (
                 has_name("LITIO")
@@ -1239,12 +1247,13 @@ class ClinicalCatalogService:
         first_match_by_input: dict[int, dict[str, Any]] = {}
         for item in matched_rows:
             first_match_by_input.setdefault(item["input_index"], item)
-        present_names = [
-            input_names[index] for index in sorted(first_match_by_input)
-        ]
+        # Mantener también nombres no incluidos en el catálogo V1 cuando una
+        # interacción Beers los reconoce explícitamente (p. ej. amilorida).
+        # Carecen de grupo hasta que se incorporen al catálogo farmacológico.
+        present_names = list(input_names)
         present_groups = [
-            first_match_by_input[index]["canonical_group"]
-            for index in sorted(first_match_by_input)
+            first_match_by_input.get(index, {}).get("canonical_group", "")
+            for index in range(len(input_names))
         ]
         results: list[dict[str, Any]] = []
         alerts: list[dict[str, Any]] = []
@@ -1366,11 +1375,11 @@ class ClinicalCatalogService:
                     status = CATALOG_STATUS_NO_ALERT
                     reason = "No se identificaron dos o más medicamentos activos con clasificación anticolinérgica fuerte en el catálogo V1."
             elif criterion["system"] == "beers" and code == "B20":
-                renal = context.get("egfr_ml_min_1_73m2")
+                renal = context.get("creatinine_clearance_ml_min")
                 formulation = context.get("tramadol_release_formulation")
                 if not _present(renal) or not _present(formulation):
                     status = CATALOG_STATUS_NOT_EVALUABLE
-                    reason = "Faltan función renal o formulación de tramadol para completar el criterio."
+                    reason = "Faltan depuración de creatinina (CrCl) o formulación de tramadol para completar el criterio."
                 elif renal < 30:
                     status = CATALOG_STATUS_ACTIVATED
                     reason = "Se identificó tramadol con función renal reducida y formulación documentada."
@@ -1380,8 +1389,13 @@ class ClinicalCatalogService:
             elif criterion["system"] == "beers" and code == "B06" and precondition_met is not False:
                 heart_failure = str(context.get("heart_failure_status") or "").lower()
                 if not heart_failure:
-                    status = CATALOG_STATUS_NOT_EVALUABLE
-                    reason = "Falta el estado sintomático de la insuficiencia cardiaca."
+                    if context.get("heart_failure_diagnosis") is True:
+                        status = CATALOG_STATUS_NOT_EVALUABLE
+                        reason = "Existe evidencia de insuficiencia cardiaca, pero falta su estado sintomático."
+                    else:
+                        status = CATALOG_STATUS_NOT_APPLICABLE
+                        effective_missing_fields = []
+                        reason = "No hay evidencia positiva de insuficiencia cardiaca crónica en la fuente del paciente; el criterio no aplica a esta evaluación histórica."
                 elif heart_failure in {"symptomatic", "sintomatica", "sintomática"}:
                     status = CATALOG_STATUS_ACTIVATED
                     beers_metadata["recommendation_type"] = "avoid"
@@ -1475,7 +1489,7 @@ class ClinicalCatalogService:
                 elif code == "B17":
                     reason = f"Se identificaron {len(implicated)} medicamentos activos sobre el sistema nervioso central: {', '.join(implicated)}."
                 elif code == "B19":
-                    reason = "Se identificó gabapentina con función renal reducida documentada."
+                    reason = "Se identificó gabapentina con depuración de creatinina (CrCl) menor de 60 mL/min documentada."
                 elif code == "B20":
                     release = str(context.get("tramadol_release_formulation", "")).lower()
                     if "prolong" in release or "extend" in release:
@@ -1484,7 +1498,26 @@ class ClinicalCatalogService:
                     else:
                         beers_metadata["recommendation_type"] = "reduce_dose"
                         beers_metadata["recommendation_text"] = "Reducir dosis de la formulación de liberación inmediata."
-                    reason = f"Se identificó tramadol con función renal reducida y formulación {release or 'documentada'}."
+                    reason = f"Se identificó tramadol con CrCl menor de 30 mL/min y formulación {release or 'documentada'}."
+                elif code == "B21":
+                    raas_profiles = self._matching_profiles(
+                        self._profiles(present_names, present_groups),
+                        group_terms=("ARA II", "IECA", "ARNI"),
+                    )
+                    potassium_sparing_profiles = self._matching_profiles(
+                        self._profiles(present_names, present_groups),
+                        name_terms=("AMILORIDA", "TRIAMTERENO"),
+                    )
+                    implicated = sorted(
+                        {
+                            profile["medication"]
+                            for profile in [*raas_profiles, *potassium_sparing_profiles]
+                        }
+                    )
+                    reason = (
+                        "Se identificó ERC estadio 3a o mayor confirmada y la combinación "
+                        f"de riesgo: {', '.join(implicated)}."
+                    )
 
             logic_details = self._logic_details(
                 code,

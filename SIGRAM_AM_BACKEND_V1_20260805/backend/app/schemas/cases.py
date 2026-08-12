@@ -48,6 +48,7 @@ class ClinicalContext(BaseModel):
     """Datos estructurados opcionales requeridos por criterios clínicos."""
 
     egfr_ml_min_1_73m2: Optional[float] = None
+    creatinine_clearance_ml_min: Optional[float] = None
     potassium_mmol_l: Optional[float] = None
     sodium_mmol_l: Optional[float] = None
     corrected_calcium_mmol_l: Optional[float] = None
@@ -113,6 +114,7 @@ class ClinicalContext(BaseModel):
     copd_diagnosis: Optional[bool] = None
     bph_diagnosis: Optional[bool] = None
     chronic_kidney_disease_diagnosis: Optional[bool] = None
+    chronic_kidney_disease_stage_3a_or_higher: Optional[bool] = None
     hypertension_diagnosis: Optional[bool] = None
     diabetes_diagnosis: Optional[bool] = None
 

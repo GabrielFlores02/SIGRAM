@@ -33,8 +33,11 @@ const EMPTY_MEDICATION: MedicationInput = {
   route: "Oral",
 };
 
+const CLONABLE_PILOT_CODES = new Set(["PILOT-96CBA7BBFA883815"]);
+
 const NUMERIC_CONTEXT_FIELDS = new Set([
   "egfr_ml_min_1_73m2",
+  "creatinine_clearance_ml_min",
   "potassium_mmol_l",
   "sodium_mmol_l",
   "corrected_calcium_mmol_l",
@@ -83,6 +86,7 @@ const BOOLEAN_CONTEXT_FIELDS = new Set([
   "severe_gerd_or_stricture",
   "osteoporosis_or_fragility_fracture",
   "bph_urinary_symptoms",
+  "chronic_kidney_disease_stage_3a_or_higher",
   "opioid_regular_use",
 ]);
 
@@ -109,6 +113,7 @@ function statusLabel(status: CriterionResult["status"]) {
     manual_review: "Requiere revisión clínica",
     out_of_scope: "Fuera del ámbito AGS Beers 2023",
     supporting_classification: "Clasificación de apoyo",
+    not_applicable: "Criterio no aplicable",
   }[status];
 }
 
@@ -290,7 +295,8 @@ function PilotContextDrawer({ patient, onClose, onEvaluate }: { patient: PilotPa
   const [values, setValues] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const fields = [
-    ["egfr_ml_min_1_73m2", "TFGe / TFG (mL/min/1.73 m²)", "number"],
+    ["egfr_ml_min_1_73m2", "TFGe / TFG reportada (mL/min/1.73 m²)", "number"],
+    ["creatinine_clearance_ml_min", "Depuración de creatinina - CrCl (mL/min)", "number"],
     ["potassium_mmol_l", "Potasio (mmol/L)", "number"],
     ["sodium_mmol_l", "Sodio (mmol/L)", "number"],
     ["tsh_miu_l", "TSH (mIU/L)", "number"],
@@ -302,12 +308,13 @@ function PilotContextDrawer({ patient, onClose, onEvaluate }: { patient: PilotPa
     const context: Record<string, unknown> = {};
     for (const [field] of fields) if (values[field] !== undefined && values[field] !== "") context[field] = Number(values[field]);
     if (values.free_t4_normal) context.free_t4_normal = values.free_t4_normal === "true";
+    if (values.chronic_kidney_disease_stage_3a_or_higher) context.chronic_kidney_disease_stage_3a_or_higher = values.chronic_kidney_disease_stage_3a_or_higher === "true";
     try { await onEvaluate(context); } finally { setSubmitting(false); }
   }
   return <div className="drawer-layer" role="dialog" aria-modal="true" aria-labelledby="pilot-context-title">
     <button className="drawer-backdrop" onClick={onClose} aria-label="Cerrar contexto clínico" />
     <aside className="detail-drawer pilot-context-drawer"><header><div><span className="status-dot" /><h2 id="pilot-context-title">Contexto clínico manual</h2></div><button onClick={onClose} aria-label="Cerrar">×</button></header>
-      <form className="drawer-content" onSubmit={submit}><p className="drawer-intro">Paciente pseudonimizado <b>{patient.patient_code}</b>. Los valores ingresados aquí tienen prioridad sobre el laboratorio mapeado por el backend.</p><div className="drawer-form-grid">{fields.map(([field, label, type]) => <label key={field}>{label}<input type={type} step="any" value={values[field] ?? ""} onChange={(event) => setValues((current) => ({ ...current, [field]: event.target.value }))} placeholder="No registrado" /></label>)}<label>T4 libre en rango de referencia<select value={values.free_t4_normal ?? ""} onChange={(event) => setValues((current) => ({ ...current, free_t4_normal: event.target.value }))}><option value="">No registrado</option><option value="true">Sí</option><option value="false">No</option></select></label></div><p className="field-help">Registre solo datos verificables de la fuente clínica autorizada. Deje vacío lo no disponible.</p><footer><button type="button" className="secondary-button" onClick={onClose}>Cancelar</button><button className="primary-button" disabled={submitting}>{submitting ? "Evaluando…" : "Evaluar con contexto"}</button></footer></form>
+      <form className="drawer-content" onSubmit={submit}><p className="drawer-intro">Paciente pseudonimizado <b>{patient.patient_code}</b>. Los valores ingresados aquí tienen prioridad sobre el laboratorio mapeado por el backend.</p><div className="drawer-form-grid">{fields.map(([field, label, type]) => <label key={field}>{label}<input type={type} step="any" value={values[field] ?? ""} onChange={(event) => setValues((current) => ({ ...current, [field]: event.target.value }))} placeholder="No registrado" /></label>)}<label>T4 libre en rango de referencia<select value={values.free_t4_normal ?? ""} onChange={(event) => setValues((current) => ({ ...current, free_t4_normal: event.target.value }))}><option value="">No registrado</option><option value="true">Sí</option><option value="false">No</option></select></label><label>ERC estadio 3a o mayor confirmada<select value={values.chronic_kidney_disease_stage_3a_or_higher ?? ""} onChange={(event) => setValues((current) => ({ ...current, chronic_kidney_disease_stage_3a_or_higher: event.target.value }))}><option value="">No registrado</option><option value="true">Sí</option><option value="false">No</option></select></label></div><p className="field-help">Para B08, B19 y B20 ingrese CrCl documentada; SIGRAM no la calcula ni sustituye automáticamente por TFGe. Para B21, confirme ERC estadio 3a o mayor. Deje vacío lo no disponible.</p><footer><button type="button" className="secondary-button" onClick={onClose}>Cancelar</button><button className="primary-button" disabled={submitting}>{submitting ? "Evaluando…" : "Evaluar con contexto"}</button></footer></form>
     </aside>
   </div>;
 }
@@ -398,6 +405,8 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
   const [historyMedications, setHistoryMedications] = useState<MedicationInput[]>([]);
   const [contextOpen, setContextOpen] = useState(false);
   const [clinicalContext, setClinicalContext] = useState<Record<string, string>>(Object.create(null));
+  const [weightKg, setWeightKg] = useState("");
+  const [heightCm, setHeightCm] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -450,6 +459,8 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
       setMedications([{ ...EMPTY_MEDICATION }]);
       setHistoryMedications([]);
       setClinicalContext(Object.create(null));
+      setWeightKg("");
+      setHeightCm("");
       setContextOpen(false);
       setHistoryNotice("");
       return;
@@ -462,8 +473,9 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
       setAge(String(prefill.age));
       setSex(prefill.sex);
       setDiagnoses(prefill.diagnoses);
-      setMedications([{ ...EMPTY_MEDICATION }]);
-      setHistoryMedications(prefill.medications);
+      setCaseCode(patientCode);
+      setMedications(prefill.medications);
+      setHistoryMedications([]);
       const mappedContext: Record<string, string> = Object.create(null);
       for (const [field, value] of Object.entries(prefill.clinical_context)) {
         if (value === null || value === undefined || Array.isArray(value) || typeof value === "object") continue;
@@ -471,7 +483,7 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
       }
       setClinicalContext(mappedContext);
       setContextOpen(true);
-      setHistoryNotice(`Historia pseudonimizada ${patientCode} cargada. Se incluyeron los medicamentos activos en ${formatDate(prefill.medication_index_date)}; puede agregar la nueva receta para evaluar polifarmacia.`);
+      setHistoryNotice(`Copia editable de ${patientCode} cargada. Puede modificar, eliminar o agregar medicamentos sin alterar la cohorte pseudonimizada original.`);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "No se pudo cargar la historia del paciente.");
     } finally {
@@ -497,6 +509,17 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
     });
     if (medicationFacts.length) result.medication_facts = medicationFacts;
     return result;
+  }
+
+  function updateTriage(field: "weight" | "height", value: string) {
+    const nextWeight = field === "weight" ? value : weightKg;
+    const nextHeight = field === "height" ? value : heightCm;
+    if (field === "weight") setWeightKg(value); else setHeightCm(value);
+    const kilograms = Number(nextWeight);
+    const meters = Number(nextHeight) / 100;
+    if (kilograms > 0 && meters > 0) {
+      setClinicalContext((current) => ({ ...current, bmi: (kilograms / (meters * meters)).toFixed(1) }));
+    }
   }
 
   function renderContextFields(items: RequiredData[]) {
@@ -549,18 +572,19 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
       <section className="form-card">
         <h2>▣ Datos del caso</h2>
         <div className="case-grid">
-          <label className="full-width">Historia para la simulación
+          <label className="full-width">Clonar paciente piloto para simulación
             <select value={selectedPatientCode} disabled={historyLoading} onChange={(event) => selectPatientHistory(event.target.value)}>
-              <option value="">Crear paciente nuevo sin historial</option>
-              {pilotPatients.map((patient) => <option key={patient.patient_code} value={patient.patient_code}>{patient.patient_code} — {patient.age} años, {patient.sex} — {patient.max_simultaneous_top_medications} medicamentos activos</option>)}
+              <option value="">Crear paciente nuevo</option>
+              {pilotPatients.filter((patient) => CLONABLE_PILOT_CODES.has(patient.patient_code)).map((patient) => <option key={patient.patient_code} value={patient.patient_code}>{patient.patient_code} — {patient.age} años, {patient.sex} — {patient.max_simultaneous_top_medications} medicamentos activos</option>)}
             </select>
-            <small className="field-help">Seleccione uno de los 10 pacientes pseudonimizados para cargar la información disponible y sumar medicamentos a su tratamiento activo.</small>
+            <small className="field-help">Disponible para pruebas: paciente con mayor cobertura clínica. Se crea una copia editable; la cohorte fuente no se modifica.</small>
           </label>
           <label>Código del caso *<input value={caseCode} onChange={(event) => setCaseCode(event.target.value)} placeholder="Ej. CASO-2025-001" /></label>
           <label>Edad (años) *<div className="suffix-input"><input type="number" min="60" value={age} onChange={(event) => setAge(event.target.value)} placeholder="≥ 60" /><span>AÑOS</span></div></label>
           <label>Sexo *<select value={sex} onChange={(event) => setSex(event.target.value)}><option value="">Seleccione…</option><option>Masculino</option><option>Femenino</option></select></label>
           <label className="full-width">Diagnósticos / condiciones clínicas *<textarea value={diagnoses} onChange={(event) => setDiagnoses(event.target.value)} placeholder="Ingrese los diagnósticos o condiciones clínicas relevantes…" /></label>
         </div>
+        <div className="triage-grid"><label>Peso (kg)<input type="number" min="1" step="0.1" value={weightKg} onChange={(event) => updateTriage("weight", event.target.value)} placeholder="Ej. 68.5" /></label><label>Talla (cm)<input type="number" min="1" step="0.1" value={heightCm} onChange={(event) => updateTriage("height", event.target.value)} placeholder="Ej. 160" /></label><label>Índice de masa corporal<input readOnly value={clinicalContext.bmi ?? ""} placeholder="Se calcula con peso y talla" /></label><small>Datos de triaje editables: al integrarse con ESSI podrán cargarse automáticamente.</small></div>
         {historyLoading && <p className="field-help">Cargando historia pseudonimizada…</p>}
         {historyNotice && <div className="catalog-notice" role="status"><span>ⓘ</span><div><strong>Historia cargada para simulación</strong><p>{historyNotice}</p></div></div>}
       </section>
@@ -631,7 +655,7 @@ function DetailDrawer({ criterion, alert, onClose }: { criterion: CriterionResul
         {criterion.diagnosis_evidence.length > 0 && <section><span className="drawer-label">Evidencia CIE-10</span><ul>{criterion.diagnosis_evidence.map((item, index) => <li key={`${item.field ?? "cie"}-${index}`}><b>{item.label ?? item.field ?? "Contexto clínico"}:</b> {item.matched_codes?.map((code) => code.code).filter(Boolean).join(", ") || "evidencia documentada"}.</li>)}</ul></section>}
         {criterion.protective_evidence.length > 0 && <section><span className="drawer-label">Protectores identificados</span><ul>{criterion.protective_evidence.map((item, index) => <li key={`${item.field ?? item.role ?? "protector"}-${index}`}>{item.label ?? item.field ?? item.role ?? "Protector documentado"}</li>)}</ul></section>}
         {criterion.exception_reason && <section><span className="drawer-label">Excepción / mitigación</span><p>{criterion.exception_reason}</p></section>}
-        {!isBeers && criterion.recommended_actions.length > 0 && <section><span className="drawer-label">Acciones sugeridas</span><ul>{criterion.recommended_actions.map((item, index) => <li key={index}>{item}</li>)}</ul></section>}
+        {!isBeers && criterion.recommended_actions.length > 0 && <section className="suggested-actions"><span className="drawer-label">Acciones sugeridas</span><ul>{criterion.recommended_actions.map((item, index) => <li key={index}>{item}</li>)}</ul></section>}
         <details className="detail-more"><summary>{isBeers ? "Ver fuente y trazabilidad" : "Ver más"}</summary><div>
           <section><span className="drawer-label">Fuente</span><p>{criterion.source_name ? `${criterion.source_name} ${criterion.source_year ?? ""}` : alert?.source || criterion.source_location || "No consignada"}</p></section>
           {isBeers && <section><span className="drawer-label">Tabla y sección</span><p>{[criterion.source_table, criterion.source_section, criterion.source_location].filter(Boolean).join(" · ")}</p></section>}
@@ -705,6 +729,7 @@ function ResultsPage({ clinicalCase, evaluation, dataAvailability }: { clinicalC
     ["no_alert", "Sin hallazgo en los datos observados"],
     ["supporting_classification", "Clasificaciones de apoyo"],
     ["out_of_scope", "Fuera del ámbito"],
+    ["not_applicable", "Criterios no aplicables"],
   ];
 
   function selectSystem(nextSystem: VisibleSystem) {

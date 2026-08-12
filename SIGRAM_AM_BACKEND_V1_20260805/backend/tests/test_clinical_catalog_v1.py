@@ -44,7 +44,7 @@ def test_missing_falls_and_renal_function_are_reported():
     assert b14["status"] == "not_evaluable"
     assert b14["missing_data"][0]["field"] == "falls_history"
     assert b19["status"] == "not_evaluable"
-    assert b19["missing_data"][0]["field"] == "egfr_ml_min_1_73m2"
+    assert b19["missing_data"][0]["field"] == "creatinine_clearance_ml_min"
 
 
 def test_metformin_low_egfr_generates_stopp_alert():
@@ -247,7 +247,7 @@ def test_beers_b06_b19_b20_and_b23_expose_conditional_or_manual_state():
         sex="M",
         clinical_context={
             "heart_failure_status": "asymptomatic",
-            "egfr_ml_min_1_73m2": 25,
+            "creatinine_clearance_ml_min": 25,
             "tramadol_release_formulation": "extended_release",
         },
     )
@@ -258,6 +258,74 @@ def test_beers_b06_b19_b20_and_b23_expose_conditional_or_manual_state():
     assert _result_by_code(results, "B20")["status"] == "activated"
     assert _result_by_code(results, "B20")["recommendation_text"] == "Evitar la formulación de liberación extendida."
     assert _result_by_code(results, "B23")["status"] == "manual_review"
+
+
+def test_beers_renal_rules_require_documented_creatinine_clearance_not_egfr():
+    _, only_egfr = ClinicalCatalogService().evaluate(
+        ["DICLOFENACO", "GABAPENTINA", "TRAMADOL"],
+        age=75,
+        sex="F",
+        clinical_context={
+            "egfr_ml_min_1_73m2": 25,
+            "tramadol_release_formulation": "extended_release",
+        },
+    )
+    for code in ("B08", "B19", "B20"):
+        assert _result_by_code(only_egfr, code)["status"] == "not_evaluable"
+
+    _, with_crcl = ClinicalCatalogService().evaluate(
+        ["DICLOFENACO", "GABAPENTINA", "TRAMADOL"],
+        age=75,
+        sex="F",
+        clinical_context={
+            "creatinine_clearance_ml_min": 25,
+            "tramadol_release_formulation": "extended_release",
+        },
+    )
+    assert _result_by_code(with_crcl, "B08")["status"] == "activated"
+    assert _result_by_code(with_crcl, "B19")["status"] == "activated"
+    assert _result_by_code(with_crcl, "B20")["status"] == "activated"
+
+
+def test_beers_b21_requires_confirmed_ckd_stage_and_both_supported_combinations():
+    service = ClinicalCatalogService()
+    _, no_ckd = service.evaluate(
+        ["LOSARTAN", "ENALAPRIL"], age=75, sex="F", clinical_context={}
+    )
+    assert _result_by_code(no_ckd, "B21")["status"] == "not_evaluable"
+
+    _, raas_double_blockade = service.evaluate(
+        ["LOSARTAN", "ENALAPRIL"],
+        age=75,
+        sex="F",
+        clinical_context={"chronic_kidney_disease_stage_3a_or_higher": True},
+    )
+    assert _result_by_code(raas_double_blockade, "B21")["status"] == "activated"
+
+    _, raas_plus_potassium_sparing = service.evaluate(
+        ["LOSARTAN", "AMILORIDA"],
+        age=75,
+        sex="F",
+        clinical_context={"chronic_kidney_disease_stage_3a_or_higher": True},
+    )
+    assert _result_by_code(raas_plus_potassium_sparing, "B21")["status"] == "activated"
+
+
+def test_beers_b06_without_positive_chronic_disease_evidence_is_not_applicable():
+    _, results = ClinicalCatalogService().evaluate(
+        ["DICLOFENACO"], age=75, sex="F", clinical_context={}
+    )
+    b06 = _result_by_code(results, "B06")
+    assert b06["status"] == "not_applicable"
+    assert b06["missing_data"] == []
+
+    _, incomplete_results = ClinicalCatalogService().evaluate(
+        ["DICLOFENACO"],
+        age=75,
+        sex="F",
+        clinical_context={"heart_failure_diagnosis": True},
+    )
+    assert _result_by_code(incomplete_results, "B06")["status"] == "not_evaluable"
 
 
 def test_stopp_protective_coprescription_changes_result():

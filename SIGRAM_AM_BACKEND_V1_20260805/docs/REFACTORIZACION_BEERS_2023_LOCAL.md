@@ -41,8 +41,9 @@ No se modificó el catálogo CSV ni se declaró que reemplaza la fuente AGS. La 
 | B11 | Se mantiene evaluable con información clínica; no se convierte en resultado negativo por ausencia de datos. |
 | B15/B16/B17 | Conservan la detección de combinaciones; las activaciones Beers usan el estado `activated` y B16 mantiene la excepción de transición/reducción de opioide. |
 | B18 | Cuenta solo medicamentos clasificados mediante B03 como anticolinérgicos fuertes; no usa relajantes musculares como sustituto. |
-| B19 | Con función renal reducida, comunica `Reducir dosis.`; la implementación actual usa eGFR disponible y debe validarse frente al parámetro renal AGS original. |
-| B20 | Requiere función renal y formulación de tramadol; con deterioro renal distingue reducción de dosis (liberación inmediata) de evitar (liberación extendida). |
+| B19 | Exige depuración de creatinina (CrCl) documentada; si CrCl es <60 mL/min, comunica `Reducir dosis.`. TFGe no se usa como sustituto automático. |
+| B20 | Exige CrCl y formulación de tramadol; si CrCl es <30 mL/min, distingue reducción de dosis (liberación inmediata) de evitar (liberación extendida). |
+| B21 | Exige ERC estadio 3a o mayor confirmada y detecta dos inhibidores del SRA, o un inhibidor del SRA junto con amilorida/triamtereno. |
 | B22 | No se fuerza una falsa ausencia de alerta por la sola presencia de datos de monitorización; continúa requiriendo la lógica clínica aplicable. |
 | B23 | Para tamsulosina se devuelve `manual_review`; la evidencia disponible requiere valoración individual. |
 
@@ -86,9 +87,16 @@ También se reconstruyó el entorno y se verificó:
 - Esta no es una certificación clínica ni una sustitución del juicio profesional.
 - Varias reglas del catálogo local no tienen aún una formulación computable completamente validada; se conservan como revisión manual o no evaluables cuando faltan datos.
 - B18 solo puede contar las sustancias anticolinérgicas fuertes presentes en el catálogo V1. La cobertura no equivale al listado completo de AGS Table 7.
-- B19/B20 se apoyan en eGFR, mientras que AGS utiliza sus propios criterios/umbrales renales; debe validarse formalmente la equivalencia y la fuente del dato.
+- B08/B19/B20 no infieren CrCl a partir de TFGe. El dato debe venir documentado desde la fuente autorizada; la estrategia de disponibilidad de CrCl en ESSI requiere validación de integración.
 - B23 queda deliberadamente en revisión manual por la limitación de evidencia aplicada a tamsulosina.
 - Antes de un uso institucional o clínico, se debe revisar cada regla con el equipo metodológico y documentar las decisiones de implementación, excepciones y pruebas de aceptación.
+
+## Ajustes locales posteriores para pruebas de integración ESSI
+
+- **B06 y enfermedad crónica:** si no existe evidencia positiva de insuficiencia cardiaca en la fuente histórica, B06 se reporta como `not_applicable` y no incrementa “requiere información adicional”. Si la insuficiencia cardiaca sí está documentada pero falta definir si es sintomática, conserva `not_evaluable`.
+- **Datos de triaje:** el formulario incluye peso, talla e IMC calculado. Estos campos son editables en la simulación y permiten mostrar cómo ESSI podrá completar datos recuperables de triaje.
+- **Clon seguro:** se habilitó el clonado editable de `PILOT-96CBA7BBFA883815`. Carga automáticamente código, edad, sexo, diagnósticos y medicamentos en un caso nuevo simulado; los medicamentos pueden editarse, eliminarse o agregarse sin modificar la cohorte piloto fuente.
+- **Acciones sugeridas:** para los criterios no Beers se mantiene el texto existente, pero su bloque usa un color violeta tenue que lo diferencia de un hallazgo o una recomendación normativa.
 
 ## Archivos modificados
 

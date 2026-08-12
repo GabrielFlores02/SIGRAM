@@ -1,11 +1,11 @@
-name: sigram-am
+name: sigram-am-dev
 
 services:
   backend:
     build:
       context: ./SIGRAM_AM_BACKEND_V1_20260805
     environment:
-      APP_ENV: local-docker
+      APP_ENV: local-docker-dev
       DATABASE_URL: sqlite:////app/runtime/sigram_poc.db
       CLINICAL_CATALOG_FILE: /app/data/catalogs/v1/clinical_catalog_v1.json
       DDINTER_DATA_DIR: /app/data/raw/ddinter2
@@ -17,9 +17,9 @@ services:
       CIE10_CONTEXT_MAPPING_FILE: /app/data/mappings/cie10_clinical_context_v1.json
       PILOT_DIAGNOSIS_LOOKBACK_DAYS: 365
     volumes:
-      - sigram_backend_data:/app/runtime
+      - sigram_backend_data_dev:/app/runtime
     ports:
-      - "127.0.0.1:8001:8000"
+      - "127.0.0.1:8002:8000"
     restart: unless-stopped
 
   frontend:
@@ -29,9 +29,10 @@ services:
       backend:
         condition: service_healthy
     ports:
-      - "127.0.0.1:8088:80"
+      # Desarrollo exclusivo de este equipo; no se expone a la red local.
+      - "127.0.0.1:8089:80"
     restart: unless-stopped
 
 volumes:
-  sigram_backend_data:
-    name: sigram_backend_data
+  sigram_backend_data_dev:
+    name: sigram_backend_data_dev
