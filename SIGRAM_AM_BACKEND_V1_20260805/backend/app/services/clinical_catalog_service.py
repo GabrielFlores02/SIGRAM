@@ -258,6 +258,18 @@ _BEERS_TABLES = {
     "B03": "Table 7",
 }
 
+
+# En la evaluación retrospectiva del piloto, no se muestra ningún resultado
+# del criterio cuando no hay evidencia de la enfermedad crónica que le da
+# aplicabilidad. Si la enfermedad está documentada, el criterio se conserva y
+# se evalúa normalmente. B06 admite tanto el diagnóstico CIE-10 como el estado
+# sintomático registrado explícitamente como evidencia de insuficiencia cardiaca.
+CHRONIC_CONDITION_EVIDENCE_FIELDS: dict[str, tuple[str, ...]] = {
+    "B06": ("heart_failure_diagnosis", "heart_failure_status"),
+    "B13": ("cognitive_impairment",),
+    "B21": ("chronic_kidney_disease_stage_3a_or_higher",),
+}
+
 _BEERS_METADATA: dict[str, dict[str, Any]] = {
     "B02": {"section": "Skeletal muscle relaxants", "evaluated_situation": "Uso de relajantes musculares esqueléticos para molestias musculoesqueléticas, incluida la orfenadrina.", "rationale": "Los relajantes musculares utilizados para molestias musculoesqueléticas suelen tolerarse mal en adultos mayores por sus efectos anticolinérgicos, sedación y mayor riesgo de fracturas; su eficacia a dosis tolerables es cuestionable.", "recommendation_type": "avoid", "recommendation_text": "Evitar.", "quality_of_evidence": "Moderate", "strength_of_recommendation": "Strong"},
     "B03": {"section": "Drugs with strong anticholinergic properties", "rationale": "Clasificación de apoyo de propiedades anticolinérgicas fuertes referida por otras tablas.", "recommendation_type": "classification_only", "recommendation_text": "Clasificación Beers: anticolinérgico fuerte.", "criterion_kind": "supporting_classification", "beers_category": "supporting_classification", "counts_as_clinical_finding": False},
@@ -1518,6 +1530,27 @@ class ClinicalCatalogService:
                         "Se identificó ERC estadio 3a o mayor confirmada y la combinación "
                         f"de riesgo: {', '.join(implicated)}."
                     )
+
+            chronic_condition_evidence_fields = (
+                CHRONIC_CONDITION_EVIDENCE_FIELDS.get(code, ())
+            )
+            if (
+                criterion["system"] == "beers"
+                and chronic_condition_evidence_fields
+                and not any(
+                    context.get(field) is True
+                    or (
+                        field == "heart_failure_status"
+                        and _present(context.get(field))
+                    )
+                    for field in chronic_condition_evidence_fields
+                )
+            ):
+                # Política clínica aprobada para el piloto: no mostrar el
+                # criterio si la enfermedad crónica no está documentada. Al
+                # omitirlo del reporte, tampoco llega a las secciones de UI,
+                # detalle, contadores ni historial de la evaluación.
+                continue
 
             logic_details = self._logic_details(
                 code,

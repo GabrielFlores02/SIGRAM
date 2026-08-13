@@ -33,7 +33,7 @@ const EMPTY_MEDICATION: MedicationInput = {
   route: "Oral",
 };
 
-const CLONABLE_PILOT_CODES = new Set(["PILOT-96CBA7BBFA883815"]);
+const ESSI_SIMULATOR_CODE = "SIM-ESSI-001";
 
 const NUMERIC_CONTEXT_FIELDS = new Set([
   "egfr_ml_min_1_73m2",
@@ -48,6 +48,9 @@ const NUMERIC_CONTEXT_FIELDS = new Set([
   "heart_rate_bpm",
   "qtc_ms",
   "bmi",
+  "weight_kg",
+  "height_cm",
+  "serum_creatinine_mg_dl",
   "medication_duration_days",
   "daily_dose_mg",
 ]);
@@ -402,11 +405,15 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
   const [selectedPatientCode, setSelectedPatientCode] = useState("");
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyNotice, setHistoryNotice] = useState("");
+  const [simulationHistory, setSimulationHistory] = useState<Array<{ id: number; event_type: string; note: string; created_at: string; snapshot: Record<string, unknown> }>>([]);
+  const [attentionNote, setAttentionNote] = useState("");
   const [historyMedications, setHistoryMedications] = useState<MedicationInput[]>([]);
   const [contextOpen, setContextOpen] = useState(false);
   const [clinicalContext, setClinicalContext] = useState<Record<string, string>>(Object.create(null));
   const [weightKg, setWeightKg] = useState("");
   const [heightCm, setHeightCm] = useState("");
+  const [serumCreatinineMgDl, setSerumCreatinineMgDl] = useState("");
+  const [serumCreatinineDate, setSerumCreatinineDate] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -427,7 +434,10 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
     return [...unique.values()].sort((a, b) => a.label.localeCompare(b.label, "es"));
   }, [criteria]);
 
-  const editableContext = requiredContext.filter((item) => item.field !== "medication_duration_days");
+  const editableContext = requiredContext.filter((item) => ![
+    "medication_duration_days",
+    "creatinine_clearance_ml_min",
+  ].includes(item.field));
   const recordedContext = editableContext.filter((item) => (clinicalContext[item.field] ?? "") !== "");
   const unrecordedContext = editableContext.filter((item) => (clinicalContext[item.field] ?? "") === "");
 
@@ -461,29 +471,56 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
       setClinicalContext(Object.create(null));
       setWeightKg("");
       setHeightCm("");
+      setSerumCreatinineMgDl("");
+      setSerumCreatinineDate("");
       setContextOpen(false);
       setHistoryNotice("");
+      setSimulationHistory([]);
+      setAttentionNote("");
       return;
     }
 
     setHistoryLoading(true);
     setHistoryNotice("");
     try {
+      if (patientCode === ESSI_SIMULATOR_CODE) {
+        const simulator = await api.getEssiSimulator();
+        const loaded = simulator.case;
+        setAge(String(loaded.age)); setSex(loaded.sex); setDiagnoses(loaded.diagnoses); setCaseCode(loaded.case_code);
+        setMedications(loaded.medications.map(({ id: _id, case_id: _caseId, created_at: _createdAt, ...medication }) => medication));
+        const mappedContext: Record<string, string> = Object.create(null);
+        for (const [field, value] of Object.entries(loaded.clinical_context)) {
+          if (value === null || value === undefined || Array.isArray(value) || typeof value === "object") continue;
+          mappedContext[field] = String(value);
+        }
+        setClinicalContext(mappedContext); setWeightKg(mappedContext.weight_kg ?? ""); setHeightCm(mappedContext.height_cm ?? "");
+        setSerumCreatinineMgDl(mappedContext.serum_creatinine_mg_dl ?? ""); setSerumCreatinineDate(mappedContext.serum_creatinine_date ?? "");
+        setHistoryMedications([]); setSimulationHistory(simulator.history); setContextOpen(true);
+        setHistoryNotice("Simulador ESSI cargado: esta copia conserva cada atención y su lista histórica de medicamentos. La cohorte piloto original no se modifica.");
+        return;
+      }
       const prefill = await api.getPilotCasePrefill(patientCode);
       setAge(String(prefill.age));
       setSex(prefill.sex);
       setDiagnoses(prefill.diagnoses);
       setCaseCode(patientCode);
-      setMedications(prefill.medications);
-      setHistoryMedications([]);
+      // La cohorte piloto se presenta como historia previa de solo lectura.
+      // Las filas de arriba representan exclusivamente la nueva receta a simular.
+      setMedications([{ ...EMPTY_MEDICATION }]);
+      setHistoryMedications(prefill.medications);
       const mappedContext: Record<string, string> = Object.create(null);
       for (const [field, value] of Object.entries(prefill.clinical_context)) {
         if (value === null || value === undefined || Array.isArray(value) || typeof value === "object") continue;
         mappedContext[field] = String(value);
       }
       setClinicalContext(mappedContext);
+      setWeightKg(mappedContext.weight_kg ?? "");
+      setHeightCm(mappedContext.height_cm ?? "");
+      setSerumCreatinineMgDl(mappedContext.serum_creatinine_mg_dl ?? "");
+      setSerumCreatinineDate(mappedContext.serum_creatinine_date ?? "");
       setContextOpen(true);
-      setHistoryNotice(`Copia editable de ${patientCode} cargada. Puede modificar, eliminar o agregar medicamentos sin alterar la cohorte pseudonimizada original.`);
+      setSimulationHistory([]);
+      setHistoryNotice(`Historia pseudonimizada ${patientCode} cargada. Sus medicamentos activos se muestran abajo como “Medicamentos en uso”; agregue arriba la nueva receta para evaluar la polifarmacia. Al finalizar, los cambios se descartan.`);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "No se pudo cargar la historia del paciente.");
     } finally {
@@ -517,10 +554,32 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
     if (field === "weight") setWeightKg(value); else setHeightCm(value);
     const kilograms = Number(nextWeight);
     const meters = Number(nextHeight) / 100;
-    if (kilograms > 0 && meters > 0) {
-      setClinicalContext((current) => ({ ...current, bmi: (kilograms / (meters * meters)).toFixed(1) }));
-    }
+    setClinicalContext((current) => ({
+      ...current,
+      weight_kg: field === "weight" ? value : current.weight_kg ?? "",
+      height_cm: field === "height" ? value : current.height_cm ?? "",
+      ...(kilograms > 0 && meters > 0 ? { bmi: (kilograms / (meters * meters)).toFixed(1) } : {}),
+    }));
   }
+
+  function updateSerumCreatinine(value: string) {
+    setSerumCreatinineMgDl(value);
+    setClinicalContext((current) => ({ ...current, serum_creatinine_mg_dl: value }));
+  }
+
+  function updateSerumCreatinineDate(value: string) {
+    setSerumCreatinineDate(value);
+    setClinicalContext((current) => ({ ...current, serum_creatinine_date: value }));
+  }
+
+  const estimatedCrCl = useMemo(() => {
+    const years = Number(age);
+    const weight = Number(weightKg);
+    const creatinine = Number(serumCreatinineMgDl);
+    if (!(years > 0 && weight > 0 && creatinine > 0) || !sex) return null;
+    const base = ((140 - years) * weight) / (72 * creatinine);
+    return (sex === "Femenino" ? base * 0.85 : base).toFixed(1);
+  }, [age, sex, weightKg, serumCreatinineMgDl]);
 
   function renderContextFields(items: RequiredData[]) {
     return <div className="context-grid">
@@ -549,9 +608,19 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
       medications: [...historyMedications, ...medications].map((item) => ({ ...item, duration: item.duration?.trim() || undefined })),
     };
     try {
-      const created = await api.createCase(payload);
-      const evaluation = await api.evaluateCase(created.id);
-      onCompleted(created, evaluation);
+      if (selectedPatientCode === ESSI_SIMULATOR_CODE) {
+        const simulator = await api.updateEssiSimulator({ ...payload, case_code: ESSI_SIMULATOR_CODE, note: attentionNote.trim() || "Atención ESSI simulada" });
+        const evaluation = await api.evaluateCase(simulator.case.id);
+        setSimulationHistory(simulator.history);
+        onCompleted(simulator.case, evaluation);
+      } else if (selectedPatientCode) {
+        const preview = await api.previewCase(payload);
+        onCompleted(preview.case, preview.evaluation);
+      } else {
+        const created = await api.createCase(payload);
+        const evaluation = await api.evaluateCase(created.id);
+        onCompleted(created, evaluation);
+      }
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "No se pudo procesar el caso.");
     } finally {
@@ -572,21 +641,32 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
       <section className="form-card">
         <h2>▣ Datos del caso</h2>
         <div className="case-grid">
-          <label className="full-width">Clonar paciente piloto para simulación
+          <label className="full-width">Historia para la simulación
             <select value={selectedPatientCode} disabled={historyLoading} onChange={(event) => selectPatientHistory(event.target.value)}>
-              <option value="">Crear paciente nuevo</option>
-              {pilotPatients.filter((patient) => CLONABLE_PILOT_CODES.has(patient.patient_code)).map((patient) => <option key={patient.patient_code} value={patient.patient_code}>{patient.patient_code} — {patient.age} años, {patient.sex} — {patient.max_simultaneous_top_medications} medicamentos activos</option>)}
+              <option value="">Crear paciente nuevo sin historial</option>
+              <optgroup label="Pacientes piloto — simulación temporal (no guarda cambios)">
+                {pilotPatients.map((patient) => <option key={patient.patient_code} value={patient.patient_code}>{patient.patient_code} — {patient.age} años, {patient.sex} — {patient.max_simultaneous_top_medications} medicamentos activos</option>)}
+              </optgroup>
+              <optgroup label="Simulador longitudinal ESSI">
+                <option value={ESSI_SIMULATOR_CODE}>SIM-ESSI-001 — paciente editable con historia persistente</option>
+              </optgroup>
             </select>
-            <small className="field-help">Disponible para pruebas: paciente con mayor cobertura clínica. Se crea una copia editable; la cohorte fuente no se modifica.</small>
+            <small className="field-help">Los 10 pilotos se usan solo para pruebas temporales. SIM-ESSI-001 es la única copia que guarda versiones de su historia, sin alterar la cohorte fuente.</small>
           </label>
           <label>Código del caso *<input value={caseCode} onChange={(event) => setCaseCode(event.target.value)} placeholder="Ej. CASO-2025-001" /></label>
           <label>Edad (años) *<div className="suffix-input"><input type="number" min="60" value={age} onChange={(event) => setAge(event.target.value)} placeholder="≥ 60" /><span>AÑOS</span></div></label>
           <label>Sexo *<select value={sex} onChange={(event) => setSex(event.target.value)}><option value="">Seleccione…</option><option>Masculino</option><option>Femenino</option></select></label>
           <label className="full-width">Diagnósticos / condiciones clínicas *<textarea value={diagnoses} onChange={(event) => setDiagnoses(event.target.value)} placeholder="Ingrese los diagnósticos o condiciones clínicas relevantes…" /></label>
         </div>
-        <div className="triage-grid"><label>Peso (kg)<input type="number" min="1" step="0.1" value={weightKg} onChange={(event) => updateTriage("weight", event.target.value)} placeholder="Ej. 68.5" /></label><label>Talla (cm)<input type="number" min="1" step="0.1" value={heightCm} onChange={(event) => updateTriage("height", event.target.value)} placeholder="Ej. 160" /></label><label>Índice de masa corporal<input readOnly value={clinicalContext.bmi ?? ""} placeholder="Se calcula con peso y talla" /></label><small>Datos de triaje editables: al integrarse con ESSI podrán cargarse automáticamente.</small></div>
+        <div className="pilot-triage-panel">
+          <div className="pilot-panel-heading"><span>ETAPA PILOTO</span><strong>Datos de triaje y función renal</strong><small>Ingreso manual para pruebas; en ESSI estos datos se cargarán automáticamente.</small></div>
+          <div className="triage-grid"><label>Peso (kg)<input type="number" min="1" step="0.1" value={weightKg} onChange={(event) => updateTriage("weight", event.target.value)} placeholder="Ej. 68.5" /></label><label>Talla (cm)<input type="number" min="1" step="0.1" value={heightCm} onChange={(event) => updateTriage("height", event.target.value)} placeholder="Ej. 160" /></label><label>Índice de masa corporal<input readOnly value={clinicalContext.bmi ?? ""} placeholder="Se calcula con peso y talla" /></label></div>
+          <div className="renal-grid"><label>Creatinina sérica (mg/dL)<input type="number" min="0.1" step="0.01" value={serumCreatinineMgDl} onChange={(event) => updateSerumCreatinine(event.target.value)} placeholder="Ej. 1.20" /></label><label>Fecha de creatinina<input type="date" value={serumCreatinineDate} onChange={(event) => updateSerumCreatinineDate(event.target.value)} /></label><label>CrCl estimada (mL/min)<input readOnly value={estimatedCrCl ?? ""} placeholder="Complete edad, sexo, peso y creatinina" /></label></div>
+          <p className="pilot-method-note">La CrCl se calcula en el backend con Cockcroft–Gault y peso actual; se guarda junto con las entradas utilizadas para la trazabilidad del piloto.</p>
+        </div>
         {historyLoading && <p className="field-help">Cargando historia pseudonimizada…</p>}
         {historyNotice && <div className="catalog-notice" role="status"><span>ⓘ</span><div><strong>Historia cargada para simulación</strong><p>{historyNotice}</p></div></div>}
+        {selectedPatientCode === ESSI_SIMULATOR_CODE && <><label className="full-width">Resumen de esta atención simulada<textarea value={attentionNote} onChange={(event) => setAttentionNote(event.target.value)} placeholder="Ej. Se añadió un medicamento y se actualizó el resultado de creatinina." /></label><div className="simulator-actions"><button type="button" className="secondary-button" onClick={async () => { if (!window.confirm("¿Restaurar SIM-ESSI-001 a su línea base? El historial seguirá siendo auditable.")) return; try { const simulator = await api.resetEssiSimulator(); setSimulationHistory(simulator.history); await selectPatientHistory(ESSI_SIMULATOR_CODE); } catch (reason) { setError(reason instanceof Error ? reason.message : "No se pudo restaurar el simulador."); } }}>Restablecer simulador a línea base</button></div>{simulationHistory.length > 0 && <details className="history-medications"><summary>Historial de atenciones guardadas ({simulationHistory.length})</summary><ul>{simulationHistory.map((item) => <li key={item.id}><strong>{new Date(item.created_at).toLocaleString("es-PE")}</strong><span>{item.note} · {Array.isArray(item.snapshot.medications) ? item.snapshot.medications.length : 0} medicamentos en esa versión.</span></li>)}</ul></details>}</>}
       </section>
 
       <section className="form-card medication-card">
@@ -633,7 +713,7 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
         </div>}
       </section>
 
-      <div className="submit-bar"><span className={minimumComplete ? "complete" : "incomplete"}>{minimumComplete ? "✓ Datos mínimos completos" : "Complete los campos obligatorios"}</span><button className="primary-button" disabled={!minimumComplete || submitting}>{submitting ? "Procesando tamizaje…" : "▣ Crear caso y ejecutar tamizaje"}</button></div>
+      <div className="submit-bar"><span className={minimumComplete ? "complete" : "incomplete"}>{minimumComplete ? "✓ Datos mínimos completos" : "Complete los campos obligatorios"}</span><button className="primary-button" disabled={!minimumComplete || submitting}>{submitting ? "Procesando tamizaje…" : selectedPatientCode === ESSI_SIMULATOR_CODE ? "▣ Guardar atención ESSI y ejecutar tamizaje" : selectedPatientCode ? "▣ Ejecutar simulación temporal" : "▣ Crear caso y ejecutar tamizaje"}</button></div>
     </form>
   );
 }

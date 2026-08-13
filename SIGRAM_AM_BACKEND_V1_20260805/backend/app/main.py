@@ -7,6 +7,7 @@ from backend.app.api.cases import router as cases_router
 from backend.app.api.evaluations import router as evaluations_router
 from backend.app.api.catalog import router as catalog_router
 from backend.app.api.pilot import router as pilot_router
+from backend.app.api.simulator import router as simulator_router
 from backend.app.schemas.responses import IndexResponse
 
 @asynccontextmanager
@@ -29,6 +30,7 @@ app.include_router(cases_router)
 app.include_router(evaluations_router)
 app.include_router(catalog_router)
 app.include_router(pilot_router)
+app.include_router(simulator_router)
 
 @app.get("/", response_model=IndexResponse)
 def index():

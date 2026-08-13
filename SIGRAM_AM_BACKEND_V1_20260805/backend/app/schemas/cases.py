@@ -60,6 +60,13 @@ class ClinicalContext(BaseModel):
     heart_rate_bpm: Optional[float] = None
     qtc_ms: Optional[float] = None
     bmi: Optional[float] = None
+    weight_kg: Optional[float] = Field(default=None, gt=0)
+    height_cm: Optional[float] = Field(default=None, gt=0)
+    serum_creatinine_mg_dl: Optional[float] = Field(default=None, gt=0)
+    serum_creatinine_date: Optional[str] = None
+    creatinine_clearance_source: Optional[str] = None
+    creatinine_clearance_method: Optional[str] = None
+    creatinine_clearance_inputs: dict = Field(default_factory=dict)
     falls_history: Optional[bool] = None
     frailty_status: Optional[str] = None
     cognitive_impairment: Optional[bool] = None

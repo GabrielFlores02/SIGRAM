@@ -212,6 +212,19 @@ export interface CatalogCriterion {
   recommendation_text?: string;
 }
 
+export interface SimulationHistoryEvent {
+  id: number;
+  event_type: string;
+  note: string;
+  snapshot: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface EssiSimulator {
+  case: ClinicalCase;
+  history: SimulationHistoryEvent[];
+}
+
 export interface CatalogMedication {
   order: number;
   medication: string;

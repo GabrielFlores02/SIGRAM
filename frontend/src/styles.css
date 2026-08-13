@@ -256,8 +256,15 @@ textarea { min-height: 84px; resize: vertical; }
 .status-dot.out_of_scope { background: #9aa2a8; }
 .status-dot.supporting_classification { background: #607d8b; }
 .status-dot.not_applicable { background: #9aa2a8; }
-.triage-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--outline-soft); }
-.triage-grid small { grid-column: 1 / -1; color: var(--text-muted); }
+.pilot-triage-panel { margin: 16px 18px 18px; padding: 16px; border: 1px solid #99d8df; border-radius: 8px; background: linear-gradient(135deg, #f0fbfc, #f7fbfd); box-shadow: inset 0 0 0 1px rgba(0, 122, 145, .04); }
+.pilot-panel-heading { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; align-items: center; margin-bottom: 14px; }
+.pilot-panel-heading > span { grid-row: span 2; padding: 5px 8px; color: #00616d; background: #d9f4f5; border: 1px solid #9bd9dc; border-radius: 4px; font-size: 10px; font-weight: 800; letter-spacing: .06em; }
+.pilot-panel-heading strong { color: #124b59; font-size: 14px; }
+.pilot-panel-heading small { color: #52717a; font-size: 11px; }
+.triage-grid, .renal-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.renal-grid { margin-top: 13px; padding-top: 13px; border-top: 1px solid #c5e3e6; }
+.pilot-method-note { margin: 10px 0 0; color: #52717a; font-size: 11px; line-height: 1.4; }
+@media (max-width: 700px) { .triage-grid, .renal-grid { grid-template-columns: 1fr; } }
 .suggested-actions { border-left: 4px solid #7a4b9b; background: #f5effa; padding-left: 12px; }
 @media (max-width: 700px) { .triage-grid { grid-template-columns: 1fr; } }
 .status-dot.ddinter-major { background: var(--error); }

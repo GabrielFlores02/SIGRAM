@@ -292,7 +292,7 @@ def test_beers_b21_requires_confirmed_ckd_stage_and_both_supported_combinations(
     _, no_ckd = service.evaluate(
         ["LOSARTAN", "ENALAPRIL"], age=75, sex="F", clinical_context={}
     )
-    assert _result_by_code(no_ckd, "B21")["status"] == "not_evaluable"
+    assert not any(item["criterion_code"] == "B21" for item in no_ckd)
 
     _, raas_double_blockade = service.evaluate(
         ["LOSARTAN", "ENALAPRIL"],
@@ -311,13 +311,31 @@ def test_beers_b21_requires_confirmed_ckd_stage_and_both_supported_combinations(
     assert _result_by_code(raas_plus_potassium_sparing, "B21")["status"] == "activated"
 
 
-def test_beers_b06_without_positive_chronic_disease_evidence_is_not_applicable():
+def test_chronic_condition_absence_omits_beers_b13_from_the_report():
+    service = ClinicalCatalogService()
+    _, no_cognitive_impairment = service.evaluate(
+        ["ORFENADRINA"], age=75, sex="F", clinical_context={}
+    )
+    assert not any(
+        item["criterion_code"] == "B13" for item in no_cognitive_impairment
+    )
+
+    _, documented_cognitive_impairment = service.evaluate(
+        ["ORFENADRINA"],
+        age=75,
+        sex="F",
+        clinical_context={"cognitive_impairment": True},
+    )
+    assert _result_by_code(documented_cognitive_impairment, "B13")[
+        "status"
+    ] == "manual_review"
+
+
+def test_chronic_condition_absence_omits_beers_b06_from_the_report():
     _, results = ClinicalCatalogService().evaluate(
         ["DICLOFENACO"], age=75, sex="F", clinical_context={}
     )
-    b06 = _result_by_code(results, "B06")
-    assert b06["status"] == "not_applicable"
-    assert b06["missing_data"] == []
+    assert not any(item["criterion_code"] == "B06" for item in results)
 
     _, incomplete_results = ClinicalCatalogService().evaluate(
         ["DICLOFENACO"],

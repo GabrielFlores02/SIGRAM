@@ -10,6 +10,7 @@ import type {
   PilotEvaluationResponse,
   PilotResearchData,
   PilotPatient,
+  EssiSimulator,
 } from "./types";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api";
@@ -44,6 +45,8 @@ export const api = {
     request<ClinicalCase>("/cases", { method: "POST", body: JSON.stringify(payload) }),
   evaluateCase: (caseId: number) =>
     request<EvaluationExecution>(`/cases/${caseId}/evaluate`, { method: "POST" }),
+  previewCase: (payload: ClinicalCaseInput) =>
+    request<{ case: ClinicalCase; evaluation: EvaluationExecution }>("/cases/preview", { method: "POST", body: JSON.stringify(payload) }),
   getLatestResults: (caseId: number) =>
     request<EvaluationExecution>(`/cases/${caseId}/results`),
   listCriteria: (system?: "beers" | "stopp_start") =>
@@ -60,4 +63,8 @@ export const api = {
     request<PilotResearchData>(`/pilot/v1/sample-patients/${encodeURIComponent(patientCode)}/research-data`),
   getPilotCasePrefill: (patientCode: string) =>
     request<PilotCasePrefill>(`/pilot/v1/sample-patients/${encodeURIComponent(patientCode)}/case-prefill`),
+  getEssiSimulator: () => request<EssiSimulator>("/simulator/essi"),
+  updateEssiSimulator: (payload: ClinicalCaseInput & { note: string }) =>
+    request<EssiSimulator>("/simulator/essi", { method: "PUT", body: JSON.stringify(payload) }),
+  resetEssiSimulator: () => request<EssiSimulator>("/simulator/essi/reset", { method: "POST" }),
 };
