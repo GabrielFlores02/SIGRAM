@@ -5,6 +5,7 @@ from backend.app.models.models import ClinicalCase, Medication
 from backend.app.schemas.cases import ClinicalCaseCreate
 from backend.app.repositories.case_repository import CaseRepository
 from backend.app.services.medication_normalizer import normalize_active_ingredient
+from backend.app.services.renal_function_service import enrich_with_cockcroft_gault
 
 class CaseService:
     @staticmethod
@@ -19,12 +20,17 @@ class CaseService:
             )
 
         # 2. Instanciar entidad ClinicalCase
+        clinical_context = enrich_with_cockcroft_gault(
+            case_data.clinical_context.model_dump(),
+            age=case_data.age,
+            sex=case_data.sex,
+        )
         clinical_case = ClinicalCase(
             case_code=case_data.case_code,
             age=case_data.age,
             sex=case_data.sex,
             diagnoses=case_data.diagnoses,
-            clinical_context=case_data.clinical_context.model_dump(),
+            clinical_context=clinical_context,
             is_simulated=case_data.is_simulated,
             status="active"
         )

@@ -13,9 +13,13 @@ from backend.app.config import settings
 
 
 CATALOG_STATUS_ALERT = "alert"
+CATALOG_STATUS_ACTIVATED = "activated"
 CATALOG_STATUS_NO_ALERT = "no_alert"
 CATALOG_STATUS_NOT_EVALUABLE = "not_evaluable"
 CATALOG_STATUS_MANUAL_REVIEW = "manual_review"
+CATALOG_STATUS_OUT_OF_SCOPE = "out_of_scope"
+CATALOG_STATUS_SUPPORTING_CLASSIFICATION = "supporting_classification"
+CATALOG_STATUS_NOT_APPLICABLE = "not_applicable"
 
 
 FIELD_LABELS = {
@@ -25,7 +29,8 @@ FIELD_LABELS = {
     "gastroprotection": "presencia o indicación de gastroprotección",
     "heart_failure_status": "presencia y estado sintomático de insuficiencia cardiaca",
     "peptic_ulcer_history": "antecedente de úlcera o sangrado gastrointestinal",
-    "egfr_ml_min_1_73m2": "TFGe/depuración renal",
+    "egfr_ml_min_1_73m2": "TFGe reportada",
+    "creatinine_clearance_ml_min": "depuración de creatinina (CrCl)",
     "primary_prevention": "indicación como prevención primaria o secundaria",
     "sodium_mmol_l": "sodio sérico",
     "delirium": "delirium o riesgo alto de delirium",
@@ -75,23 +80,25 @@ FIELD_LABELS = {
     "ppi_maintenance_indication": "indicacion justificada de mantenimiento del IBP",
     "safer_alternatives_ineffective": "alternativas mas seguras ineficaces",
     "lithium_level_monitoring": "monitorizacion de concentraciones de litio",
+    "tramadol_release_formulation": "formulacion de tramadol (liberacion inmediata o prolongada)",
+    "chronic_kidney_disease_stage_3a_or_higher": "enfermedad renal crónica estadio 3a o mayor confirmada",
 }
 
 
 REQUIREMENTS: dict[str, tuple[str, ...]] = {
-    "B04": ("medication_duration_days", "indication_confirmed"),
-    "B05": ("medication_duration_days", "gastroprotection"),
+    "B04": ("medication_duration_days", "ppi_maintenance_indication"),
+    "B05": ("medication_duration_days", "gastroprotection", "safer_alternatives_ineffective"),
     "B06": ("heart_failure_status",),
     "B07": ("peptic_ulcer_history", "gastroprotection"),
-    "B08": ("egfr_ml_min_1_73m2",),
+    "B08": ("creatinine_clearance_ml_min",),
     "B09": ("primary_prevention",),
     "B11": ("sodium_mmol_l",),
     "B12": ("delirium",),
     "B13": ("cognitive_impairment",),
     "B14": ("falls_history",),
-    "B19": ("egfr_ml_min_1_73m2",),
-    "B20": ("egfr_ml_min_1_73m2",),
-    "B21": ("egfr_ml_min_1_73m2",),
+    "B19": ("creatinine_clearance_ml_min",),
+    "B20": ("creatinine_clearance_ml_min", "tramadol_release_formulation"),
+    "B21": ("chronic_kidney_disease_stage_3a_or_higher",),
     "B23": ("syncope_history", "orthostatic_hypotension"),
     "STOPP-A1": ("indication_confirmed",),
     "STOPP-A2": ("medication_duration_days",),
@@ -179,21 +186,16 @@ REQUIREMENTS: dict[str, tuple[str, ...]] = {
 
 
 AUTOMATED_CODES = {
-    "B01",
     "B02",
-    "B03",
     "B05",
     "B07",
     "B08",
-    "B10",
     "B15",
     "B16",
     "B17",
     "B18",
     "B19",
-    "B20",
     "B21",
-    "B22",
     "STOPP-A3",
     "STOPP-B3",
     "STOPP-B12",
@@ -244,6 +246,71 @@ CNS_GROUP_TERMS = (
 # Umbral operativo del prototipo para traducir "uso cronico" del AINE.
 # Debe ser ratificado por el catalogo definitivo del equipo medico.
 CHRONIC_AINE_DAYS_V1 = 90
+
+# Metadatos de fuente: separados de la formulación operativa B01-B23 del catálogo
+# clínico SIGRAM. Los campos no verificados se declaran pendientes, no se infieren.
+_BEERS_TABLES = {
+    **{f"B{number:02d}": "Table 2" for number in (1, 2, 4, 5, 9, 10)},
+    **{f"B{number:02d}": "Table 3" for number in (6, 7, 12, 13, 14, 23)},
+    **{f"B{number:02d}": "Table 4" for number in (11,)},
+    **{f"B{number:02d}": "Table 5" for number in (15, 16, 17, 18, 21, 22)},
+    **{f"B{number:02d}": "Table 6" for number in (8, 19, 20)},
+    "B03": "Table 7",
+}
+
+
+# En la evaluación retrospectiva del piloto, no se muestra ningún resultado
+# del criterio cuando no hay evidencia de la enfermedad crónica que le da
+# aplicabilidad. Si la enfermedad está documentada, el criterio se conserva y
+# se evalúa normalmente. B06 admite tanto el diagnóstico CIE-10 como el estado
+# sintomático registrado explícitamente como evidencia de insuficiencia cardiaca.
+CHRONIC_CONDITION_EVIDENCE_FIELDS: dict[str, tuple[str, ...]] = {
+    "B06": ("heart_failure_diagnosis", "heart_failure_status"),
+    "B13": ("cognitive_impairment",),
+    "B21": ("chronic_kidney_disease_stage_3a_or_higher",),
+}
+
+_BEERS_METADATA: dict[str, dict[str, Any]] = {
+    "B02": {"section": "Skeletal muscle relaxants", "evaluated_situation": "Uso de relajantes musculares esqueléticos para molestias musculoesqueléticas, incluida la orfenadrina.", "rationale": "Los relajantes musculares utilizados para molestias musculoesqueléticas suelen tolerarse mal en adultos mayores por sus efectos anticolinérgicos, sedación y mayor riesgo de fracturas; su eficacia a dosis tolerables es cuestionable.", "recommendation_type": "avoid", "recommendation_text": "Evitar.", "quality_of_evidence": "Moderate", "strength_of_recommendation": "Strong"},
+    "B03": {"section": "Drugs with strong anticholinergic properties", "rationale": "Clasificación de apoyo de propiedades anticolinérgicas fuertes referida por otras tablas.", "recommendation_type": "classification_only", "recommendation_text": "Clasificación Beers: anticolinérgico fuerte.", "criterion_kind": "supporting_classification", "beers_category": "supporting_classification", "counts_as_clinical_finding": False},
+    "B04": {"section": "Proton-pump inhibitors", "recommendation_type": "avoid", "recommendation_text": "Evitar el uso programado por más de 8 semanas salvo excepciones documentadas.", "strength_of_recommendation": "Strong"},
+    "B06": {"section": "Heart failure", "recommendation_type": "conditional", "recommendation_text": "Usar con precaución en insuficiencia cardiaca asintomática; evitar en insuficiencia cardiaca sintomática.", "strength_of_recommendation": "Strong", "criterion_kind": "conditional_criterion"},
+    "B09": {"section": "Aspirin for primary prevention", "recommendation_type": "avoid", "recommendation_text": "Evitar iniciar aspirina para prevención primaria; considerar deprescripción en usuarios existentes.", "quality_of_evidence": "High", "strength_of_recommendation": "Strong"},
+    "B11": {"section": "Drugs that may cause or exacerbate SIADH or hyponatremia", "recommendation_type": "use_with_caution", "recommendation_text": "Usar con precaución; monitorizar sodio estrechamente al iniciar o cambiar dosis.", "quality_of_evidence": "Moderate", "strength_of_recommendation": "Strong"},
+    "B15": {"recommendation_type": "avoid", "recommendation_text": "Evitar.", "quality_of_evidence": "Moderate", "strength_of_recommendation": "Strong"},
+    "B16": {"recommendation_type": "avoid", "recommendation_text": "Evitar.", "quality_of_evidence": "Moderate", "strength_of_recommendation": "Strong", "exceptions": [{"text": "La recomendación no aplica cuando se utiliza gabapentina o pregabalina para reducir la dosis de opioides o para disminuir el uso de opioides."}]},
+    "B17": {"recommendation_type": "avoid", "recommendation_text": "Evitar el uso concurrente de tres o más fármacos activos sobre el SNC.", "quality_of_evidence": "High", "strength_of_recommendation": "Strong"},
+    "B18": {"recommendation_type": "avoid", "recommendation_text": "Evitar y minimizar el número de fármacos anticolinérgicos.", "quality_of_evidence": "Moderate", "strength_of_recommendation": "Strong"},
+    "B19": {"recommendation_type": "reduce_dose", "recommendation_text": "Reducir dosis.", "quality_of_evidence": "Moderate", "strength_of_recommendation": "Strong"},
+    "B20": {"recommendation_type": "conditional", "recommendation_text": "Liberación inmediata: reducir dosis. Liberación extendida: evitar.", "quality_of_evidence": "Low", "strength_of_recommendation": "Weak", "criterion_kind": "conditional_criterion"},
+    "B23": {"recommendation_type": "conditional", "recommendation_text": "Requiere evaluación clínica individual; los datos para bloqueadores alfa-1 selectivos son limitados.", "criterion_kind": "manual_review", "automation_mode": "manual_review"},
+}
+
+
+def _beers_metadata(code: str, criterion: dict[str, Any]) -> dict[str, Any]:
+    extra = _BEERS_METADATA.get(code, {})
+    table = _BEERS_TABLES.get(code, "PENDIENTE DE VALIDACIÓN CLÍNICA")
+    return {
+        "source_name": "AGS Beers Criteria",
+        "source_year": 2023,
+        "source_version": "2023",
+        "source_table": table,
+        "source_section": extra.get("section", criterion["section"]),
+        "source_location": criterion["location"],
+        "beers_category": extra.get("beers_category", "potentially_inappropriate_medication" if table == "Table 2" else "drug_disease_or_syndrome" if table == "Table 3" else "use_with_caution" if table == "Table 4" else "drug_drug_interaction" if table == "Table 5" else "renal_function" if table == "Table 6" else "supporting_classification"),
+        "criterion_kind": extra.get("criterion_kind", "clinical_criterion"),
+        "operational_formulation": criterion["statement"],
+        "evaluated_situation": extra.get("evaluated_situation", criterion["statement"]),
+        "rationale": extra.get("rationale"),
+        "recommendation_type": extra.get("recommendation_type", "conditional"),
+        "recommendation_text": extra.get("recommendation_text", "PENDIENTE DE VALIDACIÓN CLÍNICA"),
+        "quality_of_evidence": extra.get("quality_of_evidence"),
+        "strength_of_recommendation": extra.get("strength_of_recommendation"),
+        "evidence_profiles": extra.get("evidence_profiles", []),
+        "exceptions": [],
+        "automation_mode": extra.get("automation_mode", "automatic_if_data_available"),
+        "counts_as_clinical_finding": extra.get("counts_as_clinical_finding", True),
+    }
 
 
 CRITERION_GUIDANCE: dict[str, dict[str, Any]] = {
@@ -438,8 +505,7 @@ class ClinicalCatalogService:
             if system and criterion["system"] != system:
                 continue
             required = list(REQUIREMENTS.get(criterion["code"], ()))
-            output.append(
-                {
+            payload = {
                     **criterion,
                     "criterion_type": criterion["type"],
                     "automation_status": (
@@ -455,7 +521,9 @@ class ClinicalCatalogService:
                         for field in required
                     ],
                 }
-            )
+            if criterion["system"] == "beers":
+                payload.update(_beers_metadata(criterion["code"], criterion))
+            output.append(payload)
         return output
 
     def medications_catalog(self) -> list[dict[str, Any]]:
@@ -607,11 +675,24 @@ class ClinicalCatalogService:
     ) -> list[dict[str, str]]:
         canonical_groups = [_canonical(item) for item in group_terms]
         canonical_names = [_canonical(item) for item in name_terms]
+
+        def matches_group(group: str, term: str) -> bool:
+            """Evita interpretar la clase explícita 'no opioide' como opioide.
+
+            El catálogo V1 conserva descripciones farmacológicas legibles. Para
+            Beers, el término OPIOIDE debe referirse a un opioide positivo, no a
+            una negación textual como la de paracetamol.
+            """
+            canonical_group = _canonical(group)
+            if term == "OPIOIDE":
+                return term in canonical_group and "NO OPIOIDE" not in canonical_group
+            return term in canonical_group
+
         return [
             profile
             for profile in profiles
             if any(
-                term in _canonical(profile["pharmacologic_group"])
+                matches_group(profile["pharmacologic_group"], term)
                 for term in canonical_groups
             )
             or any(
@@ -655,8 +736,9 @@ class ClinicalCatalogService:
                 "Se encontraron menos de dos medicamentos anticolinergicos en el catalogo V1.",
             ),
             "B21": (
-                raas >= 2,
-                "Se encontraron menos de dos inhibidores del sistema renina-angiotensina.",
+                raas >= 2
+                or count_names("AMILORIDA", "TRIAMTERENO") >= 1 and raas >= 1,
+                "No se encontró doble inhibición del sistema renina-angiotensina ni combinación de un inhibidor del SRA con amilorida o triamtereno.",
             ),
             "B22": (
                 count_names("LITIO") >= 1 and raas >= 1,
@@ -738,7 +820,7 @@ class ClinicalCatalogService:
             "B16": (("OPIOIDE",), ("GABAPENTINA", "PREGABALINA")),
             "B17": (CNS_GROUP_TERMS, ()),
             "B18": (("RELAJANTE MUSCULAR", "ANTICOLINERGICO"), ()),
-            "B21": (("ARA II", "IECA", "ARNI"), ()),
+            "B21": (("ARA II", "IECA", "ARNI"), ("AMILORIDA", "TRIAMTERENO")),
             "B22": (("ARA II", "IECA", "ARNI"), ("LITIO",)),
             "STOPP-B3": (("BETABLOQUEADOR",), ("VERAPAMILO", "DILTIAZEM")),
             "STOPP-B13": (("ANTAGONISTA DE ALDOSTERONA", "ARA II", "IECA"), ()),
@@ -813,7 +895,7 @@ class ClinicalCatalogService:
                     }
                 )
 
-        if status == CATALOG_STATUS_ALERT:
+        if status in {CATALOG_STATUS_ALERT, CATALOG_STATUS_ACTIVATED}:
             for field in REQUIREMENTS.get(code, ()):
                 value = cls._context_value(
                     field, context, present_groups, implicated
@@ -997,7 +1079,7 @@ class ClinicalCatalogService:
             )
             return bool(context["peptic_ulcer_history"]) and not exception_complete
         if code == "B08":
-            return has_aine and context["egfr_ml_min_1_73m2"] < 30
+            return has_aine and context["creatinine_clearance_ml_min"] < 30
         if code == "B15":
             return has_opioid and has_benzo
         if code == "B16":
@@ -1019,11 +1101,15 @@ class ClinicalCatalogService:
         if code in {"B18", "STOPP-M1"}:
             return count_group("RELAJANTE MUSCULAR") >= 2
         if code == "B19":
-            return has_name("GABAPENTINA") and context["egfr_ml_min_1_73m2"] < 60
+            return has_name("GABAPENTINA") and context["creatinine_clearance_ml_min"] < 60
         if code == "B20":
-            return has_name("TRAMADOL") and context["egfr_ml_min_1_73m2"] < 30
+            return has_name("TRAMADOL") and context["creatinine_clearance_ml_min"] < 30
         if code == "B21":
-            return context["egfr_ml_min_1_73m2"] < 60 and has_raas() >= 2
+            has_potassium_sparing_diuretic = has_name("AMILORIDA", "TRIAMTERENO")
+            has_beers_combination = has_raas() >= 2 or (
+                has_raas() >= 1 and has_potassium_sparing_diuretic
+            )
+            return bool(context["chronic_kidney_disease_stage_3a_or_higher"]) and has_beers_combination
         if code == "B22":
             return (
                 has_name("LITIO")
@@ -1173,12 +1259,13 @@ class ClinicalCatalogService:
         first_match_by_input: dict[int, dict[str, Any]] = {}
         for item in matched_rows:
             first_match_by_input.setdefault(item["input_index"], item)
-        present_names = [
-            input_names[index] for index in sorted(first_match_by_input)
-        ]
+        # Mantener también nombres no incluidos en el catálogo V1 cuando una
+        # interacción Beers los reconoce explícitamente (p. ej. amilorida).
+        # Carecen de grupo hasta que se incorporen al catálogo farmacológico.
+        present_names = list(input_names)
         present_groups = [
-            first_match_by_input[index]["canonical_group"]
-            for index in sorted(first_match_by_input)
+            first_match_by_input.get(index, {}).get("canonical_group", "")
+            for index in range(len(input_names))
         ]
         results: list[dict[str, Any]] = []
         alerts: list[dict[str, Any]] = []
@@ -1264,7 +1351,77 @@ class ClinicalCatalogService:
                 [] if precondition_met is False else missing_fields
             )
 
-            if precondition_met is False:
+            beers_metadata = (
+                _beers_metadata(code, criterion)
+                if criterion["system"] == "beers"
+                else {}
+            )
+            if criterion["system"] == "beers" and age < 65:
+                status = CATALOG_STATUS_OUT_OF_SCOPE
+                reason = "Fuera del ámbito etario original de AGS Beers 2023 (65 años o más)."
+            elif criterion["system"] == "beers" and code == "B03":
+                status = CATALOG_STATUS_SUPPORTING_CLASSIFICATION
+                reason = "Clasificación Beers: anticolinérgico fuerte; no constituye un hallazgo clínico independiente."
+            elif criterion["system"] == "beers" and code == "B23":
+                status = CATALOG_STATUS_MANUAL_REVIEW
+                reason = "La aplicabilidad a tamsulosina requiere evaluación clínica individual; la evidencia es limitada."
+            elif criterion["system"] == "beers" and code == "B04":
+                duration = self._context_value("medication_duration_days", context, present_groups, implicated)
+                maintenance = context.get("ppi_maintenance_indication")
+                if not _present(duration) or maintenance is None:
+                    status = CATALOG_STATUS_NOT_EVALUABLE
+                    reason = "Faltan duración estructurada o indicación de mantenimiento del IBP."
+                elif duration > 56 and not maintenance:
+                    status = CATALOG_STATUS_ACTIVATED
+                    reason = "Se identificó un IBP activo durante más de 8 semanas sin indicación de mantenimiento documentada."
+                else:
+                    status = CATALOG_STATUS_NO_ALERT
+                    reason = "La duración o una indicación de mantenimiento documentada no activa el criterio de IBP."
+            elif criterion["system"] == "beers" and code == "B18":
+                anticholinergics = sorted({item["input_medication"] for item in matched_rows if "B03" in item["beers_codes"]})
+                if len(anticholinergics) >= 2:
+                    status = CATALOG_STATUS_ACTIVATED
+                    implicated = anticholinergics
+                    reason = f"Se identificaron {len(anticholinergics)} medicamentos activos con clasificación anticolinérgica fuerte: {', '.join(anticholinergics)}."
+                else:
+                    status = CATALOG_STATUS_NO_ALERT
+                    reason = "No se identificaron dos o más medicamentos activos con clasificación anticolinérgica fuerte en el catálogo V1."
+            elif criterion["system"] == "beers" and code == "B20":
+                renal = context.get("creatinine_clearance_ml_min")
+                formulation = context.get("tramadol_release_formulation")
+                if not _present(renal) or not _present(formulation):
+                    status = CATALOG_STATUS_NOT_EVALUABLE
+                    reason = "Faltan depuración de creatinina (CrCl) o formulación de tramadol para completar el criterio."
+                elif renal < 30:
+                    status = CATALOG_STATUS_ACTIVATED
+                    reason = "Se identificó tramadol con función renal reducida y formulación documentada."
+                else:
+                    status = CATALOG_STATUS_NO_ALERT
+                    reason = "La función renal documentada no activa el umbral del criterio de tramadol."
+            elif criterion["system"] == "beers" and code == "B06" and precondition_met is not False:
+                heart_failure = str(context.get("heart_failure_status") or "").lower()
+                if not heart_failure:
+                    if context.get("heart_failure_diagnosis") is True:
+                        status = CATALOG_STATUS_NOT_EVALUABLE
+                        reason = "Existe evidencia de insuficiencia cardiaca, pero falta su estado sintomático."
+                    else:
+                        status = CATALOG_STATUS_NOT_APPLICABLE
+                        effective_missing_fields = []
+                        reason = "No hay evidencia positiva de insuficiencia cardiaca crónica en la fuente del paciente; el criterio no aplica a esta evaluación histórica."
+                elif heart_failure in {"symptomatic", "sintomatica", "sintomática"}:
+                    status = CATALOG_STATUS_ACTIVATED
+                    beers_metadata["recommendation_type"] = "avoid"
+                    beers_metadata["recommendation_text"] = "Evitar en insuficiencia cardiaca sintomática."
+                    reason = "Se identificó un AINE activo y una insuficiencia cardiaca sintomática documentada."
+                elif heart_failure in {"asymptomatic", "asintomatica", "asintomática"}:
+                    status = CATALOG_STATUS_ACTIVATED
+                    beers_metadata["recommendation_type"] = "use_with_caution"
+                    beers_metadata["recommendation_text"] = "Usar con precaución en insuficiencia cardiaca asintomática."
+                    reason = "Se identificó un AINE activo y una insuficiencia cardiaca asintomática documentada."
+                else:
+                    status = CATALOG_STATUS_NOT_EVALUABLE
+                    reason = "El estado de insuficiencia cardiaca no permite distinguir si es sintomática o asintomática."
+            elif precondition_met is False:
                 status = CATALOG_STATUS_NO_ALERT
                 reason = precondition_reason or (
                     "No se encontró la exposición farmacológica requerida por el criterio."
@@ -1294,6 +1451,106 @@ class ClinicalCatalogService:
                     "El medicamento coincide con el catálogo, pero este criterio "
                     "requiere interpretación clínica o una regla aún no automatizada."
                 )
+
+            trigger_facts: dict[str, Any] = {}
+            if criterion["system"] == "beers" and code == "B16":
+                combination_profiles = self._matching_profiles(
+                    self._profiles(present_names, present_groups),
+                    group_terms=("OPIOIDE",),
+                    name_terms=("GABAPENTINA", "PREGABALINA"),
+                )
+                if precondition_met:
+                    implicated = sorted({profile["medication"] for profile in combination_profiles})
+                    if status == CATALOG_STATUS_ACTIVATED:
+                        reason = f"Se identificó uso concomitante de {', '.join(implicated)}."
+            if criterion["system"] == "beers" and code == "B17":
+                cns_profiles = self._matching_profiles(
+                    self._profiles(present_names, present_groups),
+                    group_terms=CNS_GROUP_TERMS,
+                )
+                implicated = sorted({profile["medication"] for profile in cns_profiles})
+                trigger_facts = {
+                    "cns_active_count": len(implicated),
+                    "medications": implicated,
+                    "pharmacologic_classes": sorted(
+                        {profile["pharmacologic_group"] for profile in cns_profiles}
+                    ),
+                }
+                if len(implicated) < 3:
+                    status = CATALOG_STATUS_NO_ALERT
+                    reason = (
+                        f"Se identificaron {len(implicated)} medicamentos activos sobre el SNC; "
+                        "el criterio requiere 3 o más."
+                    )
+                else:
+                    status = CATALOG_STATUS_ACTIVATED
+                    reason = (
+                        f"Se identificaron {len(implicated)} medicamentos activos sobre el SNC: "
+                        f"{', '.join(implicated)}."
+                    )
+
+            if criterion["system"] == "beers" and status == CATALOG_STATUS_ALERT:
+                status = CATALOG_STATUS_ACTIVATED
+            if criterion["system"] == "beers" and status == CATALOG_STATUS_ACTIVATED:
+                if code == "B02":
+                    reason = f"Se identificó {', '.join(implicated)} entre los medicamentos activos del paciente."
+                elif code == "B15":
+                    reason = "Se identificó la combinación concurrente de un opioide y una benzodiacepina."
+                elif code == "B16":
+                    reason = f"Se identificó uso concomitante de {', '.join(implicated)}."
+                elif code == "B17":
+                    reason = f"Se identificaron {len(implicated)} medicamentos activos sobre el sistema nervioso central: {', '.join(implicated)}."
+                elif code == "B19":
+                    reason = "Se identificó gabapentina con depuración de creatinina (CrCl) menor de 60 mL/min documentada."
+                elif code == "B20":
+                    release = str(context.get("tramadol_release_formulation", "")).lower()
+                    if "prolong" in release or "extend" in release:
+                        beers_metadata["recommendation_type"] = "avoid"
+                        beers_metadata["recommendation_text"] = "Evitar la formulación de liberación extendida."
+                    else:
+                        beers_metadata["recommendation_type"] = "reduce_dose"
+                        beers_metadata["recommendation_text"] = "Reducir dosis de la formulación de liberación inmediata."
+                    reason = f"Se identificó tramadol con CrCl menor de 30 mL/min y formulación {release or 'documentada'}."
+                elif code == "B21":
+                    raas_profiles = self._matching_profiles(
+                        self._profiles(present_names, present_groups),
+                        group_terms=("ARA II", "IECA", "ARNI"),
+                    )
+                    potassium_sparing_profiles = self._matching_profiles(
+                        self._profiles(present_names, present_groups),
+                        name_terms=("AMILORIDA", "TRIAMTERENO"),
+                    )
+                    implicated = sorted(
+                        {
+                            profile["medication"]
+                            for profile in [*raas_profiles, *potassium_sparing_profiles]
+                        }
+                    )
+                    reason = (
+                        "Se identificó ERC estadio 3a o mayor confirmada y la combinación "
+                        f"de riesgo: {', '.join(implicated)}."
+                    )
+
+            chronic_condition_evidence_fields = (
+                CHRONIC_CONDITION_EVIDENCE_FIELDS.get(code, ())
+            )
+            if (
+                criterion["system"] == "beers"
+                and chronic_condition_evidence_fields
+                and not any(
+                    context.get(field) is True
+                    or (
+                        field == "heart_failure_status"
+                        and _present(context.get(field))
+                    )
+                    for field in chronic_condition_evidence_fields
+                )
+            ):
+                # Política clínica aprobada para el piloto: no mostrar el
+                # criterio si la enfermedad crónica no está documentada. Al
+                # omitirlo del reporte, tampoco llega a las secciones de UI,
+                # detalle, contadores ni historial de la evaluación.
+                continue
 
             logic_details = self._logic_details(
                 code,
@@ -1326,9 +1583,10 @@ class ClinicalCatalogService:
                     for field in effective_missing_fields
                 ],
                 "reason": reason,
+                "trigger_facts": trigger_facts,
                 "catalog_version": catalog["catalog_version"],
                 "age_scope": (
-                    "protocol_adaptation_60_64"
+                    "out_of_scope_60_64"
                     if criterion["system"] == "beers" and age < 65
                     else "standard_65_plus"
                     if criterion["system"] == "beers"
@@ -1338,10 +1596,13 @@ class ClinicalCatalogService:
                 "lab_evidence": lab_evidence,
                 "diagnosis_evidence": diagnosis_evidence,
                 **logic_details,
+                **beers_metadata,
             }
+            if criterion["system"] == "beers":
+                result["recommended_actions"] = []
             results.append(result)
 
-            if status == CATALOG_STATUS_ALERT:
+            if status in {CATALOG_STATUS_ALERT, CATALOG_STATUS_ACTIVATED}:
                 alerts.append(
                     {
                         "rule_code": code,

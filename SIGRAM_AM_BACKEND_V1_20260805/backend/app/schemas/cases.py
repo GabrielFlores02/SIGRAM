@@ -48,6 +48,7 @@ class ClinicalContext(BaseModel):
     """Datos estructurados opcionales requeridos por criterios clínicos."""
 
     egfr_ml_min_1_73m2: Optional[float] = None
+    creatinine_clearance_ml_min: Optional[float] = None
     potassium_mmol_l: Optional[float] = None
     sodium_mmol_l: Optional[float] = None
     corrected_calcium_mmol_l: Optional[float] = None
@@ -59,6 +60,13 @@ class ClinicalContext(BaseModel):
     heart_rate_bpm: Optional[float] = None
     qtc_ms: Optional[float] = None
     bmi: Optional[float] = None
+    weight_kg: Optional[float] = Field(default=None, gt=0)
+    height_cm: Optional[float] = Field(default=None, gt=0)
+    serum_creatinine_mg_dl: Optional[float] = Field(default=None, gt=0)
+    serum_creatinine_date: Optional[str] = None
+    creatinine_clearance_source: Optional[str] = None
+    creatinine_clearance_method: Optional[str] = None
+    creatinine_clearance_inputs: dict = Field(default_factory=dict)
     falls_history: Optional[bool] = None
     frailty_status: Optional[str] = None
     cognitive_impairment: Optional[bool] = None
@@ -100,6 +108,7 @@ class ClinicalContext(BaseModel):
     ppi_maintenance_indication: Optional[bool] = None
     safer_alternatives_ineffective: Optional[bool] = None
     lithium_level_monitoring: Optional[bool] = None
+    tramadol_release_formulation: Optional[str] = None
     medication_facts: List[MedicationClinicalFacts] = Field(default_factory=list)
     lab_provenance: List[dict] = Field(default_factory=list)
     diagnosis_codes: List[str] = Field(default_factory=list)
@@ -112,6 +121,7 @@ class ClinicalContext(BaseModel):
     copd_diagnosis: Optional[bool] = None
     bph_diagnosis: Optional[bool] = None
     chronic_kidney_disease_diagnosis: Optional[bool] = None
+    chronic_kidney_disease_stage_3a_or_higher: Optional[bool] = None
     hypertension_diagnosis: Optional[bool] = None
     diabetes_diagnosis: Optional[bool] = None
 

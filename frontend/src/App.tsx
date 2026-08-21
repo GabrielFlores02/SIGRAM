@@ -33,8 +33,11 @@ const EMPTY_MEDICATION: MedicationInput = {
   route: "Oral",
 };
 
+const ESSI_SIMULATOR_CODE = "SIM-ESSI-001";
+
 const NUMERIC_CONTEXT_FIELDS = new Set([
   "egfr_ml_min_1_73m2",
+  "creatinine_clearance_ml_min",
   "potassium_mmol_l",
   "sodium_mmol_l",
   "corrected_calcium_mmol_l",
@@ -45,6 +48,9 @@ const NUMERIC_CONTEXT_FIELDS = new Set([
   "heart_rate_bpm",
   "qtc_ms",
   "bmi",
+  "weight_kg",
+  "height_cm",
+  "serum_creatinine_mg_dl",
   "medication_duration_days",
   "daily_dose_mg",
 ]);
@@ -83,6 +89,7 @@ const BOOLEAN_CONTEXT_FIELDS = new Set([
   "severe_gerd_or_stricture",
   "osteoporosis_or_fragility_fracture",
   "bph_urinary_symptoms",
+  "chronic_kidney_disease_stage_3a_or_higher",
   "opioid_regular_use",
 ]);
 
@@ -102,11 +109,27 @@ function sexLabel(value: string) {
 
 function statusLabel(status: CriterionResult["status"]) {
   return {
-    alert: "Advertencia",
+    alert: "Criterio activado",
+    activated: "Criterio activado",
     no_alert: "Sin hallazgo en los datos observados",
     not_evaluable: "Requiere información adicional",
-    manual_review: "Revisión manual",
+    manual_review: "Requiere revisión clínica",
+    out_of_scope: "Fuera del ámbito AGS Beers 2023",
+    supporting_classification: "Clasificación de apoyo",
+    not_applicable: "Criterio no aplicable",
   }[status];
+}
+
+function beersRecommendationLabel(criterion: CriterionResult) {
+  const labels: Record<string, string> = {
+    avoid: "Evitar",
+    use_with_caution: "Usar con precaución",
+    reduce_dose: "Reducir dosis",
+    monitor: "Monitorizar",
+    conditional: "Condicional",
+    classification_only: "Anticolinérgico fuerte",
+  };
+  return labels[criterion.recommendation_type ?? ""] ?? criterion.recommendation_text ?? "Pendiente de validación clínica";
 }
 
 function ddinterLevel(alert: AlertResult): DDInterLevel {
@@ -275,7 +298,8 @@ function PilotContextDrawer({ patient, onClose, onEvaluate }: { patient: PilotPa
   const [values, setValues] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const fields = [
-    ["egfr_ml_min_1_73m2", "TFGe / TFG (mL/min/1.73 m²)", "number"],
+    ["egfr_ml_min_1_73m2", "TFGe / TFG reportada (mL/min/1.73 m²)", "number"],
+    ["creatinine_clearance_ml_min", "Depuración de creatinina - CrCl (mL/min)", "number"],
     ["potassium_mmol_l", "Potasio (mmol/L)", "number"],
     ["sodium_mmol_l", "Sodio (mmol/L)", "number"],
     ["tsh_miu_l", "TSH (mIU/L)", "number"],
@@ -287,12 +311,13 @@ function PilotContextDrawer({ patient, onClose, onEvaluate }: { patient: PilotPa
     const context: Record<string, unknown> = {};
     for (const [field] of fields) if (values[field] !== undefined && values[field] !== "") context[field] = Number(values[field]);
     if (values.free_t4_normal) context.free_t4_normal = values.free_t4_normal === "true";
+    if (values.chronic_kidney_disease_stage_3a_or_higher) context.chronic_kidney_disease_stage_3a_or_higher = values.chronic_kidney_disease_stage_3a_or_higher === "true";
     try { await onEvaluate(context); } finally { setSubmitting(false); }
   }
   return <div className="drawer-layer" role="dialog" aria-modal="true" aria-labelledby="pilot-context-title">
     <button className="drawer-backdrop" onClick={onClose} aria-label="Cerrar contexto clínico" />
     <aside className="detail-drawer pilot-context-drawer"><header><div><span className="status-dot" /><h2 id="pilot-context-title">Contexto clínico manual</h2></div><button onClick={onClose} aria-label="Cerrar">×</button></header>
-      <form className="drawer-content" onSubmit={submit}><p className="drawer-intro">Paciente pseudonimizado <b>{patient.patient_code}</b>. Los valores ingresados aquí tienen prioridad sobre el laboratorio mapeado por el backend.</p><div className="drawer-form-grid">{fields.map(([field, label, type]) => <label key={field}>{label}<input type={type} step="any" value={values[field] ?? ""} onChange={(event) => setValues((current) => ({ ...current, [field]: event.target.value }))} placeholder="No registrado" /></label>)}<label>T4 libre en rango de referencia<select value={values.free_t4_normal ?? ""} onChange={(event) => setValues((current) => ({ ...current, free_t4_normal: event.target.value }))}><option value="">No registrado</option><option value="true">Sí</option><option value="false">No</option></select></label></div><p className="field-help">Registre solo datos verificables de la fuente clínica autorizada. Deje vacío lo no disponible.</p><footer><button type="button" className="secondary-button" onClick={onClose}>Cancelar</button><button className="primary-button" disabled={submitting}>{submitting ? "Evaluando…" : "Evaluar con contexto"}</button></footer></form>
+      <form className="drawer-content" onSubmit={submit}><p className="drawer-intro">Paciente pseudonimizado <b>{patient.patient_code}</b>. Los valores ingresados aquí tienen prioridad sobre el laboratorio mapeado por el backend.</p><div className="drawer-form-grid">{fields.map(([field, label, type]) => <label key={field}>{label}<input type={type} step="any" value={values[field] ?? ""} onChange={(event) => setValues((current) => ({ ...current, [field]: event.target.value }))} placeholder="No registrado" /></label>)}<label>T4 libre en rango de referencia<select value={values.free_t4_normal ?? ""} onChange={(event) => setValues((current) => ({ ...current, free_t4_normal: event.target.value }))}><option value="">No registrado</option><option value="true">Sí</option><option value="false">No</option></select></label><label>ERC estadio 3a o mayor confirmada<select value={values.chronic_kidney_disease_stage_3a_or_higher ?? ""} onChange={(event) => setValues((current) => ({ ...current, chronic_kidney_disease_stage_3a_or_higher: event.target.value }))}><option value="">No registrado</option><option value="true">Sí</option><option value="false">No</option></select></label></div><p className="field-help">Para B08, B19 y B20 ingrese CrCl documentada; SIGRAM no la calcula ni sustituye automáticamente por TFGe. Para B21, confirme ERC estadio 3a o mayor. Deje vacío lo no disponible.</p><footer><button type="button" className="secondary-button" onClick={onClose}>Cancelar</button><button className="primary-button" disabled={submitting}>{submitting ? "Evaluando…" : "Evaluar con contexto"}</button></footer></form>
     </aside>
   </div>;
 }
@@ -380,9 +405,15 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
   const [selectedPatientCode, setSelectedPatientCode] = useState("");
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyNotice, setHistoryNotice] = useState("");
+  const [simulationHistory, setSimulationHistory] = useState<Array<{ id: number; event_type: string; note: string; created_at: string; snapshot: Record<string, unknown> }>>([]);
+  const [attentionNote, setAttentionNote] = useState("");
   const [historyMedications, setHistoryMedications] = useState<MedicationInput[]>([]);
   const [contextOpen, setContextOpen] = useState(false);
   const [clinicalContext, setClinicalContext] = useState<Record<string, string>>(Object.create(null));
+  const [weightKg, setWeightKg] = useState("");
+  const [heightCm, setHeightCm] = useState("");
+  const [serumCreatinineMgDl, setSerumCreatinineMgDl] = useState("");
+  const [serumCreatinineDate, setSerumCreatinineDate] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -403,7 +434,10 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
     return [...unique.values()].sort((a, b) => a.label.localeCompare(b.label, "es"));
   }, [criteria]);
 
-  const editableContext = requiredContext.filter((item) => item.field !== "medication_duration_days");
+  const editableContext = requiredContext.filter((item) => ![
+    "medication_duration_days",
+    "creatinine_clearance_ml_min",
+  ].includes(item.field));
   const recordedContext = editableContext.filter((item) => (clinicalContext[item.field] ?? "") !== "");
   const unrecordedContext = editableContext.filter((item) => (clinicalContext[item.field] ?? "") === "");
 
@@ -435,18 +469,43 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
       setMedications([{ ...EMPTY_MEDICATION }]);
       setHistoryMedications([]);
       setClinicalContext(Object.create(null));
+      setWeightKg("");
+      setHeightCm("");
+      setSerumCreatinineMgDl("");
+      setSerumCreatinineDate("");
       setContextOpen(false);
       setHistoryNotice("");
+      setSimulationHistory([]);
+      setAttentionNote("");
       return;
     }
 
     setHistoryLoading(true);
     setHistoryNotice("");
     try {
+      if (patientCode === ESSI_SIMULATOR_CODE) {
+        const simulator = await api.getEssiSimulator();
+        const loaded = simulator.case;
+        setAge(String(loaded.age)); setSex(loaded.sex); setDiagnoses(loaded.diagnoses); setCaseCode(loaded.case_code);
+        setMedications(loaded.medications.map(({ id: _id, case_id: _caseId, created_at: _createdAt, ...medication }) => medication));
+        const mappedContext: Record<string, string> = Object.create(null);
+        for (const [field, value] of Object.entries(loaded.clinical_context)) {
+          if (value === null || value === undefined || Array.isArray(value) || typeof value === "object") continue;
+          mappedContext[field] = String(value);
+        }
+        setClinicalContext(mappedContext); setWeightKg(mappedContext.weight_kg ?? ""); setHeightCm(mappedContext.height_cm ?? "");
+        setSerumCreatinineMgDl(mappedContext.serum_creatinine_mg_dl ?? ""); setSerumCreatinineDate(mappedContext.serum_creatinine_date ?? "");
+        setHistoryMedications([]); setSimulationHistory(simulator.history); setContextOpen(true);
+        setHistoryNotice("Simulador ESSI cargado: esta copia conserva cada atención y su lista histórica de medicamentos. La cohorte piloto original no se modifica.");
+        return;
+      }
       const prefill = await api.getPilotCasePrefill(patientCode);
       setAge(String(prefill.age));
       setSex(prefill.sex);
       setDiagnoses(prefill.diagnoses);
+      setCaseCode(patientCode);
+      // La cohorte piloto se presenta como historia previa de solo lectura.
+      // Las filas de arriba representan exclusivamente la nueva receta a simular.
       setMedications([{ ...EMPTY_MEDICATION }]);
       setHistoryMedications(prefill.medications);
       const mappedContext: Record<string, string> = Object.create(null);
@@ -455,8 +514,13 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
         mappedContext[field] = String(value);
       }
       setClinicalContext(mappedContext);
+      setWeightKg(mappedContext.weight_kg ?? "");
+      setHeightCm(mappedContext.height_cm ?? "");
+      setSerumCreatinineMgDl(mappedContext.serum_creatinine_mg_dl ?? "");
+      setSerumCreatinineDate(mappedContext.serum_creatinine_date ?? "");
       setContextOpen(true);
-      setHistoryNotice(`Historia pseudonimizada ${patientCode} cargada. Se incluyeron los medicamentos activos en ${formatDate(prefill.medication_index_date)}; puede agregar la nueva receta para evaluar polifarmacia.`);
+      setSimulationHistory([]);
+      setHistoryNotice(`Historia pseudonimizada ${patientCode} cargada. Sus medicamentos activos se muestran abajo como “Medicamentos en uso”; agregue arriba la nueva receta para evaluar la polifarmacia. Al finalizar, los cambios se descartan.`);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "No se pudo cargar la historia del paciente.");
     } finally {
@@ -483,6 +547,39 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
     if (medicationFacts.length) result.medication_facts = medicationFacts;
     return result;
   }
+
+  function updateTriage(field: "weight" | "height", value: string) {
+    const nextWeight = field === "weight" ? value : weightKg;
+    const nextHeight = field === "height" ? value : heightCm;
+    if (field === "weight") setWeightKg(value); else setHeightCm(value);
+    const kilograms = Number(nextWeight);
+    const meters = Number(nextHeight) / 100;
+    setClinicalContext((current) => ({
+      ...current,
+      weight_kg: field === "weight" ? value : current.weight_kg ?? "",
+      height_cm: field === "height" ? value : current.height_cm ?? "",
+      ...(kilograms > 0 && meters > 0 ? { bmi: (kilograms / (meters * meters)).toFixed(1) } : {}),
+    }));
+  }
+
+  function updateSerumCreatinine(value: string) {
+    setSerumCreatinineMgDl(value);
+    setClinicalContext((current) => ({ ...current, serum_creatinine_mg_dl: value }));
+  }
+
+  function updateSerumCreatinineDate(value: string) {
+    setSerumCreatinineDate(value);
+    setClinicalContext((current) => ({ ...current, serum_creatinine_date: value }));
+  }
+
+  const estimatedCrCl = useMemo(() => {
+    const years = Number(age);
+    const weight = Number(weightKg);
+    const creatinine = Number(serumCreatinineMgDl);
+    if (!(years > 0 && weight > 0 && creatinine > 0) || !sex) return null;
+    const base = ((140 - years) * weight) / (72 * creatinine);
+    return (sex === "Femenino" ? base * 0.85 : base).toFixed(1);
+  }, [age, sex, weightKg, serumCreatinineMgDl]);
 
   function renderContextFields(items: RequiredData[]) {
     return <div className="context-grid">
@@ -511,9 +608,19 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
       medications: [...historyMedications, ...medications].map((item) => ({ ...item, duration: item.duration?.trim() || undefined })),
     };
     try {
-      const created = await api.createCase(payload);
-      const evaluation = await api.evaluateCase(created.id);
-      onCompleted(created, evaluation);
+      if (selectedPatientCode === ESSI_SIMULATOR_CODE) {
+        const simulator = await api.updateEssiSimulator({ ...payload, case_code: ESSI_SIMULATOR_CODE, note: attentionNote.trim() || "Atención ESSI simulada" });
+        const evaluation = await api.evaluateCase(simulator.case.id);
+        setSimulationHistory(simulator.history);
+        onCompleted(simulator.case, evaluation);
+      } else if (selectedPatientCode) {
+        const preview = await api.previewCase(payload);
+        onCompleted(preview.case, preview.evaluation);
+      } else {
+        const created = await api.createCase(payload);
+        const evaluation = await api.evaluateCase(created.id);
+        onCompleted(created, evaluation);
+      }
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "No se pudo procesar el caso.");
     } finally {
@@ -537,17 +644,29 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
           <label className="full-width">Historia para la simulación
             <select value={selectedPatientCode} disabled={historyLoading} onChange={(event) => selectPatientHistory(event.target.value)}>
               <option value="">Crear paciente nuevo sin historial</option>
-              {pilotPatients.map((patient) => <option key={patient.patient_code} value={patient.patient_code}>{patient.patient_code} — {patient.age} años, {patient.sex} — {patient.max_simultaneous_top_medications} medicamentos activos</option>)}
+              <optgroup label="Pacientes piloto — simulación temporal (no guarda cambios)">
+                {pilotPatients.map((patient) => <option key={patient.patient_code} value={patient.patient_code}>{patient.patient_code} — {patient.age} años, {patient.sex} — {patient.max_simultaneous_top_medications} medicamentos activos</option>)}
+              </optgroup>
+              <optgroup label="Simulador longitudinal ESSI">
+                <option value={ESSI_SIMULATOR_CODE}>SIM-ESSI-001 — paciente editable con historia persistente</option>
+              </optgroup>
             </select>
-            <small className="field-help">Seleccione uno de los 10 pacientes pseudonimizados para cargar la información disponible y sumar medicamentos a su tratamiento activo.</small>
+            <small className="field-help">Los 10 pilotos se usan solo para pruebas temporales. SIM-ESSI-001 es la única copia que guarda versiones de su historia, sin alterar la cohorte fuente.</small>
           </label>
           <label>Código del caso *<input value={caseCode} onChange={(event) => setCaseCode(event.target.value)} placeholder="Ej. CASO-2025-001" /></label>
           <label>Edad (años) *<div className="suffix-input"><input type="number" min="60" value={age} onChange={(event) => setAge(event.target.value)} placeholder="≥ 60" /><span>AÑOS</span></div></label>
           <label>Sexo *<select value={sex} onChange={(event) => setSex(event.target.value)}><option value="">Seleccione…</option><option>Masculino</option><option>Femenino</option></select></label>
           <label className="full-width">Diagnósticos / condiciones clínicas *<textarea value={diagnoses} onChange={(event) => setDiagnoses(event.target.value)} placeholder="Ingrese los diagnósticos o condiciones clínicas relevantes…" /></label>
         </div>
+        <div className="pilot-triage-panel">
+          <div className="pilot-panel-heading"><span>ETAPA PILOTO</span><strong>Datos de triaje y función renal</strong><small>Ingreso manual para pruebas; en ESSI estos datos se cargarán automáticamente.</small></div>
+          <div className="triage-grid"><label>Peso (kg)<input type="number" min="1" step="0.1" value={weightKg} onChange={(event) => updateTriage("weight", event.target.value)} placeholder="Ej. 68.5" /></label><label>Talla (cm)<input type="number" min="1" step="0.1" value={heightCm} onChange={(event) => updateTriage("height", event.target.value)} placeholder="Ej. 160" /></label><label>Índice de masa corporal<input readOnly value={clinicalContext.bmi ?? ""} placeholder="Se calcula con peso y talla" /></label></div>
+          <div className="renal-grid"><label>Creatinina sérica (mg/dL)<input type="number" min="0.1" step="0.01" value={serumCreatinineMgDl} onChange={(event) => updateSerumCreatinine(event.target.value)} placeholder="Ej. 1.20" /></label><label>Fecha de creatinina<input type="date" value={serumCreatinineDate} onChange={(event) => updateSerumCreatinineDate(event.target.value)} /></label><label>CrCl estimada (mL/min)<input readOnly value={estimatedCrCl ?? ""} placeholder="Complete edad, sexo, peso y creatinina" /></label></div>
+          <p className="pilot-method-note">La CrCl se calcula en el backend con Cockcroft–Gault y peso actual; se guarda junto con las entradas utilizadas para la trazabilidad del piloto.</p>
+        </div>
         {historyLoading && <p className="field-help">Cargando historia pseudonimizada…</p>}
         {historyNotice && <div className="catalog-notice" role="status"><span>ⓘ</span><div><strong>Historia cargada para simulación</strong><p>{historyNotice}</p></div></div>}
+        {selectedPatientCode === ESSI_SIMULATOR_CODE && <><label className="full-width">Resumen de esta atención simulada<textarea value={attentionNote} onChange={(event) => setAttentionNote(event.target.value)} placeholder="Ej. Se añadió un medicamento y se actualizó el resultado de creatinina." /></label><div className="simulator-actions"><button type="button" className="secondary-button" onClick={async () => { if (!window.confirm("¿Restaurar SIM-ESSI-001 a su línea base? El historial seguirá siendo auditable.")) return; try { const simulator = await api.resetEssiSimulator(); setSimulationHistory(simulator.history); await selectPatientHistory(ESSI_SIMULATOR_CODE); } catch (reason) { setError(reason instanceof Error ? reason.message : "No se pudo restaurar el simulador."); } }}>Restablecer simulador a línea base</button></div>{simulationHistory.length > 0 && <details className="history-medications"><summary>Historial de atenciones guardadas ({simulationHistory.length})</summary><ul>{simulationHistory.map((item) => <li key={item.id}><strong>{new Date(item.created_at).toLocaleString("es-PE")}</strong><span>{item.note} · {Array.isArray(item.snapshot.medications) ? item.snapshot.medications.length : 0} medicamentos en esa versión.</span></li>)}</ul></details>}</>}
       </section>
 
       <section className="form-card medication-card">
@@ -594,30 +713,36 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
         </div>}
       </section>
 
-      <div className="submit-bar"><span className={minimumComplete ? "complete" : "incomplete"}>{minimumComplete ? "✓ Datos mínimos completos" : "Complete los campos obligatorios"}</span><button className="primary-button" disabled={!minimumComplete || submitting}>{submitting ? "Procesando tamizaje…" : "▣ Crear caso y ejecutar tamizaje"}</button></div>
+      <div className="submit-bar"><span className={minimumComplete ? "complete" : "incomplete"}>{minimumComplete ? "✓ Datos mínimos completos" : "Complete los campos obligatorios"}</span><button className="primary-button" disabled={!minimumComplete || submitting}>{submitting ? "Procesando tamizaje…" : selectedPatientCode === ESSI_SIMULATOR_CODE ? "▣ Guardar atención ESSI y ejecutar tamizaje" : selectedPatientCode ? "▣ Ejecutar simulación temporal" : "▣ Crear caso y ejecutar tamizaje"}</button></div>
     </form>
   );
 }
 
 function DetailDrawer({ criterion, alert, onClose }: { criterion: CriterionResult; alert?: AlertResult; onClose: () => void }) {
+  const isBeers = criterion.system === "beers";
   return <div className="drawer-layer" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
     <button className="drawer-backdrop" onClick={onClose} aria-label="Cerrar detalle" />
     <aside className="detail-drawer">
       <header><div><span className={`status-dot ${criterion.status}`} /><h2 id="drawer-title">Detalle del criterio {criterion.criterion_code}</h2></div><button onClick={onClose} aria-label="Cerrar">×</button></header>
       <div className="drawer-content">
-        <section><span className="drawer-label">Estado</span><span className={`status-pill ${criterion.status}`}>{statusLabel(criterion.status)}</span></section>
-        <section><span className="drawer-label">Criterio</span><p>{criterion.statement}</p></section>
+        <section><span className="drawer-label">{isBeers ? "Recomendación AGS Beers 2023" : "Estado"}</span>{isBeers ? <span className={`beers-recommendation ${criterion.recommendation_type ?? "conditional"}`}>{beersRecommendationLabel(criterion)}</span> : <span className={`status-pill ${criterion.status}`}>{statusLabel(criterion.status)}</span>}</section>
+        <section><span className="drawer-label">{isBeers ? "Criterio / situación evaluada" : "Criterio"}</span><p>{isBeers ? criterion.evaluated_situation ?? criterion.statement : criterion.statement}</p></section>
+        {isBeers && criterion.rationale && <section><span className="drawer-label">Fundamento clínico — rationale</span><p>{criterion.rationale}</p></section>}
         <section><span className="drawer-label">Medicamentos implicados</span><p>{criterion.implicated_medications.length ? criterion.implicated_medications.join(", ") : "Ninguno registrado"}</p></section>
+        {isBeers && <section><span className="drawer-label">Motivo del hallazgo</span><p>{criterion.reason}</p></section>}
         <section><span className="drawer-label">Datos faltantes</span>{criterion.missing_data.length ? <ul>{criterion.missing_data.map((item, index) => <li key={index}>{String(item.label ?? item.field ?? JSON.stringify(item))}</li>)}</ul> : <p>No se reportaron datos faltantes.</p>}</section>
         {(criterion.lab_evidence?.length ?? 0) > 0 && <section><span className="drawer-label">Exámenes usados por el backend</span><ul>{criterion.lab_evidence.map((item) => <li key={`${item.field}-${item.source_row_sha256}`}><b>{labFieldLabel(item.field)}:</b> {labValueLabel(item)}; {formatDate(item.result_date)}; código ESSI {item.exam_code}; {item.applied ? "aplicado" : "no aplicado (prioridad al contexto manual)"}.</li>)}</ul></section>}
         {criterion.diagnosis_evidence.length > 0 && <section><span className="drawer-label">Evidencia CIE-10</span><ul>{criterion.diagnosis_evidence.map((item, index) => <li key={`${item.field ?? "cie"}-${index}`}><b>{item.label ?? item.field ?? "Contexto clínico"}:</b> {item.matched_codes?.map((code) => code.code).filter(Boolean).join(", ") || "evidencia documentada"}.</li>)}</ul></section>}
         {criterion.protective_evidence.length > 0 && <section><span className="drawer-label">Protectores identificados</span><ul>{criterion.protective_evidence.map((item, index) => <li key={`${item.field ?? item.role ?? "protector"}-${index}`}>{item.label ?? item.field ?? item.role ?? "Protector documentado"}</li>)}</ul></section>}
         {criterion.exception_reason && <section><span className="drawer-label">Excepción / mitigación</span><p>{criterion.exception_reason}</p></section>}
-        {criterion.recommended_actions.length > 0 && <section><span className="drawer-label">Acciones sugeridas</span><ul>{criterion.recommended_actions.map((item, index) => <li key={index}>{item}</li>)}</ul></section>}
-        <details className="detail-more"><summary>Ver más</summary><div>
-          <section><span className="drawer-label">Justificación de la evaluación</span><p>{alert?.justification || criterion.reason || "Sin detalle adicional."}</p></section>
-          <section><span className="drawer-label">Fuente</span><p>{alert?.source || criterion.source_location || "No consignada"}</p></section>
-          <section><span className="drawer-label">Versión</span><p>{alert?.rule_version || criterion.catalog_version}</p></section>
+        {!isBeers && criterion.recommended_actions.length > 0 && <section className="suggested-actions"><span className="drawer-label">Acciones sugeridas</span><ul>{criterion.recommended_actions.map((item, index) => <li key={index}>{item}</li>)}</ul></section>}
+        <details className="detail-more"><summary>{isBeers ? "Ver fuente y trazabilidad" : "Ver más"}</summary><div>
+          <section><span className="drawer-label">Fuente</span><p>{criterion.source_name ? `${criterion.source_name} ${criterion.source_year ?? ""}` : alert?.source || criterion.source_location || "No consignada"}</p></section>
+          {isBeers && <section><span className="drawer-label">Tabla y sección</span><p>{[criterion.source_table, criterion.source_section, criterion.source_location].filter(Boolean).join(" · ")}</p></section>}
+          {isBeers && criterion.quality_of_evidence && <section><span className="drawer-label">Calidad de la evidencia</span><span className="evidence-neutral">{criterion.quality_of_evidence === "High" ? "Alta ●●●" : criterion.quality_of_evidence === "Moderate" ? "Moderada ●●○" : criterion.quality_of_evidence === "Low" ? "Baja ●○○" : criterion.quality_of_evidence}</span></section>}
+          {isBeers && criterion.strength_of_recommendation && <section><span className="drawer-label">Fuerza de la recomendación</span><span className="evidence-neutral">{criterion.strength_of_recommendation === "Strong" ? "Fuerte" : criterion.strength_of_recommendation === "Weak" ? "Débil" : criterion.strength_of_recommendation}</span></section>}
+          {isBeers && <section><span className="drawer-label">Formulación operativa del catálogo SIGRAM</span><p>{criterion.operational_formulation ?? criterion.statement}</p></section>}
+          <section><span className="drawer-label">Versión del catálogo</span><p>{alert?.rule_version || criterion.catalog_version}</p></section>
           {criterion.triggering_evidence.length > 0 && <section><span className="drawer-label">Evidencia activadora</span><ul>{criterion.triggering_evidence.map((item, index) => <li key={`${item.field ?? item.role ?? "trigger"}-${index}`}>{item.label ?? item.field ?? item.role ?? "Condición evaluada"}: {String(item.value ?? "documentada")}</li>)}</ul></section>}
           {criterion.medication_coverage_note && <section><span className="drawer-label">Cobertura farmacológica</span><p>{criterion.medication_coverage_note}</p></section>}
         </div></details>
@@ -663,7 +788,8 @@ function ResultsPage({ clinicalCase, evaluation, dataAvailability }: { clinicalC
   const [selectedInteraction, setSelectedInteraction] = useState<AlertResult>();
 
   const analysis = evaluation.analysis_results.find((item) => item.system === system);
-  const visibleCriteria = (evaluation.clinical_findings ?? evaluation.criteria_report.filter((item) => item.status === "alert")).filter((item) => item.system === system);
+  const isBeers = system === "beers";
+  const visibleCriteria = (evaluation.clinical_findings ?? evaluation.criteria_report.filter((item) => item.status === "alert" || item.status === "activated")).filter((item) => item.system === system);
   const ddinterAlerts = evaluation.alerts.filter((item) => item.analysis_system === "ddinter");
   const rows = visibleCriteria.filter((item) => {
     const haystack = `${item.criterion_code} ${item.statement} ${item.reason} ${item.implicated_medications.join(" ")}`.toLowerCase();
@@ -674,6 +800,17 @@ function ResultsPage({ clinicalCase, evaluation, dataAvailability }: { clinicalC
     return haystack.includes(query.toLowerCase()) && (ddinterLevelFilter === "all" || ddinterLevel(item) === ddinterLevelFilter);
   });
   const selectedAlert = selected ? evaluation.alerts.find((item) => item.analysis_system === selected.system && item.rule_code === selected.criterion_code) : undefined;
+  const beersCriteria = evaluation.criteria_report.filter((item) => item.system === "beers");
+  const beersCount = (status: CriterionResult["status"]) => beersCriteria.filter((item) => item.status === status).length;
+  const beersAnalysisSections: Array<[CriterionResult["status"], string]> = [
+    ["activated", "Criterios activados"],
+    ["not_evaluable", "Requieren información adicional"],
+    ["manual_review", "Requieren revisión clínica"],
+    ["no_alert", "Sin hallazgo en los datos observados"],
+    ["supporting_classification", "Clasificaciones de apoyo"],
+    ["out_of_scope", "Fuera del ámbito"],
+    ["not_applicable", "Criterios no aplicables"],
+  ];
 
   function selectSystem(nextSystem: VisibleSystem) {
     setSystem(nextSystem);
@@ -697,13 +834,18 @@ function ResultsPage({ clinicalCase, evaluation, dataAvailability }: { clinicalC
       <div><strong className="metric-alert">{analysis?.alert_count ?? 0}</strong><span>Interacciones detectadas</span></div>
       <div><strong>DDInter local</strong><span>{analysis?.catalog ?? "Catálogo no informado"}</span></div>
       <div><strong>Coincidencia</strong><span>Exacta o alias provisional</span></div>
-    </div> : <div className="metric-grid">
-      <div><strong className="metric-alert">{analysis?.alert_count ?? 0}</strong><span>Alertas</span></div>
-      <div><strong className="metric-primary">{analysis?.evaluated_count ?? 0}</strong><span>Evaluados</span></div>
+    </div> : isBeers ? <><div className="metric-grid">
+      <div><strong className="metric-alert">{analysis?.alert_count ?? 0}</strong><span>Criterios activados</span></div>
+      <div><strong>{analysis?.not_evaluable_count ?? 0}</strong><span>Requieren información adicional</span></div>
+      <div><strong className="metric-manual">{analysis?.manual_review_count ?? 0}</strong><span>Requieren revisión clínica</span></div>
+      <div><strong className="metric-primary">{beersCount("no_alert")}</strong><span>Sin hallazgo en los datos observados</span></div>
+    </div><p className="coverage-note">{beersCriteria.length} criterios Beers candidatos considerados en esta evaluación.{(analysis?.out_of_scope_count ?? 0) > 0 ? ` ${(analysis?.out_of_scope_count ?? 0)} fuera del ámbito.` : ""}</p></> : <div className="metric-grid">
+      <div><strong className="metric-alert">{analysis?.alert_count ?? 0}</strong><span>{isBeers ? "Criterios activados" : "Alertas"}</span></div>
+      <div><strong className="metric-primary">{analysis?.evaluated_count ?? 0}</strong><span>{isBeers ? "Candidatos analizados" : "Evaluados"}</span></div>
       <div><strong>{analysis?.not_evaluable_count ?? 0}</strong><span>Requieren información adicional</span></div>
       <div><strong className="metric-manual">{analysis?.manual_review_count ?? 0}</strong><span>Revisión manual</span></div>
     </div>}
-    {system === "beers" && clinicalCase.age < 65 && <div className="method-note">ⓘ En pacientes de 60 a 64 años, la aplicación de Beers corresponde a una adaptación metodológica del piloto; el criterio fue diseñado para población de 65 años o más.</div>}
+    {system === "beers" && clinicalCase.age < 65 && <div className="method-note">ⓘ Fuera del ámbito etario original de AGS Beers 2023 (65 años o más). No se muestran estos resultados como aplicación canónica.</div>}
     {system === "stopp_start" && <div className="method-note">▧ Los resultados requieren interpretación clínica y no reemplazan el juicio profesional.</div>}
     {system === "ddinter" && <div className="method-note">ⓘ {analysis?.note ?? "El resultado DDInter se reporta según el catálogo local configurado en el backend."}</div>}
     {system === "ddinter" ? <div className="results-card">
@@ -723,24 +865,27 @@ function ResultsPage({ clinicalCase, evaluation, dataAvailability }: { clinicalC
       </tbody></table>{interactionRows.length === 0 && <div className="empty-state">No se detectaron interacciones DDInter para los medicamentos evaluados.</div>}</div>
       <div className="table-footer">Mostrando {interactionRows.length} de {ddinterAlerts.length} hallazgos</div>
     </div> : <div className="results-card">
-      <div className="results-toolbar"><div><strong>Hallazgos clínicos</strong><span>{visibleCriteria.length} alertas confirmadas</span></div><div><label className="search-field"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Filtrar…" /></label></div></div>
-      <div className="table-scroll"><table className="results-table"><thead><tr><th>Gravedad</th><th>Código</th><th>Medicamento(s)</th><th>Estado</th><th>Justificación / Datos faltantes</th><th>Acción</th></tr></thead><tbody>
+      <div className="results-toolbar"><div><strong>{isBeers ? "Hallazgos Beers" : "Hallazgos clínicos"}</strong><span>{visibleCriteria.length} {isBeers ? "criterios activados" : "alertas confirmadas"}</span></div><div><label className="search-field"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Filtrar…" /></label></div></div>
+      <div className="table-scroll"><table className="results-table"><thead>{isBeers ? <tr><th aria-label="Criterio activado" /><th>Código</th><th>Medicamento(s)</th><th>Recomendación AGS Beers 2023</th><th>Motivo del hallazgo</th><th>Acción</th></tr> : <tr><th>Gravedad</th><th>Código</th><th>Medicamento(s)</th><th>Estado</th><th>Justificación / Datos faltantes</th><th>Acción</th></tr>}</thead><tbody>
         {rows.map((criterion) => {
           const alert = evaluation.alerts.find((item) => item.analysis_system === criterion.system && item.rule_code === criterion.criterion_code);
           const explanation = criterion.missing_data.length ? `Dato faltante: ${criterion.missing_data.map((item) => item.label ?? item.field).join(", ")}` : alert?.justification || criterion.reason;
           return <tr key={`${criterion.system}-${criterion.criterion_code}`} className={criterion.status === "no_alert" ? "no-alert-row" : ""}>
-            <td><span className={`severity-bar ${criterion.status}`} title={statusLabel(criterion.status)} /></td>
+            <td><span className={`severity-bar ${criterion.status}`} title={isBeers ? "Criterio activado por el tamizaje" : statusLabel(criterion.status)} /></td>
             <td><code>{criterion.criterion_code}</code></td>
             <td>{criterion.implicated_medications.length ? criterion.implicated_medications.join(", ") : "—"}</td>
-            <td><span className={`status-pill ${criterion.status}`}>{statusLabel(criterion.status)}</span></td>
-            <td>{criterion.missing_data.length > 0 && <b className="missing-label">⚠ Dato faltante</b>}<span>{explanation || "Evaluación completada."}</span></td>
+            <td>{isBeers ? <span className={`beers-recommendation ${criterion.recommendation_type ?? "conditional"}`}>{beersRecommendationLabel(criterion)}</span> : <span className={`status-pill ${criterion.status}`}>{statusLabel(criterion.status)}</span>}</td>
+            <td>{criterion.missing_data.length > 0 && <b className="missing-label">⚠ Dato faltante</b>}<span>{isBeers ? criterion.reason : explanation || "Evaluación completada."}</span></td>
             <td><button className="outline-button" onClick={() => setSelected(criterion)}>Ver detalle</button></td>
           </tr>;
         })}
       </tbody></table>{rows.length === 0 && <div className="empty-state">No hay resultados para los filtros seleccionados.</div>}</div>
       <div className="table-footer">Mostrando {rows.length} de {visibleCriteria.length} registros</div>
     </div>}
-    {system !== "ddinter" && <details className="full-analysis"><summary>Ver más: análisis completo</summary><div className="full-analysis-content"><p><b>Requieren información adicional:</b> {(evaluation.data_gaps ?? []).filter((item) => item.system === system).length}. <b>Revisión manual:</b> {(evaluation.manual_review_findings ?? []).filter((item) => item.system === system).length}.</p><div className="table-scroll"><table><thead><tr><th>Código</th><th>Estado</th><th>Motivo</th><th>Acción</th></tr></thead><tbody>{evaluation.criteria_report.filter((item) => item.system === system).map((item) => <tr key={`technical-${item.system}-${item.criterion_code}`}><td><code>{item.criterion_code}</code></td><td><span className={`status-pill ${item.status}`}>{statusLabel(item.status)}</span></td><td>{item.reason}</td><td><button className="outline-button" onClick={() => setSelected(item)}>Ver detalle</button></td></tr>)}</tbody></table></div></div></details>}
+    {system !== "ddinter" && <details className="full-analysis"><summary>Ver más: análisis completo</summary><div className="full-analysis-content">{isBeers ? beersAnalysisSections.map(([status, title]) => {
+      const items = beersCriteria.filter((item) => item.status === status);
+      return items.length ? <section className="analysis-section" key={status}><h3 className={status}>{title}</h3><div className="table-scroll"><table><thead><tr><th>Código</th><th>Motivo</th><th>Acción</th></tr></thead><tbody>{items.map((item) => <tr key={`technical-${item.system}-${item.criterion_code}`}><td><code>{item.criterion_code}</code></td><td>{item.reason}</td><td><button className="outline-button" onClick={() => setSelected(item)}>Ver detalle</button></td></tr>)}</tbody></table></div></section> : null;
+    }) : <><p><b>Requieren información adicional:</b> {(evaluation.data_gaps ?? []).filter((item) => item.system === system).length}. <b>Revisión manual:</b> {(evaluation.manual_review_findings ?? []).filter((item) => item.system === system).length}.</p><div className="table-scroll"><table><thead><tr><th>Código</th><th>Estado</th><th>Motivo</th><th>Acción</th></tr></thead><tbody>{evaluation.criteria_report.filter((item) => item.system === system).map((item) => <tr key={`technical-${item.system}-${item.criterion_code}`}><td><code>{item.criterion_code}</code></td><td><span className={`status-pill ${item.status}`}>{statusLabel(item.status)}</span></td><td>{item.reason}</td><td><button className="outline-button" onClick={() => setSelected(item)}>Ver detalle</button></td></tr>)}</tbody></table></div></>}</div></details>}
     {selected && <DetailDrawer criterion={selected} alert={selectedAlert} onClose={() => setSelected(undefined)} />}
     {selectedInteraction && <DDInterDetailDrawer alert={selectedInteraction} onClose={() => setSelectedInteraction(undefined)} />}
   </section>;

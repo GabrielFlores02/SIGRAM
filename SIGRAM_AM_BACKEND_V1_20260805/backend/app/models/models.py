@@ -33,6 +33,12 @@ class ClinicalCase(Base):
         back_populates="case",
         cascade="all, delete-orphan"
     )
+    simulation_history_events = relationship(
+        "SimulationHistoryEvent",
+        back_populates="case",
+        cascade="all, delete-orphan",
+        order_by="SimulationHistoryEvent.created_at.desc()",
+    )
 
     __table_args__ = (
         CheckConstraint("age >= 60", name="check_age_minimum_60"),
@@ -109,3 +115,17 @@ class Alert(Base):
     __table_args__ = (
         CheckConstraint("severity IN ('alta', 'moderada', 'advertencia')", name="check_alert_severity_valid"),
     )
+
+
+class SimulationHistoryEvent(Base):
+    """Versiones auditables del único paciente de demostración ESSI."""
+    __tablename__ = "simulation_history_events"
+
+    id = Column(Integer, primary_key=True, index=True)
+    case_id = Column(Integer, ForeignKey("clinical_cases.id", ondelete="CASCADE"), nullable=False)
+    event_type = Column(String, nullable=False)
+    note = Column(String, nullable=False, default="")
+    snapshot = Column(JSON, nullable=False, default=dict)
+    created_at = Column(DateTime, nullable=False, default=get_utc_now)
+
+    case = relationship("ClinicalCase", back_populates="simulation_history_events")

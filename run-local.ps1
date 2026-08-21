@@ -6,5 +6,5 @@ docker compose up --build --detach
 docker compose ps
 
 Write-Host ""
-Write-Host "SIGRAM-AM disponible en http://127.0.0.1:8088" -ForegroundColor Cyan
-Write-Host "API y documentación en http://127.0.0.1:8001/docs" -ForegroundColor Cyan
+Write-Host "SIGRAM-AM (desarrollo) disponible en http://127.0.0.1:8089" -ForegroundColor Cyan
+Write-Host "API y documentación de desarrollo en http://127.0.0.1:8002/docs" -ForegroundColor Cyan

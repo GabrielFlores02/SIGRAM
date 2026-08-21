@@ -34,8 +34,10 @@ class AnalysisMethodResult(BaseModel):
     status: str
     alert_count: int
     evaluated_count: int = 0
+    out_of_scope_count: int = 0
     not_evaluable_count: int = 0
     manual_review_count: int = 0
+    not_applicable_count: int = 0
     catalog: str
     note: str
 
@@ -63,6 +65,24 @@ class CriterionEvaluationResult(BaseModel):
     recommended_actions: List[str] = Field(default_factory=list)
     logic_summary: str = ""
     medication_coverage_note: str = "top_v1_only"
+    source_name: Optional[str] = None
+    source_year: Optional[int] = None
+    source_version: Optional[str] = None
+    source_table: Optional[str] = None
+    source_section: Optional[str] = None
+    beers_category: Optional[str] = None
+    operational_formulation: Optional[str] = None
+    evaluated_situation: Optional[str] = None
+    rationale: Optional[str] = None
+    recommendation_type: Optional[str] = None
+    recommendation_text: Optional[str] = None
+    quality_of_evidence: Optional[str] = None
+    strength_of_recommendation: Optional[str] = None
+    evidence_profiles: List[dict] = Field(default_factory=list)
+    exceptions: List[dict] = Field(default_factory=list)
+    automation_mode: Optional[str] = None
+    counts_as_clinical_finding: Optional[bool] = None
+    trigger_facts: dict = Field(default_factory=dict)
 
 
 class EvaluationExecutionRead(BaseModel):
@@ -86,7 +106,7 @@ class EvaluationExecutionRead(BaseModel):
     @property
     def clinical_findings(self) -> List[CriterionEvaluationResult]:
         """Hallazgos confirmados que el frontend muestra por defecto."""
-        return [item for item in self.criteria_report if item.status == "alert"]
+        return [item for item in self.criteria_report if item.status in {"alert", "activated"}]
 
     @computed_field
     @property
@@ -118,20 +138,26 @@ class EvaluationExecutionRead(BaseModel):
         status_counts = {
             system: {
                 "evaluated": 0,
+                "out_of_scope": 0,
                 "not_evaluable": 0,
                 "manual_review": 0,
+                "not_applicable": 0,
             }
             for system in ("beers", "stopp_start")
         }
         for criterion in self.criteria_report:
             if criterion.system not in status_counts:
                 continue
-            if criterion.status in {"alert", "no_alert"}:
+            if criterion.status in {"alert", "activated", "no_alert", "supporting_classification"}:
                 status_counts[criterion.system]["evaluated"] += 1
+            elif criterion.status == "out_of_scope":
+                status_counts[criterion.system]["out_of_scope"] += 1
             elif criterion.status == "not_evaluable":
                 status_counts[criterion.system]["not_evaluable"] += 1
             elif criterion.status == "manual_review":
                 status_counts[criterion.system]["manual_review"] += 1
+            elif criterion.status == "not_applicable":
+                status_counts[criterion.system]["not_applicable"] += 1
         return [
             AnalysisMethodResult(
                 system="beers",
@@ -139,12 +165,14 @@ class EvaluationExecutionRead(BaseModel):
                 status="active_v1_screening_catalog",
                 alert_count=counts["beers"],
                 evaluated_count=status_counts["beers"]["evaluated"],
+                out_of_scope_count=status_counts["beers"]["out_of_scope"],
                 not_evaluable_count=status_counts["beers"]["not_evaluable"],
                 manual_review_count=status_counts["beers"]["manual_review"],
+                not_applicable_count=status_counts["beers"]["not_applicable"],
                 catalog="top de medicamentos validado por el equipo médico, 2026-07-30",
                 note=(
-                    "La cohorte es 60+; el uso fuera de 65+ debe declararse "
-                    "como adaptación del protocolo. clinical_findings contiene "
+                    "El alcance canónico AGS Beers es 65+; los casos fuera de "
+                    "ese alcance se reportan explícitamente. clinical_findings contiene "
                     "los hallazgos resueltos para la vista principal."
                 ),
             ),
