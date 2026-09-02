@@ -463,9 +463,35 @@ CRITERION_GUIDANCE: dict[str, dict[str, Any]] = {
 class ClinicalCatalogService:
     _catalog_cache: dict[str, Any] | None = None
     _catalog_signature: tuple[str, int, int] | None = None
+    _reference_catalog_cache: dict[str, Any] | None = None
+    _reference_catalog_signature: tuple[str, int, int] | None = None
+    _reference_exact_index: dict[str, list[dict[str, Any]]] = {}
+    _reference_root_index: dict[str, list[dict[str, Any]]] = {}
 
-    def __init__(self, catalog_path: str | Path | None = None):
+    def __init__(
+        self,
+        catalog_path: str | Path | None = None,
+        reference_catalog_path: str | Path | None = None,
+    ):
         self.catalog_path = Path(catalog_path or settings.CLINICAL_CATALOG_FILE)
+        self.reference_catalog_path = Path(
+            reference_catalog_path or settings.REFERENCE_CATALOG_FILE
+        )
+
+    @staticmethod
+    def _criterion_codes(value: Any) -> list[str]:
+        """Normaliza códigos provenientes de catálogos JSON/CSV heterogéneos."""
+        if value is None:
+            return []
+        if isinstance(value, list):
+            return [str(item).strip() for item in value if str(item).strip()]
+        if isinstance(value, str):
+            return [
+                item.strip()
+                for item in re.split(r"[,;|]", value)
+                if item.strip()
+            ]
+        return [str(value).strip()] if str(value).strip() else []
 
     def _load_catalog(self) -> dict[str, Any]:
         stat = self.catalog_path.stat()
@@ -474,14 +500,91 @@ class ClinicalCatalogService:
             ClinicalCatalogService._catalog_cache is None
             or ClinicalCatalogService._catalog_signature != signature
         ):
-            ClinicalCatalogService._catalog_cache = json.loads(
+            catalog = json.loads(
                 self.catalog_path.read_text(encoding="utf-8")
             )
+            for medication in catalog.get("medications", []):
+                for field in ("beers_codes", "stopp_codes", "start_codes"):
+                    medication[field] = self._criterion_codes(
+                        medication.get(field)
+                    )
+            ClinicalCatalogService._catalog_cache = catalog
             ClinicalCatalogService._catalog_signature = signature
         return ClinicalCatalogService._catalog_cache
 
+    def _load_reference_catalog(self) -> dict[str, Any]:
+        """Carga grupos farmacológicos y CIE-10 sin convertirlos en reglas clínicas."""
+        stat = self.reference_catalog_path.stat()
+        signature = (
+            str(self.reference_catalog_path.resolve()),
+            stat.st_mtime_ns,
+            stat.st_size,
+        )
+        if (
+            ClinicalCatalogService._reference_catalog_cache is None
+            or ClinicalCatalogService._reference_catalog_signature != signature
+        ):
+            ClinicalCatalogService._reference_catalog_cache = json.loads(
+                self.reference_catalog_path.read_text(encoding="utf-8")
+            )
+            exact_index: dict[str, list[dict[str, Any]]] = {}
+            root_index: dict[str, list[dict[str, Any]]] = {}
+            for item in ClinicalCatalogService._reference_catalog_cache.get(
+                "medications", []
+            ):
+                canonical = _canonical(item["medication"])
+                root = re.split(r"\s+\d", canonical, maxsplit=1)[0]
+                exact_index.setdefault(canonical, []).append(item)
+                root_index.setdefault(root, []).append(item)
+            ClinicalCatalogService._reference_exact_index = exact_index
+            ClinicalCatalogService._reference_root_index = root_index
+            ClinicalCatalogService._reference_catalog_signature = signature
+        return ClinicalCatalogService._reference_catalog_cache
+
+    def _reference_matches(
+        self, evaluation_name: str, essi_presentation: str = ""
+    ) -> list[dict[str, Any]]:
+        rows = self._load_reference_catalog().get("medications", [])
+        exact = ClinicalCatalogService._reference_exact_index.get(
+            _canonical(essi_presentation), []
+        )
+        if exact:
+            return list(exact)
+        canonical_evaluation = _canonical(evaluation_name)
+        evaluation_root = re.split(
+            r"\s+\d", canonical_evaluation, maxsplit=1
+        )[0]
+        indexed = (
+            ClinicalCatalogService._reference_exact_index.get(
+                canonical_evaluation, []
+            )
+            or ClinicalCatalogService._reference_root_index.get(
+                canonical_evaluation, []
+            )
+            or ClinicalCatalogService._reference_root_index.get(
+                evaluation_root, []
+            )
+        )
+        if indexed:
+            return list(indexed)
+        # Respaldo conservador para alias no indexables; es excepcional y no
+        # afecta el recorrido normal de la cohorte.
+        return [item for item in rows if self._matches(evaluation_name, item["medication"])]
+
+    def cie10_details(self, code: str) -> dict[str, Any] | None:
+        normalized = str(code or "").strip().upper()
+        return next(
+            (
+                dict(item)
+                for item in self._load_reference_catalog().get("syndromes", [])
+                if str(item.get("cie10") or "").strip().upper() == normalized
+            ),
+            None,
+        )
+
     def summary(self) -> dict[str, Any]:
         catalog = self._load_catalog()
+        reference = self._load_reference_catalog()
         criteria = catalog["criteria"]
         by_system = Counter(item["system"] for item in criteria)
         automated = sum(item["code"] in AUTOMATED_CODES for item in criteria)
@@ -490,6 +593,10 @@ class ClinicalCatalogService:
             "source_file": catalog["source_file"],
             "source_sha256": catalog["source_sha256"],
             "medication_count": catalog["medication_count"],
+            "clinical_medication_count": catalog["medication_count"],
+            "pharmacologic_group_medication_count": reference["medication_count"],
+            "pharmacologic_group_catalog_version": reference["catalog_version"],
+            "cie10_syndrome_row_count": reference["syndrome_row_count"],
             "criterion_count": catalog["criterion_count"],
             "criteria_by_system": dict(by_system),
             "automated_criterion_count": automated,
@@ -527,8 +634,31 @@ class ClinicalCatalogService:
         return output
 
     def medications_catalog(self) -> list[dict[str, Any]]:
-        """Expone la presentacion fuente, agrupacion y criterios del top V1."""
-        return [dict(item) for item in self._load_catalog()["medications"]]
+        """Expone grupos ampliados; solo el subconjunto clínico conserva reglas."""
+        clinical_by_name = {
+            _canonical(item["medication"]): item
+            for item in self._load_catalog()["medications"]
+        }
+        reference = self._load_reference_catalog()
+        output: list[dict[str, Any]] = []
+        for item in reference.get("medications", []):
+            clinical = clinical_by_name.get(_canonical(item["medication"]))
+            output.append(
+                {
+                    **item,
+                    "pharmacologic_group": item["pharmacologic_group"],
+                    "beers_codes": list(clinical.get("beers_codes", [])) if clinical else [],
+                    "stopp_codes": list(clinical.get("stopp_codes", [])) if clinical else [],
+                    "start_codes": list(clinical.get("start_codes", [])) if clinical else [],
+                    "atc_code": clinical.get("atc_code") if clinical else None,
+                    "pharmacologic_group_level4": clinical.get("pharmacologic_group_level4") if clinical else None,
+                    "mapping_status": clinical.get("mapping_status", "reference_group_only") if clinical else "reference_group_only",
+                    "catalog_version": clinical.get("catalog_version") if clinical else reference["catalog_version"],
+                    "clinical_rules_validated": clinical is not None,
+                    "reference_group_only": clinical is None,
+                }
+            )
+        return output
 
     def classify_medications(self, medications: list[Any]) -> list[dict[str, Any]]:
         """Clasifica cada presentacion recibida contra el catalogo medico V1."""
@@ -548,13 +678,29 @@ class ClinicalCatalogService:
                 if self._matches(evaluation_name, item["medication"])
             ]
             if not matches:
+                reference_matches = self._reference_matches(
+                    evaluation_name, essi_presentation
+                )
+                reference_groups = sorted(
+                    {
+                        str(item.get("pharmacologic_group") or "").strip()
+                        for item in reference_matches
+                        if str(item.get("pharmacologic_group") or "").strip()
+                    }
+                )
                 output.append(
                     {
                         "essi_presentation": essi_presentation,
                         "evaluation_name": evaluation_name,
                         "matched_top_v1": False,
                         "catalog_medication": None,
-                        "pharmacologic_group": None,
+                        "pharmacologic_group": " | ".join(reference_groups) or None,
+                        "matched_reference_catalog": bool(reference_matches),
+                        "reference_catalog_medication": (
+                            reference_matches[0]["medication"]
+                            if len(reference_matches) == 1
+                            else None
+                        ),
                         "beers_codes": [],
                         "stopp_codes": [],
                         "start_codes": [],
@@ -567,6 +713,9 @@ class ClinicalCatalogService:
                         "essi_presentation": essi_presentation,
                         "evaluation_name": evaluation_name,
                         "matched_top_v1": True,
+                        "matched_reference_catalog": bool(
+                            self._reference_matches(evaluation_name, essi_presentation)
+                        ),
                         "catalog_medication": item["medication"],
                         "pharmacologic_group": item["pharmacologic_group"],
                         "beers_codes": list(item["beers_codes"]),
@@ -1263,10 +1412,21 @@ class ClinicalCatalogService:
         # interacción Beers los reconoce explícitamente (p. ej. amilorida).
         # Carecen de grupo hasta que se incorporen al catálogo farmacológico.
         present_names = list(input_names)
-        present_groups = [
-            first_match_by_input.get(index, {}).get("canonical_group", "")
-            for index in range(len(input_names))
-        ]
+        present_groups = []
+        for index, input_name in enumerate(input_names):
+            clinical_group = first_match_by_input.get(index, {}).get(
+                "canonical_group", ""
+            )
+            reference_groups = {
+                _canonical(item.get("pharmacologic_group", ""))
+                for item in self._reference_matches(
+                    input_name, input_presentations[index]
+                )
+                if item.get("pharmacologic_group")
+            }
+            present_groups.append(
+                " | ".join(sorted({clinical_group, *reference_groups} - {""}))
+            )
         results: list[dict[str, Any]] = []
         alerts: list[dict[str, Any]] = []
 

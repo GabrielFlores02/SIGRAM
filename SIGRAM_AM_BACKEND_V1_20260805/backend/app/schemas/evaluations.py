@@ -3,6 +3,8 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field, computed_field
 
+from backend.app.config import settings
+
 
 class AlertRead(BaseModel):
     id: int
@@ -131,6 +133,11 @@ class EvaluationExecutionRead(BaseModel):
     @computed_field
     @property
     def analysis_results(self) -> List[AnalysisMethodResult]:
+        enabled = {
+            item.strip().lower()
+            for item in settings.ENABLED_CLINICAL_SYSTEMS.split(",")
+            if item.strip()
+        }
         counts = {"beers": 0, "stopp_start": 0, "ddinter": 0}
         for alert in self.alerts:
             if alert.analysis_system in counts:
@@ -158,7 +165,7 @@ class EvaluationExecutionRead(BaseModel):
                 status_counts[criterion.system]["manual_review"] += 1
             elif criterion.status == "not_applicable":
                 status_counts[criterion.system]["not_applicable"] += 1
-        return [
+        results = [
             AnalysisMethodResult(
                 system="beers",
                 label="Beers",
@@ -203,6 +210,7 @@ class EvaluationExecutionRead(BaseModel):
                 ),
             ),
         ]
+        return [item for item in results if item.system in enabled]
 
 
 class EvaluationExecutionSummary(BaseModel):

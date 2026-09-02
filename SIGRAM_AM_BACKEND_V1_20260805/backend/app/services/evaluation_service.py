@@ -1,3 +1,4 @@
+import logging
 import time
 from datetime import datetime, timezone
 from fastapi import HTTPException, status
@@ -9,6 +10,9 @@ from backend.app.repositories.case_repository import CaseRepository
 from backend.app.repositories.evaluation_repository import EvaluationRepository
 from backend.app.services.rule_engine import RuleEngine
 from backend.app.services.clinical_catalog_service import ClinicalCatalogService
+
+
+logger = logging.getLogger(__name__)
 
 class EvaluationService:
     @staticmethod
@@ -130,6 +134,7 @@ class EvaluationService:
             return execution
 
         except Exception:
+            logger.exception("Fallo técnico durante la evaluación del caso %s", case_id)
             # Ejecutar rollback de la transacción de la BD
             db.rollback()
 

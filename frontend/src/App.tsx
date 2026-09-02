@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./api";
 import type {
   AnalysisSystem,
@@ -13,13 +13,14 @@ import type {
   EvaluationExecution,
   LabEvidence,
   MedicationInput,
+  PilotCasePrefill,
   PilotEvaluationResponse,
   PilotPatient,
   PilotResearchData,
   RequiredData,
 } from "./types";
 
-type Page = "cases" | "new" | "history" | "research" | "results";
+type Page = "cases" | "new" | "new-minimal" | "history" | "research" | "results";
 type VisibleSystem = AnalysisSystem;
 type DDInterLevel = "MAJOR" | "MODERATE" | "MINOR" | "UNKNOWN" | "UNSPECIFIED";
 
@@ -31,6 +32,15 @@ const EMPTY_MEDICATION: MedicationInput = {
   frequency: "C/24h",
   duration: "",
   route: "Oral",
+};
+
+const EMPTY_MINIMAL_MEDICATION: MedicationInput = {
+  entered_name: "",
+  normalized_active_ingredient: "",
+  dose: "no estructurada",
+  dose_unit: "no estructurada",
+  frequency: "no estructurada",
+  route: "no estructurada",
 };
 
 const ESSI_SIMULATOR_CODE = "SIM-ESSI-001";
@@ -199,6 +209,7 @@ function Shell({ page, onNavigate, children }: { page: Page; onNavigate: (page: 
         <nav className="main-nav" aria-label="Navegación principal">
           <button className={`research-nav ${page === "cases" ? "active" : ""}`} onClick={() => onNavigate("cases")}>Casos del piloto</button>
           <button className={page === "new" ? "active" : ""} onClick={() => onNavigate("new")}>Nuevo caso</button>
+          <button className={page === "new-minimal" ? "active" : ""} onClick={() => onNavigate("new-minimal")}>Nuevo caso simple</button>
           <button className={page === "history" ? "active" : ""} onClick={() => onNavigate("history")}>Historial</button>
           <button className={`research-nav ${page === "research" ? "active" : ""}`} onClick={() => onNavigate("research")}>Validación de datos</button>
         </nav>
@@ -220,22 +231,32 @@ function ErrorNotice({ message, onClose }: { message: string; onClose: () => voi
   );
 }
 
+function InfoTip({ text }: { text: string }) {
+  return <span className="info-tip" tabIndex={0} aria-label={`Información: ${text}`}>
+    <span aria-hidden="true">i</span>
+    <span className="info-tip-content" role="tooltip">{text}</span>
+  </span>;
+}
+
 function CasesPage({ onNew, onPilotReview }: { onNew: () => void; onPilotReview: (response: PilotEvaluationResponse) => void }) {
   const [pilotPatients, setPilotPatients] = useState<PilotPatient[]>([]);
   const [query, setQuery] = useState("");
+  const [search, setSearch] = useState("");
+  const [offset, setOffset] = useState(0);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [busyCode, setBusyCode] = useState("");
   const [error, setError] = useState("");
   const [selectedPatient, setSelectedPatient] = useState<PilotPatient>();
 
   useEffect(() => {
-    api.listPilotPatients()
-      .then(setPilotPatients)
+    api.listPopulationPatients(offset, 50, search)
+      .then((page) => { setPilotPatients(page.items); setTotal(page.total); })
       .catch((reason: Error) => setError(reason.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [offset, search]);
 
-  const filteredPatients = pilotPatients.filter((item) => item.patient_code.toLowerCase().includes(query.toLowerCase()));
+  const filteredPatients = pilotPatients;
 
   async function evaluateSample(patient: PilotPatient, clinicalContext: Record<string, unknown> = {}) {
     setBusyCode(patient.patient_code);
@@ -256,17 +277,18 @@ function CasesPage({ onNew, onPilotReview }: { onNew: () => void; onPilotReview:
       {error && <ErrorNotice message={error} onClose={() => setError("")} />}
       <div className="section-hero">
         <div>
-          <span className="eyebrow">Casos del piloto</span>
+          <span className="eyebrow">Cohorte Rebagliati 2025</span>
           <h1>Evaluación de prescripción en adultos mayores</h1>
-          <p>Muestra pseudonimizada del periodo 2025 disponible para evaluación controlada.</p>
+          <p>Directorio paginado de 181,356 pacientes pseudonimizados. Los datos clínicos se consultan por paciente.</p>
         </div>
         <span className="pilot-badge">ⓘ Piloto de investigación</span>
       </div>
 
       <div className="toolbar-row">
-        <span className="sample-label">Muestra piloto pseudonimizada</span>
+        <span className="sample-label">{total.toLocaleString("es-PE")} pacientes · Rebagliati 2025</span>
         <div className="toolbar-actions">
-          <label className="search-field"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar por código..." /></label>
+          <label className="search-field"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { setSearch(query); setOffset(0); } }} placeholder="Buscar por código..." /></label>
+          <button className="secondary-button" onClick={() => { setSearch(query); setOffset(0); }}>Buscar</button>
           <button className="primary-button" onClick={onNew}>＋ Nuevo caso simulado</button>
         </div>
       </div>
@@ -274,21 +296,22 @@ function CasesPage({ onNew, onPilotReview }: { onNew: () => void; onPilotReview:
       <div className="table-card">
         {loading ? <div className="empty-state">Cargando muestra…</div> : (
           <div className="table-scroll"><table>
-            <thead><tr><th>Código pseudonimizado</th><th>Paciente</th><th>Medicamentos simultáneos</th><th>Fecha índice</th><th>Laboratorios 2025</th><th>CIE-10 2025</th><th>Acción</th></tr></thead>
+            <thead><tr><th>Código pseudonimizado</th><th>Paciente</th><th>Polifarmacia</th><th>Máx. simultáneos</th><th>Tamizaje Beers</th><th>Tamizaje DDInter</th><th>Acción</th></tr></thead>
             <tbody>{filteredPatients.map((patient) => (
               <tr key={patient.patient_code}>
                 <td><span className="case-code">{patient.patient_code}</span></td>
                 <td>{patient.age} años<br /><small>{patient.sex}</small></td>
+                <td>{patient.polypharmacy_level ?? "No informado"}</td>
                 <td>{patient.max_simultaneous_top_medications}</td>
-                <td>{patient.index_date ?? "—"}</td>
-                <td>{patient.raw_lab_rows_2025}</td>
-                <td>{patient.raw_diagnosis_rows_2025}<br /><small>{patient.distinct_diagnosis_codes_2025} códigos</small></td>
+                <td>{patient.beers_screening_flag ? "Posible exposición" : "Sin bandera"}</td>
+                <td>{patient.ddinter_screening_flag ? "Posible interacción" : "Sin bandera"}</td>
                 <td><div className="table-actions"><button className="link-button" disabled={busyCode === patient.patient_code} onClick={() => evaluateSample(patient)}>{busyCode === patient.patient_code ? "Evaluando…" : "Evaluar →"}</button><button className="secondary-link" disabled={busyCode === patient.patient_code} onClick={() => setSelectedPatient(patient)}>Contexto clínico</button></div></td>
               </tr>
             ))}</tbody>
-          </table>{filteredPatients.length === 0 && <div className="empty-state">No hay registros disponibles en la muestra.</div>}</div>
+          </table>{filteredPatients.length === 0 && <div className="empty-state">No hay registros para la búsqueda.</div>}</div>
         )}
       </div>
+      <div className="table-footer">Mostrando {total ? offset + 1 : 0}–{Math.min(offset + pilotPatients.length, total)} de {total.toLocaleString("es-PE")} pacientes <span><button className="secondary-button" disabled={offset === 0 || loading} onClick={() => setOffset(Math.max(0, offset - 50))}>Anterior</button> <button className="secondary-button" disabled={offset + pilotPatients.length >= total || loading} onClick={() => setOffset(offset + 50)}>Siguiente</button></span></div>
       {selectedPatient && <PilotContextDrawer patient={selectedPatient} onClose={() => setSelectedPatient(undefined)} onEvaluate={async (context) => { await evaluateSample(selectedPatient, context); setSelectedPatient(undefined); }} />}
     </section>
   );
@@ -402,6 +425,8 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
   const [catalogMedications, setCatalogMedications] = useState<CatalogMedication[]>([]);
   const [catalogSummary, setCatalogSummary] = useState<CatalogSummary>();
   const [pilotPatients, setPilotPatients] = useState<PilotPatient[]>([]);
+  const [historySort, setHistorySort] = useState<"engine_alerts" | "alerts" | "patient_code">("engine_alerts");
+  const [historyOptionsLoading, setHistoryOptionsLoading] = useState(false);
   const [selectedPatientCode, setSelectedPatientCode] = useState("");
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyNotice, setHistoryNotice] = useState("");
@@ -410,6 +435,8 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
   const [historyMedications, setHistoryMedications] = useState<MedicationInput[]>([]);
   const [contextOpen, setContextOpen] = useState(false);
   const [clinicalContext, setClinicalContext] = useState<Record<string, string>>(Object.create(null));
+  const [committedContextFields, setCommittedContextFields] = useState<Set<string>>(new Set());
+  const recordedContextRef = useRef<HTMLDetailsElement>(null);
   const [weightKg, setWeightKg] = useState("");
   const [heightCm, setHeightCm] = useState("");
   const [serumCreatinineMgDl, setSerumCreatinineMgDl] = useState("");
@@ -418,15 +445,22 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
   const [error, setError] = useState("");
 
   useEffect(() => {
-    Promise.all([api.listCriteria(), api.listCatalogMedications(), api.getCatalogSummary(), api.listPilotPatients()])
-      .then(([criteriaRows, medicationRows, summary, patientRows]) => {
+    Promise.all([api.listCriteria(), api.listCatalogMedications(), api.getCatalogSummary()])
+      .then(([criteriaRows, medicationRows, summary]) => {
         setCriteria(criteriaRows);
         setCatalogMedications(medicationRows);
         setCatalogSummary(summary);
-        setPilotPatients(patientRows);
       })
       .catch((reason: Error) => setError(reason.message));
   }, []);
+
+  useEffect(() => {
+    setHistoryOptionsLoading(true);
+    api.listPilotPatients(historySort)
+      .then(setPilotPatients)
+      .catch((reason: Error) => setError(reason.message))
+      .finally(() => setHistoryOptionsLoading(false));
+  }, [historySort]);
 
   const requiredContext = useMemo(() => {
     const unique = new Map<string, RequiredData>();
@@ -438,8 +472,12 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
     "medication_duration_days",
     "creatinine_clearance_ml_min",
   ].includes(item.field));
-  const recordedContext = editableContext.filter((item) => (clinicalContext[item.field] ?? "") !== "");
-  const unrecordedContext = editableContext.filter((item) => (clinicalContext[item.field] ?? "") === "");
+  const recordedContext = editableContext.filter((item) =>
+    (clinicalContext[item.field] ?? "") !== "" && committedContextFields.has(item.field)
+  );
+  const unrecordedContext = editableContext.filter((item) =>
+    (clinicalContext[item.field] ?? "") === "" || !committedContextFields.has(item.field)
+  );
 
   const minimumComplete = Boolean(
     caseCode.trim() && Number(age) >= 60 && sex && diagnoses.trim() && medications.length &&
@@ -469,6 +507,7 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
       setMedications([{ ...EMPTY_MEDICATION }]);
       setHistoryMedications([]);
       setClinicalContext(Object.create(null));
+      setCommittedContextFields(new Set());
       setWeightKg("");
       setHeightCm("");
       setSerumCreatinineMgDl("");
@@ -493,7 +532,7 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
           if (value === null || value === undefined || Array.isArray(value) || typeof value === "object") continue;
           mappedContext[field] = String(value);
         }
-        setClinicalContext(mappedContext); setWeightKg(mappedContext.weight_kg ?? ""); setHeightCm(mappedContext.height_cm ?? "");
+        setClinicalContext(mappedContext); setCommittedContextFields(new Set(Object.keys(mappedContext))); setWeightKg(mappedContext.weight_kg ?? ""); setHeightCm(mappedContext.height_cm ?? "");
         setSerumCreatinineMgDl(mappedContext.serum_creatinine_mg_dl ?? ""); setSerumCreatinineDate(mappedContext.serum_creatinine_date ?? "");
         setHistoryMedications([]); setSimulationHistory(simulator.history); setContextOpen(true);
         setHistoryNotice("Simulador ESSI cargado: esta copia conserva cada atención y su lista histórica de medicamentos. La cohorte piloto original no se modifica.");
@@ -514,6 +553,7 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
         mappedContext[field] = String(value);
       }
       setClinicalContext(mappedContext);
+      setCommittedContextFields(new Set(Object.keys(mappedContext)));
       setWeightKg(mappedContext.weight_kg ?? "");
       setHeightCm(mappedContext.height_cm ?? "");
       setSerumCreatinineMgDl(mappedContext.serum_creatinine_mg_dl ?? "");
@@ -581,13 +621,37 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
     return (sex === "Femenino" ? base * 0.85 : base).toFixed(1);
   }, [age, sex, weightKg, serumCreatinineMgDl]);
 
+  function setContextValue(field: string, value: string, commit = false) {
+    setClinicalContext((current) => ({ ...current, [field]: value }));
+    if (!value) {
+      setCommittedContextFields((current) => {
+        const next = new Set(current);
+        next.delete(field);
+        return next;
+      });
+    } else if (commit) {
+      setCommittedContextFields((current) => new Set(current).add(field));
+    }
+  }
+
+  function commitContextField(field: string, value: string) {
+    if (!value.trim()) return;
+    setCommittedContextFields((current) => new Set(current).add(field));
+    requestAnimationFrame(() => {
+      if (recordedContextRef.current) {
+        recordedContextRef.current.open = true;
+        recordedContextRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    });
+  }
+
   function renderContextFields(items: RequiredData[]) {
     return <div className="context-grid">
       {items.map((item) => <label key={item.field}>{item.label}
         {BOOLEAN_CONTEXT_FIELDS.has(item.field) ? (
-          <select value={clinicalContext[item.field] ?? ""} onChange={(event) => setClinicalContext((current) => ({ ...current, [item.field]: event.target.value }))}><option value="">No registrado</option><option value="true">Sí</option><option value="false">No</option></select>
+          <select value={clinicalContext[item.field] ?? ""} onChange={(event) => setContextValue(item.field, event.target.value, true)}><option value="">No registrado</option><option value="true">Sí</option><option value="false">No</option></select>
         ) : (
-          <input type={NUMERIC_CONTEXT_FIELDS.has(item.field) ? "number" : "text"} step="any" value={clinicalContext[item.field] ?? ""} onChange={(event) => setClinicalContext((current) => ({ ...current, [item.field]: event.target.value }))} placeholder="No registrado" />
+          <input type={NUMERIC_CONTEXT_FIELDS.has(item.field) ? "number" : "text"} step="any" value={clinicalContext[item.field] ?? ""} onChange={(event) => setContextValue(item.field, event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); commitContextField(item.field, event.currentTarget.value); } }} placeholder="No registrado" />
         )}
       </label>)}
     </div>;
@@ -631,38 +695,50 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
   return (
     <form onSubmit={submit}>
       {error && <ErrorNotice message={error} onClose={() => setError("")} />}
-      <div className="intro-row"><span className="intro-icon">⚗</span><div><h1>Evaluar caso simulado</h1><p>Ingrese los datos clínicos para ejecutar el algoritmo de tamizaje de prescripciones potencialmente inapropiadas en el adulto mayor.</p></div></div>
+      <div className="intro-row"><span className="intro-icon">⚗</span><div><h1 className="heading-with-info">Evaluar caso simulado <InfoTip text="Ingrese los datos clínicos para ejecutar el algoritmo de tamizaje de prescripciones potencialmente inapropiadas en el adulto mayor." /></h1></div></div>
 
-      <div className="catalog-notice" role="status">
+      <div className="catalog-notice compact-notice" role="status">
         <span>▤</span>
-        <div><strong>Catálogo clínico controlado: {catalogSummary?.medication_count ?? 54} medicamentos</strong><p>Fuente: top_meds_list_beers_stopp_start_v3-20260730.xlsx. ATC y cuarto nivel farmacológico pendientes de validación clínica; no se infieren automáticamente.</p></div>
+        <div><strong className="heading-with-info">Catálogo farmacológico: {catalogSummary?.pharmacologic_group_medication_count ?? 1008} medicamentos; {catalogSummary?.clinical_medication_count ?? 54} con reglas clínicas <InfoTip text="Los grupos farmacológicos provienen de BD_MEDICAMENTOS-GF_SINDROMES_20260818. Solo el subconjunto clínico validado activa criterios Beers o STOPP/START; no se inventan reglas por pertenencia a un grupo." /></strong></div>
       </div>
 
       <section className="form-card">
         <h2>▣ Datos del caso</h2>
         <div className="case-grid">
-          <label className="full-width">Historia para la simulación
-            <select value={selectedPatientCode} disabled={historyLoading} onChange={(event) => selectPatientHistory(event.target.value)}>
-              <option value="">Crear paciente nuevo sin historial</option>
-              <optgroup label="Pacientes piloto — simulación temporal (no guarda cambios)">
-                {pilotPatients.map((patient) => <option key={patient.patient_code} value={patient.patient_code}>{patient.patient_code} — {patient.age} años, {patient.sex} — {patient.max_simultaneous_top_medications} medicamentos activos</option>)}
-              </optgroup>
-              <optgroup label="Simulador longitudinal ESSI">
-                <option value={ESSI_SIMULATOR_CODE}>SIM-ESSI-001 — paciente editable con historia persistente</option>
-              </optgroup>
-            </select>
-            <small className="field-help">Los 10 pilotos se usan solo para pruebas temporales. SIM-ESSI-001 es la única copia que guarda versiones de su historia, sin alterar la cohorte fuente.</small>
-          </label>
+          <div className="full-width history-selection-grid">
+            <label><span className="label-with-info">Historia para la simulación <InfoTip text="Se muestran 50 historias pseudonimizadas según el orden elegido. SIM-ESSI-001 guarda versiones sin alterar la cohorte fuente." /></span>
+              <select value={selectedPatientCode} disabled={historyLoading || historyOptionsLoading} onChange={(event) => selectPatientHistory(event.target.value)}>
+                <option value="">Crear paciente nuevo sin historial</option>
+                <optgroup label="Pacientes Rebagliati — simulación temporal (no guarda cambios)">
+                  {pilotPatients.map((patient) => <option key={patient.patient_code} value={patient.patient_code}>{patient.patient_code} — {patient.age} años, {patient.sex} — {patient.max_simultaneous_top_medications} medicamentos simultáneos{patient.engine_alert_count != null ? ` — motor: ${patient.engine_alert_count} alertas (${patient.engine_beers_alert_count ?? 0} Beers + ${patient.engine_stopp_start_alert_count ?? 0} STOPP/START + ${patient.engine_ddinter_alert_count ?? 0} DDInter)` : patient.screening_alert_count != null ? ` — anual: ${patient.beers_screening_group_count ?? 0} grupos Beers + ${patient.ddinter_potential_count ?? 0} pares DDInter` : ""}</option>)}
+                </optgroup>
+                <optgroup label="Simulador longitudinal ESSI">
+                  <option value={ESSI_SIMULATOR_CODE}>SIM-ESSI-001 — paciente editable con historia persistente</option>
+                </optgroup>
+              </select>
+            </label>
+            <label><span className="label-with-info">Orden de pacientes <InfoTip text="El orden recalcula Beers, STOPP/START y DDInter sobre los medicamentos simultáneos de los 200 pacientes con mayor carga anual. Es un priorizador de tamizaje; la evaluación completa puede variar al añadir contexto clínico." /></span>
+              <select value={historySort} disabled={historyOptionsLoading} onChange={(event) => setHistorySort(event.target.value as typeof historySort)}>
+                <option value="engine_alerts">Más alertas producidas por el motor</option>
+                <option value="alerts">Mayor carga anual precalculada</option>
+                <option value="patient_code">Código de paciente</option>
+              </select>
+            </label>
+          </div>
           <label>Código del caso *<input value={caseCode} onChange={(event) => setCaseCode(event.target.value)} placeholder="Ej. CASO-2025-001" /></label>
           <label>Edad (años) *<div className="suffix-input"><input type="number" min="60" value={age} onChange={(event) => setAge(event.target.value)} placeholder="≥ 60" /><span>AÑOS</span></div></label>
           <label>Sexo *<select value={sex} onChange={(event) => setSex(event.target.value)}><option value="">Seleccione…</option><option>Masculino</option><option>Femenino</option></select></label>
           <label className="full-width">Diagnósticos / condiciones clínicas *<textarea value={diagnoses} onChange={(event) => setDiagnoses(event.target.value)} placeholder="Ingrese los diagnósticos o condiciones clínicas relevantes…" /></label>
         </div>
-        <div className="pilot-triage-panel">
-          <div className="pilot-panel-heading"><span>ETAPA PILOTO</span><strong>Datos de triaje y función renal</strong><small>Ingreso manual para pruebas; en ESSI estos datos se cargarán automáticamente.</small></div>
-          <div className="triage-grid"><label>Peso (kg)<input type="number" min="1" step="0.1" value={weightKg} onChange={(event) => updateTriage("weight", event.target.value)} placeholder="Ej. 68.5" /></label><label>Talla (cm)<input type="number" min="1" step="0.1" value={heightCm} onChange={(event) => updateTriage("height", event.target.value)} placeholder="Ej. 160" /></label><label>Índice de masa corporal<input readOnly value={clinicalContext.bmi ?? ""} placeholder="Se calcula con peso y talla" /></label></div>
-          <div className="renal-grid"><label>Creatinina sérica (mg/dL)<input type="number" min="0.1" step="0.01" value={serumCreatinineMgDl} onChange={(event) => updateSerumCreatinine(event.target.value)} placeholder="Ej. 1.20" /></label><label>Fecha de creatinina<input type="date" value={serumCreatinineDate} onChange={(event) => updateSerumCreatinineDate(event.target.value)} /></label><label>CrCl estimada (mL/min)<input readOnly value={estimatedCrCl ?? ""} placeholder="Complete edad, sexo, peso y creatinina" /></label></div>
-          <p className="pilot-method-note">La CrCl se calcula en el backend con Cockcroft–Gault y peso actual; se guarda junto con las entradas utilizadas para la trazabilidad del piloto.</p>
+        <div className="clinical-entry-panels">
+          <section className="pilot-triage-panel">
+            <div className="pilot-panel-heading"><span>ETAPA PILOTO</span><strong className="heading-with-info">Datos de triaje <InfoTip text="Ingreso manual para pruebas; en ESSI estos datos se cargarán automáticamente." /></strong></div>
+            <div className="triage-grid"><label>Peso (kg)<input type="number" min="1" step="0.1" value={weightKg} onChange={(event) => updateTriage("weight", event.target.value)} placeholder="Ej. 68.5" /></label><label>Talla (cm)<input type="number" min="1" step="0.1" value={heightCm} onChange={(event) => updateTriage("height", event.target.value)} placeholder="Ej. 160" /></label><label>Índice de masa corporal<input readOnly value={clinicalContext.bmi ?? ""} placeholder="Se calcula con peso y talla" /></label></div>
+          </section>
+          <section className="pilot-renal-panel">
+            <div className="pilot-panel-heading"><span>ETAPA PILOTO</span><strong className="heading-with-info">Creatinina y función renal <InfoTip text="Datos para estimar la depuración de creatinina de forma trazable. La CrCl se calcula en el backend con Cockcroft–Gault y peso actual; se guardan las entradas utilizadas." /></strong></div>
+            <div className="renal-grid"><label>Creatinina sérica (mg/dL)<input type="number" min="0.1" step="0.01" value={serumCreatinineMgDl} onChange={(event) => updateSerumCreatinine(event.target.value)} placeholder="Ej. 1.20" /></label><label>Fecha de creatinina<input type="date" value={serumCreatinineDate} onChange={(event) => updateSerumCreatinineDate(event.target.value)} /></label><label>CrCl estimada (mL/min)<input readOnly value={estimatedCrCl ?? ""} placeholder="Complete edad, sexo, peso y creatinina" /></label></div>
+          </section>
         </div>
         {historyLoading && <p className="field-help">Cargando historia pseudonimizada…</p>}
         {historyNotice && <div className="catalog-notice" role="status"><span>ⓘ</span><div><strong>Historia cargada para simulación</strong><p>{historyNotice}</p></div></div>}
@@ -670,7 +746,7 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
       </section>
 
       <section className="form-card medication-card">
-        <div className="card-heading"><h2>▤ Medicamentos activos</h2><button type="button" className="small-primary" onClick={() => setMedications((current) => [...current, { ...EMPTY_MEDICATION }])}>＋ Agregar</button></div>
+        <div className="card-heading"><h2 className="heading-with-info">▤ Medicamentos activos <InfoTip text="Puede seleccionar entre 1,008 presentaciones con grupo farmacológico. La activación de criterios clínicos específicos permanece restringida a los 54 medicamentos validados. Si registra duración, use un número de días, por ejemplo: 120 días." /></h2><button type="button" className="small-primary" onClick={() => setMedications((current) => [...current, { ...EMPTY_MEDICATION }])}>＋ Agregar</button></div>
         <div className="medication-list">
           {medications.map((medication, index) => (
             <div className="medication-row" key={index}>
@@ -685,7 +761,6 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
             </div>
           ))}
         </div>
-        <p className="field-help">ⓘ Las pruebas de esta versión están restringidas al catálogo de 54 medicamentos validado por el equipo clínico. Si registra duración, use un número de días (ej. “120 días”) para que el backend la reciba como dato estructurado.</p>
       </section>
 
       {selectedPatientCode && historyMedications.length > 0 && <details className="history-medications">
@@ -696,12 +771,13 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
 
       <section className="context-card">
         <button type="button" className="context-toggle" onClick={() => setContextOpen((value) => !value)} aria-expanded={contextOpen}>
-          <span className="context-icon">♨</span><span><strong>Contexto clínico (opcional)</strong><small>Valores de laboratorio y condiciones específicas del paciente.</small></span><em>Recomendado para STOPP/START</em><b>{contextOpen ? "⌃" : "⌄"}</b>
+          <span className="context-icon">♨</span><span><strong>Contexto clínico (opcional)</strong><small>Valores de laboratorio y condiciones específicas del paciente.</small></span><em>Mejora Beers y STOPP/START</em><b>{contextOpen ? "⌃" : "⌄"}</b>
         </button>
         {contextOpen && <div className="context-groups">
           {requiredContext.length === 0 && <p>Cargando campos requeridos desde el catálogo clínico…</p>}
           {requiredContext.length > 0 && <>
-            <details className="context-group" open={recordedContext.length > 0}>
+            <div className="context-scope-compact"><strong>Alcance del contexto clínico</strong><InfoTip text={`El catálogo activo reúne Beers y STOPP/START y requiere ${editableContext.length} campos clínicos únicos. Un dato ausente queda como no evaluable; nunca se interpreta como normal.`} /></div>
+            <details className="context-group" ref={recordedContextRef} open={recordedContext.length > 0}>
               <summary>Exámenes y datos clínicos realizados ({recordedContext.length})</summary>
               {recordedContext.length ? renderContextFields(recordedContext) : <p>No hay exámenes o datos clínicos registrados en la historia cargada.</p>}
             </details>
@@ -709,6 +785,7 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
               <summary>Exámenes y datos clínicos no realizados / no registrados ({unrecordedContext.length})</summary>
               {unrecordedContext.length ? renderContextFields(unrecordedContext) : <p>Todos los campos disponibles tienen un valor registrado.</p>}
             </details>
+            <p className="context-entry-help">Escriba el valor completo y presione Enter para moverlo a “realizados”.</p>
           </>}
         </div>}
       </section>
@@ -716,6 +793,224 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
       <div className="submit-bar"><span className={minimumComplete ? "complete" : "incomplete"}>{minimumComplete ? "✓ Datos mínimos completos" : "Complete los campos obligatorios"}</span><button className="primary-button" disabled={!minimumComplete || submitting}>{submitting ? "Procesando tamizaje…" : selectedPatientCode === ESSI_SIMULATOR_CODE ? "▣ Guardar atención ESSI y ejecutar tamizaje" : selectedPatientCode ? "▣ Ejecutar simulación temporal" : "▣ Crear caso y ejecutar tamizaje"}</button></div>
     </form>
   );
+}
+
+function MinimalCasePage() {
+  const [patients, setPatients] = useState<PilotPatient[]>([]);
+  const [patientQuery, setPatientQuery] = useState("");
+  const [selectedPatientCode, setSelectedPatientCode] = useState("");
+  const [loadingPatients, setLoadingPatients] = useState(true);
+  const [loadingPatientData, setLoadingPatientData] = useState(false);
+  const [prefill, setPrefill] = useState<PilotCasePrefill>();
+  const [catalogMedications, setCatalogMedications] = useState<CatalogMedication[]>([]);
+  const [historyMedications, setHistoryMedications] = useState<MedicationInput[]>([]);
+  const [medications, setMedications] = useState<MedicationInput[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [result, setResult] = useState<{ patient: PilotPatient; evaluation: EvaluationExecution }>();
+  const [selectedAlertId, setSelectedAlertId] = useState<number>();
+
+  useEffect(() => {
+    api.listCatalogMedications()
+      .then(setCatalogMedications)
+      .catch((reason: Error) => setError(reason.message));
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const timer = window.setTimeout(async () => {
+    async function loadPatients() {
+      setLoadingPatients(true);
+      setError("");
+      try {
+        const nextPatients = await api.listSimplePatients(patientQuery);
+        if (!cancelled) setPatients(nextPatients);
+      } catch (reason) {
+        if (!cancelled) setError(reason instanceof Error ? reason.message : "No se pudo consultar la cohorte.");
+      } finally {
+        if (!cancelled) setLoadingPatients(false);
+      }
+    }
+    loadPatients();
+    }, 300);
+    return () => { cancelled = true; window.clearTimeout(timer); };
+  }, [patientQuery]);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!selectedPatientCode) {
+      setPrefill(undefined);
+      setHistoryMedications([]);
+      setMedications([]);
+      setLoadingPatientData(false);
+      return () => { cancelled = true; };
+    }
+    setLoadingPatientData(true);
+    setError("");
+    api.getPilotCasePrefill(selectedPatientCode)
+      .then((nextPrefill) => {
+        if (cancelled) return;
+        setPrefill(nextPrefill);
+        setHistoryMedications(nextPrefill.medications);
+        setMedications([{ ...EMPTY_MINIMAL_MEDICATION }]);
+      })
+      .catch((reason: Error) => { if (!cancelled) setError(reason.message); })
+      .finally(() => { if (!cancelled) setLoadingPatientData(false); });
+    return () => { cancelled = true; };
+  }, [selectedPatientCode]);
+
+  const selectedPatient = patients.find((patient) => patient.patient_code === selectedPatientCode);
+  const patientOptionLabel = (patient: PilotPatient) => {
+    const alertCount = patient.estimated_alert_count ?? patient.engine_alert_count;
+    const diagnosis = patient.example_cie10_code
+      ? ` — ${patient.example_cie10_code} ${patient.example_cie10_description ?? patient.example_cie10_syndrome ?? ""}`.trimEnd()
+      : "";
+    return `${patient.patient_code} — ${patient.age} años, ${patient.sex} — ${patient.max_simultaneous_top_medications} medicamentos simultáneos${alertCount != null ? ` — ${alertCount} alertas estimadas` : ""}${diagnosis}`;
+  };
+  const withoutPolypharmacy = patients.filter((patient) => patient.simple_example_group === "without_polypharmacy");
+  const prioritizedPatients = patients.filter((patient) => patient.simple_example_group === "prioritized");
+  const searchPatients = patients.filter((patient) => !["without_polypharmacy", "prioritized"].includes(patient.simple_example_group ?? "search"));
+  const additionalMedications = medications.filter((medication) => medication.entered_name.trim());
+  const totalMedications = historyMedications.length + additionalMedications.length;
+  const canSubmit = Boolean(selectedPatient && prefill && totalMedications > 0);
+
+  function selectMinimalMedication(index: number, name: string) {
+    setMedications((current) => current.map((medication, position) => position === index
+      ? name ? { ...EMPTY_MINIMAL_MEDICATION, entered_name: name, normalized_active_ingredient: name } : { ...EMPTY_MINIMAL_MEDICATION }
+      : medication));
+    setResult(undefined);
+  }
+
+  async function submitMinimal(event: FormEvent) {
+    event.preventDefault();
+    if (!canSubmit || !selectedPatient || !prefill) return;
+    setSubmitting(true);
+    setError("");
+    setResult(undefined);
+    setSelectedAlertId(undefined);
+    try {
+      const response = await api.previewCase({
+        case_code: `MIN-${selectedPatientCode}`,
+        age: prefill.age,
+        sex: prefill.sex,
+        diagnoses: prefill.diagnoses,
+        clinical_context: prefill.clinical_context,
+        is_simulated: true,
+        medications: [...historyMedications, ...additionalMedications],
+      });
+      setResult({ patient: selectedPatient, evaluation: response.evaluation });
+      setSelectedAlertId(response.evaluation.alerts.find((alert) => ["beers", "stopp_start", "ddinter"].includes(alert.analysis_system))?.id);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "No se pudo ejecutar el tamizaje rápido.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return <form className="minimal-case-page" onSubmit={submitMinimal}>
+    {error && <ErrorNotice message={error} onClose={() => setError("")} />}
+    <div className="intro-row"><span className="intro-icon">◇</span><div><h1>Nuevo caso simple</h1><p>Seleccione un paciente pseudonimizado; SIGRAM cargará su historia disponible sin solicitar datos esenciales manuales.</p></div></div>
+    <section className="form-card minimal-card">
+      <h2>▣ Seleccionar paciente</h2>
+      <div className="minimal-patient-picker">
+        <label>Buscar por código de paciente
+          <input value={patientQuery} onChange={(event) => setPatientQuery(event.target.value)} placeholder="Ej.: REB-045177" />
+        </label>
+        <label>Paciente priorizado por alertas
+          <select value={selectedPatientCode} disabled={loadingPatients} onChange={(event) => { setSelectedPatientCode(event.target.value); setResult(undefined); }}>
+            <option value="">{loadingPatients ? "Buscando pacientes…" : "Seleccione un paciente…"}</option>
+            {withoutPolypharmacy.length > 0 && <optgroup label="Ejemplos sin polifarmacia (0–4 medicamentos)">{withoutPolypharmacy.map((patient) => <option key={patient.patient_code} value={patient.patient_code}>{patientOptionLabel(patient)}</option>)}</optgroup>}
+            {prioritizedPatients.length > 0 && <optgroup label="Pacientes priorizados por alertas">{prioritizedPatients.map((patient) => <option key={patient.patient_code} value={patient.patient_code}>{patientOptionLabel(patient)}</option>)}</optgroup>}
+            {searchPatients.length > 0 && <optgroup label={patientQuery.trim() ? "Resultados de búsqueda" : "Otros pacientes"}>{searchPatients.map((patient) => <option key={patient.patient_code} value={patient.patient_code}>{patientOptionLabel(patient)}</option>)}</optgroup>}
+          </select>
+        </label>
+        {!loadingPatients && patients.length === 0 && <p className="minimal-empty">No se encontraron pacientes con ese código.</p>}
+        {selectedPatient && <div className="minimal-patient-summary"><strong>{selectedPatient.patient_code}</strong><span>{selectedPatient.age} años · {selectedPatient.sex}</span><span>{selectedPatient.polypharmacy_level ?? "Polifarmacia no informada"} · máximo {selectedPatient.max_simultaneous_top_medications} medicamentos simultáneos</span></div>}
+      </div>
+    </section>
+    {selectedPatientCode && <section className="form-card minimal-card">
+      <div className="card-heading"><h2>▤ Medicamentos a evaluar</h2><button type="button" className="small-primary" disabled={loadingPatientData} onClick={() => { setMedications((current) => [...current, { ...EMPTY_MINIMAL_MEDICATION }]); setResult(undefined); }}>＋ Agregar</button></div>
+      {loadingPatientData ? <div className="empty-state">Preparando medicamentos…</div> : <div className="minimal-medications">
+        {medications.map((medication, index) => <div className="minimal-medication-row" key={`${index}-${medication.entered_name}`}>
+          <label>Medicamento {index + 1}
+            <select value={medication.entered_name} onChange={(event) => selectMinimalMedication(index, event.target.value)}>
+              <option value="">Seleccione del catálogo…</option>
+              {!catalogMedications.some((item) => item.medication === medication.entered_name) && medication.entered_name && <option value={medication.entered_name}>{medication.entered_name} (historia cargada)</option>}
+              {catalogMedications.map((item) => <option value={item.medication} key={item.order}>{item.medication}</option>)}
+            </select>
+          </label>
+          <button type="button" className="delete-button" aria-label={`Eliminar medicamento ${index + 1}`} disabled={medications.length === 1} onClick={() => { setMedications((current) => current.filter((_, position) => position !== index)); setResult(undefined); }}>⌫</button>
+        </div>)}
+      </div>}
+      {!loadingPatientData && <p className="minimal-warning">Opcional: seleccione aquí uno o más medicamentos nuevos para agregarlos al tamizaje.</p>}
+    </section>}
+    {selectedPatientCode && !loadingPatientData && historyMedications.length > 0 && <details className="history-medications minimal-history-medications">
+      <summary>Medicamentos cargados del paciente ({historyMedications.length})</summary>
+      <p>Medicamentos activos registrados en la historia pseudonimizada. Se evaluarán junto con los medicamentos nuevos seleccionados arriba.</p>
+      <ul>{historyMedications.map((medication, index) => <li key={`${medication.entered_name}-${index}`}><strong>{medication.entered_name}</strong><span>{medication.normalized_active_ingredient}{medication.duration ? ` · ${medication.duration}` : " · duración no estructurada"}</span></li>)}</ul>
+    </details>}
+    <div className="submit-bar minimal-submit"><span className={canSubmit ? "complete" : "incomplete"}>{canSubmit ? `✓ ${totalMedications} medicamentos listos` : selectedPatientCode ? "Espere la carga de la historia" : "Seleccione un paciente"}</span><button className="primary-button" disabled={!canSubmit || submitting}>{submitting ? "Validando…" : "✓ Validar prescripción"}</button></div>
+    {result && <QuickScreeningToast result={result} selectedAlertId={selectedAlertId} onSelectAlert={setSelectedAlertId} onClose={() => { setResult(undefined); setSelectedAlertId(undefined); }} />}
+  </form>;
+}
+
+function QuickScreeningToast({ result, selectedAlertId, onSelectAlert, onClose }: { result: { patient: PilotPatient; evaluation: EvaluationExecution }; selectedAlertId?: number; onSelectAlert: (id?: number) => void; onClose: () => void }) {
+  type QuickTab = "pim" | "ddinter";
+  type PimGroup = { key: string; alerts: AlertResult[]; representative: AlertResult };
+  const duplicateFamilies: Record<string, string> = {
+    B09: "aspirin-primary-prevention", "STOPP-C16": "aspirin-primary-prevention",
+    B07: "nsaid-ulcer-no-gastroprotection", "STOPP-H1": "nsaid-ulcer-no-gastroprotection",
+    B10: "long-acting-sulfonylurea", "STOPP-J1": "long-acting-sulfonylurea",
+    B18: "multiple-anticholinergics", "STOPP-M1": "multiple-anticholinergics",
+    B23: "alpha-blocker-syncope-orthostasis", "STOPP-I5": "alpha-blocker-syncope-orthostasis",
+  };
+  const alerts = result.evaluation.alerts.filter((alert) => ["beers", "stopp_start", "ddinter"].includes(alert.analysis_system));
+  const pimAlerts = alerts.filter((alert) => alert.analysis_system === "beers" || alert.analysis_system === "stopp_start");
+  const pimGroups = Array.from(pimAlerts.reduce((groups, alert) => {
+    const key = duplicateFamilies[alert.rule_code] ?? alert.rule_code;
+    const current = groups.get(key) ?? [];
+    current.push(alert);
+    groups.set(key, current);
+    return groups;
+  }, new Map<string, AlertResult[]>())).map(([key, groupedAlerts]): PimGroup => ({
+    key,
+    alerts: groupedAlerts,
+    representative: groupedAlerts.find((alert) => alert.analysis_system === "stopp_start") ?? groupedAlerts[0],
+  }));
+  const ddinterAlerts = alerts.filter((alert) => alert.analysis_system === "ddinter");
+  const initiallySelected = alerts.find((alert) => alert.id === selectedAlertId);
+  const [activeTab, setActiveTab] = useState<QuickTab>(initiallySelected?.analysis_system === "ddinter" ? "ddinter" : "pim");
+  const selectedPimGroup = pimGroups.find((group) => group.alerts.some((alert) => alert.id === selectedAlertId));
+  const selectedDdinter = ddinterAlerts.find((alert) => alert.id === selectedAlertId);
+  const visibleCount = activeTab === "pim" ? pimGroups.length : ddinterAlerts.length;
+  const totalFindings = pimGroups.length + ddinterAlerts.length;
+
+  function selectTab(tab: QuickTab) {
+    setActiveTab(tab);
+    onSelectAlert(tab === "pim" ? pimGroups[0]?.representative.id : ddinterAlerts[0]?.id);
+  }
+
+  return <aside className="quick-screening-toast" role="status" aria-live="polite" aria-label="Resultado del tamizaje rápido">
+    <header><div><strong>{totalFindings} {totalFindings === 1 ? "hallazgo detectado" : "hallazgos detectados"}</strong><span>Paciente {result.patient.patient_code}</span></div><button type="button" onClick={onClose} aria-label="Cerrar resultado">×</button></header>
+    <div className="quick-alert-tabs" role="tablist" aria-label="Tipo de hallazgo">{(["pim", "ddinter"] as QuickTab[]).map((tab) => <button type="button" role="tab" aria-selected={activeTab === tab} className={`quick-alert-tab tab-${tab} ${activeTab === tab ? "active" : ""}`} onClick={() => selectTab(tab)} key={tab}><span>{tab === "pim" ? "PIM" : "DDInter"}</span><b>{tab === "pim" ? pimGroups.length : ddinterAlerts.length}</b></button>)}</div>
+    {visibleCount > 0 ? <div className="quick-alert-list" role="tabpanel" aria-label={`Hallazgos ${activeTab === "pim" ? "PIM" : "DDInter"}`}>
+      {activeTab === "pim" ? pimGroups.map((group) => <button type="button" key={group.key} className={group.alerts.some((alert) => alert.id === selectedAlertId) ? "active" : ""} onClick={() => onSelectAlert(group.representative.id)}><span>PIM · {group.alerts.map((alert) => alert.rule_code).join(" + ")}</span><strong>{group.representative.problem_identified}</strong></button>) : ddinterAlerts.map((alert) => <button type="button" key={alert.id} className={alert.id === selectedAlertId ? "active" : ""} onClick={() => onSelectAlert(alert.id)}><span>DDInter · {alert.rule_code}</span><strong>{alert.problem_identified}</strong></button>)}
+    </div> : <div className="quick-alert-empty" role="tabpanel">No se detectaron hallazgos {activeTab === "pim" ? "PIM" : "DDInter"} con los datos disponibles.</div>}
+    {activeTab === "pim" && selectedPimGroup && <section className="quick-alert-detail" aria-label="Detalle simple del PIM seleccionado">
+      <div><span>PIM</span><b>{selectedPimGroup.alerts.map((alert) => alert.rule_code).join(" + ")}</b></div>
+      <strong>{selectedPimGroup.representative.problem_identified}</strong>
+      <p><b>Medicamentos:</b> {Array.from(new Set(selectedPimGroup.alerts.flatMap((alert) => alert.implicated_medications))).join(", ") || "No consignados"}</p>
+      {selectedPimGroup.alerts.filter((alert) => alert.analysis_system === "stopp_start").map((alert) => <p key={`description-${alert.id}`}><b>Descripción STOPP/START ({alert.rule_code}):</b> {alert.problem_identified}</p>)}
+      {selectedPimGroup.representative.justification && <p><b>Motivo:</b> {selectedPimGroup.representative.justification}</p>}
+      {Array.from(new Set(selectedPimGroup.alerts.map((alert) => alert.recommendation).filter(Boolean))).map((recommendation) => <p key={recommendation}><b>Orientación:</b> {recommendation}</p>)}
+    </section>}
+    {activeTab === "ddinter" && selectedDdinter && <section className="quick-alert-detail" aria-label="Detalle simple de la interacción seleccionada">
+      <div><span>DDInter</span><b>{selectedDdinter.rule_code}</b></div><strong>{selectedDdinter.problem_identified}</strong>
+      <p><b>Medicamentos:</b> {selectedDdinter.implicated_medications.join(", ") || "No consignados"}</p>
+      {selectedDdinter.justification && <p><b>Motivo:</b> {selectedDdinter.justification}</p>}
+      {selectedDdinter.recommendation && <p><b>Orientación:</b> {selectedDdinter.recommendation}</p>}
+    </section>}
+  </aside>;
 }
 
 function DetailDrawer({ criterion, alert, onClose }: { criterion: CriterionResult; alert?: AlertResult; onClose: () => void }) {
@@ -846,7 +1141,7 @@ function ResultsPage({ clinicalCase, evaluation, dataAvailability }: { clinicalC
       <div><strong className="metric-manual">{analysis?.manual_review_count ?? 0}</strong><span>Revisión manual</span></div>
     </div>}
     {system === "beers" && clinicalCase.age < 65 && <div className="method-note">ⓘ Fuera del ámbito etario original de AGS Beers 2023 (65 años o más). No se muestran estos resultados como aplicación canónica.</div>}
-    {system === "stopp_start" && <div className="method-note">▧ Los resultados requieren interpretación clínica y no reemplazan el juicio profesional.</div>}
+    {system === "stopp_start" && <div className="method-note">▧ STOPP/START está activo como tamizaje de investigación; los resultados requieren interpretación y validación clínica.</div>}
     {system === "ddinter" && <div className="method-note">ⓘ {analysis?.note ?? "El resultado DDInter se reporta según el catálogo local configurado en el backend."}</div>}
     {system === "ddinter" ? <div className="results-card">
       <div className="results-toolbar"><div><strong>Interacciones farmacológicas</strong><span>{ddinterAlerts.length} hallazgos</span></div><div><label className="search-field"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Filtrar…" /></label><select aria-label="Filtrar por nivel DDInter" value={ddinterLevelFilter} onChange={(event) => setDdinterLevelFilter(event.target.value as typeof ddinterLevelFilter)}><option value="all">Todos los niveles</option><option value="MAJOR">Major</option><option value="MODERATE">Moderate</option><option value="MINOR">Minor</option><option value="UNKNOWN">Unknown</option></select></div></div>
@@ -894,6 +1189,11 @@ function ResultsPage({ clinicalCase, evaluation, dataAvailability }: { clinicalC
 function LaboratoryEvidencePanel({ availability }: { availability: PilotEvaluationResponse["data_availability"] }) {
   const evidence = availability.mapped_lab_fields ?? [];
   const diagnoses = availability.mapped_diagnosis_fields ?? [];
+  const catalogMatchedPresentations = new Set(
+    availability.medication_catalog_classification
+      .filter((item) => item.matched_top_v1)
+      .map((item) => item.essi_presentation),
+  );
   return <>
   <section className="laboratory-panel" aria-label="Exámenes mapeados desde la muestra piloto">
     <div className="laboratory-heading"><div><h2>Exámenes disponibles para la evaluación</h2><p>Resultados de la muestra pseudonimizada, aceptados con fecha igual o anterior a la fecha índice.</p></div><span>{availability.lab_lookback_days} días de ventana</span></div>
@@ -918,7 +1218,7 @@ function LaboratoryEvidencePanel({ availability }: { availability: PilotEvaluati
     </article>)}</div> : <div className="lab-empty">No se identificó evidencia CIE-10 mapeada para esta fecha índice. Esto no significa ausencia de enfermedad.</div>}
     <div className="laboratory-footnotes"><span>Códigos CIE-10 distintos: {availability.distinct_diagnosis_codes}</span><span>Registros futuros excluidos: {availability.future_diagnosis_rows_excluded}</span>{availability.diagnosis_mapping_warnings.map((warning) => <span key={warning}>ⓘ {warning}</span>)}</div>
   </section>
-  {availability.medication_catalog_classification.length > 0 && <section className="laboratory-panel" aria-label="Medicamentos activos clasificados"><div className="laboratory-heading"><div><h2>Medicamentos activos en la fecha índice</h2><p>Clasificación del catálogo V1 para la presentación ESSI registrada.</p></div></div><div className="table-scroll"><table><thead><tr><th>Presentación ESSI</th><th>Grupo farmacológico</th><th>Beers</th><th>STOPP/START</th></tr></thead><tbody>{availability.medication_catalog_classification.map((item, index) => <tr key={`${item.essi_presentation}-${index}`}><td><b>{item.essi_presentation}</b></td><td>{item.pharmacologic_group ?? "No clasificado"}</td><td>{item.beers_codes.join(", ") || "—"}</td><td>{[...item.stopp_codes, ...item.start_codes].join(", ") || "—"}</td></tr>)}</tbody></table></div></section>}
+  {availability.medication_catalog_classification.length > 0 && <section className="laboratory-panel" aria-label="Medicamentos activos clasificados"><div className="laboratory-heading"><div><h2>Medicamentos activos en la fecha índice</h2><p>Cobertura del catálogo operativo: {catalogMatchedPresentations.size} de {availability.medications_loaded} medicamentos activos. Los no clasificados no fueron evaluados por Beers ni STOPP/START.</p></div></div><div className="table-scroll"><table><thead><tr><th>Presentación ESSI</th><th>Cobertura</th><th>Grupo farmacológico</th><th>Beers</th><th>STOPP/START</th></tr></thead><tbody>{availability.medication_catalog_classification.map((item, index) => <tr key={`${item.essi_presentation}-${index}`}><td><b>{item.essi_presentation}</b></td><td>{item.matched_top_v1 ? "Incluido" : "Fuera del catálogo operativo"}</td><td>{item.pharmacologic_group ?? "No clasificado"}</td><td>{item.beers_codes.join(", ") || "—"}</td><td>{[...item.stopp_codes, ...item.start_codes].join(", ") || "—"}</td></tr>)}</tbody></table></div></section>}
   </>;
 }
 
@@ -975,6 +1275,7 @@ export default function App() {
     {error && <ErrorNotice message={error} onClose={() => setError("")} />}
     {page === "cases" && <CasesPage onNew={() => setPage("new")} onPilotReview={completePilotCase} />}
     {page === "new" && <NewCasePage onCompleted={completeCase} />}
+    {page === "new-minimal" && <MinimalCasePage />}
     {page === "history" && <HistoryPage onReview={reviewCase} />}
     {page === "research" && <ResearchDataPage />}
     {page === "results" && clinicalCase && evaluation && <ResultsPage clinicalCase={clinicalCase} evaluation={evaluation} dataAvailability={dataAvailability} />}

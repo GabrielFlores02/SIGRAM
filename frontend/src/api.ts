@@ -10,6 +10,7 @@ import type {
   PilotEvaluationResponse,
   PilotResearchData,
   PilotPatient,
+  PopulationPatientPage,
   EssiSimulator,
 } from "./types";
 
@@ -53,7 +54,26 @@ export const api = {
     request<CatalogCriterion[]>(`/catalog/v1/criteria${system ? `?system=${system}` : ""}`),
   listCatalogMedications: () => request<CatalogMedication[]>("/catalog/v1/medications"),
   getCatalogSummary: () => request<CatalogSummary>("/catalog/v1/summary"),
-  listPilotPatients: () => request<PilotPatient[]>("/pilot/v1/sample-patients"),
+  // Conserva una lista corta para formularios; el directorio principal usa
+  // paginación y nunca descarga los 181 mil pacientes de una sola vez.
+  listPilotPatients: async (sort: "patient_code" | "alerts" | "engine_alerts" = "patient_code") => {
+    const payload = await request<PilotPatient[] | PopulationPatientPage>(`/pilot/v1/sample-patients?limit=50&sort=${sort}`);
+    return Array.isArray(payload) ? payload : payload.items;
+  },
+  listSimplePatients: async (query = "") => {
+    const params = new URLSearchParams({ limit: "50" });
+    if (query.trim()) params.set("query", query.trim());
+    const payload = await request<PilotPatient[] | PopulationPatientPage>(`/pilot/v1/simple-patients?${params}`);
+    return Array.isArray(payload) ? payload : payload.items;
+  },
+  listPopulationPatients: async (offset = 0, limit = 50, query = "") => {
+    const params = new URLSearchParams({ offset: String(offset), limit: String(limit) });
+    if (query.trim()) params.set("query", query.trim());
+    const payload = await request<PilotPatient[] | PopulationPatientPage>(`/pilot/v1/sample-patients?${params}`);
+    return Array.isArray(payload)
+      ? { items: payload, total: payload.length, offset: 0, limit: payload.length }
+      : payload;
+  },
   evaluatePilotPatient: (patientCode: string, clinicalContext: Record<string, unknown> = {}) =>
     request<PilotEvaluationResponse>(`/pilot/v1/sample-patients/${encodeURIComponent(patientCode)}/evaluate`, {
       method: "POST",

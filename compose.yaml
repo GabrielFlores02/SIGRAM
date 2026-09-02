@@ -7,17 +7,23 @@ services:
     environment:
       APP_ENV: local-docker-dev
       DATABASE_URL: sqlite:////app/runtime/sigram_poc.db
+      SIGRAM_DATASET_MODE: rebagliati
+      SIGRAM_PATIENTS_FILE: /app/rebagliati/01_Datos_Plataforma/patients_rebagliati_2025.parquet
+      SIGRAM_MEDICATIONS_FILE: /app/rebagliati/01_Datos_Plataforma/medications_rebagliati_2025.parquet
+      SIGRAM_DIAGNOSES_FILE: /app/rebagliati/01_Datos_Plataforma/diagnoses_rebagliati_2025.parquet
+      SIGRAM_LABS_FILE: /app/rebagliati/01_Datos_Plataforma/labs_rebagliati_2025.parquet
+      SIGRAM_PATIENT_SUMMARY_FILE: /app/rebagliati/01_Datos_Plataforma/patient_summary_rebagliati_2025.parquet
+      SIGRAM_ENGINE_RANKING_FILE: /app/data/processed/engine_patient_ranking_rebagliati_2025.json
       CLINICAL_CATALOG_FILE: /app/data/catalogs/v1/clinical_catalog_v1.json
-      DDINTER_DATA_DIR: /app/data/raw/ddinter2
-      DDINTER_ALIAS_FILE: /app/data/mappings/ddinter_name_aliases.csv
-      PILOT_COHORT_FILE: /app/data/raw/cohorte.parquet
-      PILOT_LABS_FILE: /app/data/raw/sigram.parquet
-      PILOT_SAMPLE_DIR: /app/data/processed/v1_handoff
-      PILOT_DIAGNOSES_FILE: /app/data/processed/v1_handoff/sample_diagnoses_2025.parquet
-      CIE10_CONTEXT_MAPPING_FILE: /app/data/mappings/cie10_clinical_context_v1.json
+      REFERENCE_CATALOG_FILE: /app/data/catalogs/reference/pharmacologic_groups_cie10_20260818.json
+      DDINTER_DATA_DIR: /app/rebagliati/02_Catalogos_Motor/ddinter2
+      DDINTER_ALIAS_FILE: /app/rebagliati/02_Catalogos_Motor/ddinter_name_aliases.csv
+      CIE10_CONTEXT_MAPPING_FILE: /app/rebagliati/02_Catalogos_Motor/cie10_clinical_context_v1.json
+      ENABLED_CLINICAL_SYSTEMS: beers,stopp_start,ddinter
       PILOT_DIAGNOSIS_LOOKBACK_DAYS: 365
     volumes:
       - sigram_backend_data_dev:/app/runtime
+      - ./SIGRAM_Rebagliati_2025_Entrega_Desarrollador:/app/rebagliati:ro
     ports:
       - "127.0.0.1:8002:8000"
     restart: unless-stopped

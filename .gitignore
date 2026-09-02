@@ -12,6 +12,7 @@
 *.db
 .env
 .env.*
+!.env*.example
 
 # Salidas y versiones históricas no utilizadas por compose.yaml
 /outputs/

@@ -10,12 +10,33 @@ def _result_by_code(results, code):
     return next(item for item in results if item["criterion_code"] == code)
 
 
+def test_catalog_code_fields_accept_empty_strings_and_delimited_text():
+    assert ClinicalCatalogService._criterion_codes("") == []
+    assert ClinicalCatalogService._criterion_codes("B01; B02") == ["B01", "B02"]
+    assert ClinicalCatalogService._criterion_codes(["B03", ""]) == ["B03"]
+
+
 def test_catalog_v1_has_expected_scope():
     summary = ClinicalCatalogService().summary()
     assert summary["catalog_version"] == "2026-07-30-top-medications-v1"
     assert summary["medication_count"] == 54
+    assert summary["clinical_medication_count"] == 54
+    assert summary["pharmacologic_group_medication_count"] == 1008
+    assert summary["cie10_syndrome_row_count"] == 340
     assert summary["criterion_count"] == 97
     assert summary["criteria_by_system"] == {"beers": 23, "stopp_start": 74}
+
+
+def test_reference_group_does_not_invent_clinical_rule_codes():
+    classification = ClinicalCatalogService().classify_medications(
+        ["OXIGENO MEDICINAL 99 - 100 % (PUREZA) GAS COMPRIMIDO"]
+    )[0]
+    assert classification["matched_top_v1"] is False
+    assert classification["matched_reference_catalog"] is True
+    assert classification["pharmacologic_group"] == "Gases medicinales: oxígeno"
+    assert classification["beers_codes"] == []
+    assert classification["stopp_codes"] == []
+    assert classification["start_codes"] == []
 
 
 def test_beers_b01_requires_manual_review_until_clinical_rule_is_validated():
@@ -381,10 +402,12 @@ def test_catalog_and_source_endpoints(client):
     summary = client.get("/api/catalog/v1/summary")
     assert summary.status_code == 200
     assert summary.json()["medication_count"] == 54
+    assert summary.json()["pharmacologic_group_medication_count"] == 1008
 
     medications = client.get("/api/catalog/v1/medications")
     assert medications.status_code == 200
-    assert len(medications.json()) == 54
+    assert len(medications.json()) == 1008
+    assert sum(item["clinical_rules_validated"] for item in medications.json()) == 54
     assert all(item["pharmacologic_group"] for item in medications.json())
 
     sources = client.get("/api/pilot/v1/sources")

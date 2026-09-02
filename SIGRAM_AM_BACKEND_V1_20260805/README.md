@@ -39,6 +39,25 @@ DDInter se consulta localmente, sin servicios externos. Los pares se canonizan y
 
 ## Datos ya disponibles
 
+## Despliegue Rebagliati 2025
+
+La configuración de Docker de la raíz despliega la cohorte completa de
+Rebagliati 2025. Monta la carpeta
+`../SIGRAM_Rebagliati_2025_Entrega_Desarrollador` como solo lectura y consulta
+los Parquet con DuckDB, filtrando siempre por `patient_code`. El endpoint del
+directorio es paginado: `GET /api/pilot/v1/sample-patients?offset=0&limit=50`
+y admite `query=REB-000001`.
+
+No se cargan en memoria los 6,012,673 despachos ni los 19,623,893 laboratorios.
+Para ejecutar sin Docker, copie `.env.rebagliati.example` a `.env` desde esta
+carpeta. Por indicación clínica posterior se habilitan Beers, STOPP/START y
+DDInter como tamizajes de investigación. Las reglas sin contexto suficiente se
+reportan como no evaluables o sujetas a revisión profesional.
+
+La ausencia de filas de laboratorio se conserva como ausencia de registro, no
+como un resultado normal. Los resultados siguen siendo tamizajes de
+investigación y no decisiones clínicas.
+
 `data/raw/cohorte.parquet` contiene 1,185,657 pacientes únicos de 60+.
 Al cruzarla con la elegibilidad previa de polifarmacia quedan 733,564
 pacientes para el piloto. `data/raw/sigram.parquet` contiene 278,872,980

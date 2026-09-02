@@ -26,7 +26,8 @@ frontend/node_modules/
 frontend/dist/
 
 # Datos (fuentes crudas y procesadas)
-data/processed/
+data/processed/*
+!data/processed/engine_patient_ranking_rebagliati_2025.json
 data/raw/
 backend/data/sigram_poc.db
 

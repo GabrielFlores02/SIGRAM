@@ -67,6 +67,7 @@ DDINTER_DATA_DIR=data/raw/ddinter2
 DDINTER_ALIAS_FILE=data/mappings/ddinter_name_aliases.csv
 DDINTER_INCLUDE_UNKNOWN=false
 CLINICAL_CATALOG_FILE=data/catalogs/v1/clinical_catalog_v1.json
+REFERENCE_CATALOG_FILE=data/catalogs/reference/pharmacologic_groups_cie10_20260818.json
 PILOT_COHORT_FILE=data/raw/cohorte.parquet
 PILOT_LABS_FILE=data/raw/sigram.parquet
 PILOT_OBSERVATION_YEAR=2025
@@ -83,6 +84,7 @@ PILOT_DIAGNOSIS_LOOKBACK_DAYS=365
 - `GET /api/catalog/v1/criteria?system=beers`
 - `GET /api/pilot/v1/sources`
 - `GET /api/pilot/v1/sample-patients`
+- `GET /api/pilot/v1/simple-patients`
 - `POST /api/pilot/v1/sample-patients/{patient_code}/evaluate`
 - `POST /api/cases`
 - `POST /api/cases/{case_id}/evaluate`
@@ -113,7 +115,9 @@ interpreta como ausencia de enfermedad.
 
 ## Limitaciones pendientes
 
-- El catálogo V1 cubre sólo el top de 54 medicamentos, no el universo farmacológico.
+- El catálogo de referencia asigna grupo farmacológico a 1,008 presentaciones.
+  Solo 54 tienen asociaciones clínicas validadas para activar reglas; pertenecer
+  a un grupo no crea por sí solo un criterio Beers o STOPP/START.
 - La muestra aplica retrospectivamente en todo 2025 solo TFG reportada
   directamente, potasio, sodio, TSH, T4 libre con rango propio y proteinuria de
   24 horas, mediante identidades ESSI y unidades permitidas. El significado de

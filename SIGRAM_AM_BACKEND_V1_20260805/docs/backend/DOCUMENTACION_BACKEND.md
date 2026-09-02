@@ -159,6 +159,8 @@ un archivo `.env` en la raiz del proyecto.
 | `DDINTER_ALIAS_FILE` | `data/mappings/ddinter_name_aliases.csv` | Alias locales |
 | `DDINTER_INCLUDE_UNKNOWN` | `false` | Incluir interacciones Unknown |
 | `CLINICAL_CATALOG_FILE` | `data/catalogs/v1/clinical_catalog_v1.json` | Catalogo Beers/STOPP-START |
+| `REFERENCE_CATALOG_FILE` | `data/catalogs/reference/pharmacologic_groups_cie10_20260818.json` | Grupos farmacológicos ampliados y descripciones CIE-10 |
+| `SIGRAM_ENGINE_RANKING_FILE` | `data/processed/engine_patient_ranking_rebagliati_2025.json` | Ranking persistente calculado por el motor para los 200 candidatos |
 | `PILOT_COHORT_FILE` | `data/raw/cohorte.parquet` | Fuente completa de cohorte |
 | `PILOT_LABS_FILE` | `data/raw/sigram.parquet` | Fuente completa de laboratorios |
 | `PILOT_DIAGNOSES_FILE` | `.../atenmed.parquet` | Fuente de atenciones y CIE-10 |

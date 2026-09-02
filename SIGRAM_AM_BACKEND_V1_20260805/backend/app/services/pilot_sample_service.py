@@ -2,6 +2,7 @@ import csv
 import re
 import unicodedata
 from datetime import date, timedelta
+from functools import lru_cache
 from pathlib import Path
 from uuid import uuid4
 
@@ -49,6 +50,13 @@ def _canonical(value: str) -> str:
 
 class PilotSampleService:
     """Carga exclusivamente la muestra pseudonimizada preparada para la V1."""
+
+    diagnosis_source_label = "sample_diagnoses_2025.parquet from atenmed.parquet"
+    population_note = (
+        "La evaluación usa retrospectivamente los laboratorios y CIE-10 aceptados "
+        "del año 2025. La ausencia de una fila no se interpreta como un resultado "
+        "normal ni como ausencia de enfermedad."
+    )
 
     def __init__(self, sample_dir: str | Path | None = None):
         self.sample_dir = Path(sample_dir or settings.PILOT_SAMPLE_DIR)
@@ -183,7 +191,7 @@ class PilotSampleService:
             ]
 
         return {
-            "patient": next(item for item in self.list_patients() if item["patient_code"] == patient_code),
+            "patient": self.patient_summary(patient_code),
             "medication_index_date": medication_index_date.isoformat(),
             "clinical_observation_start_date": PILOT_OBSERVATION_START.isoformat(),
             "clinical_observation_end_date": PILOT_OBSERVATION_END.isoformat(),
@@ -366,6 +374,7 @@ class PilotSampleService:
         )
 
     @staticmethod
+    @lru_cache(maxsize=1)
     def _alias_names() -> list[str]:
         alias_path = Path(settings.DDINTER_ALIAS_FILE)
         if not alias_path.is_file():
@@ -404,6 +413,12 @@ class PilotSampleService:
             medications.filter(pl.col("patient_code") == patient_code),
             labs.filter(pl.col("patient_code") == patient_code),
             diagnoses.filter(pl.col("patient_code") == patient_code),
+        )
+
+    def patient_summary(self, patient_code: str) -> dict:
+        """Resumen de un paciente; las subclases evitan recorrer todo el listado."""
+        return next(
+            item for item in self.list_patients() if item["patient_code"] == patient_code
         )
 
     def evaluate(
@@ -530,9 +545,7 @@ class PilotSampleService:
         medication_classification = ClinicalCatalogService().classify_medications(
             case.medications
         )
-        patient_summary = next(
-            item for item in self.list_patients() if item["patient_code"] == patient_code
-        )
+        patient_summary = self.patient_summary(patient_code)
         return {
             "patient": patient_summary,
             "case": case,
@@ -556,7 +569,7 @@ class PilotSampleService:
                 ],
                 "lab_lookback_days": lab_mapping["lookback_days"],
                 "lab_mapping_warnings": lab_mapping["warnings"],
-                "diagnosis_source": "sample_diagnoses_2025.parquet from atenmed.parquet",
+                "diagnosis_source": self.diagnosis_source_label,
                 "diagnosis_rows_considered": diagnosis_mapping[
                     "diagnosis_rows_considered"
                 ],
@@ -573,12 +586,6 @@ class PilotSampleService:
                     for label, field in UNRESOLVED_CLINICAL_FIELDS.items()
                     if getattr(context, field) is None
                 ],
-                "note": (
-                    "El piloto usa retrospectivamente todos los laboratorios y CIE-10 "
-                    "aceptados entre 2025-01-01 y 2025-12-31. Cada valor conserva evidencia "
-                    "y advertencias; la ausencia de CIE-10 no se interpreta como ausencia "
-                    "de enfermedad. La fecha indice solo determina los medicamentos del top "
-                    "V1 activos; la elegibilidad de polifarmacia proviene de la cohorte completa."
-                ),
+                "note": self.population_note,
             },
         }

@@ -131,6 +131,8 @@ export interface MedicationClassification {
   essi_presentation: string;
   evaluation_name: string;
   matched_top_v1: boolean;
+  matched_reference_catalog?: boolean;
+  reference_catalog_medication?: string | null;
   catalog_medication?: string | null;
   pharmacologic_group?: string | null;
   beers_codes: string[];
@@ -234,8 +236,11 @@ export interface CatalogMedication {
   beers_codes: string[];
   atc_code: string | null;
   pharmacologic_group_level4: string | null;
-  mapping_status: "pending_clinical_validation";
+  mapping_status: "pending_clinical_validation" | "reference_group_only";
   catalog_version: string;
+  clinical_rules_validated?: boolean;
+  reference_group_only?: boolean;
+  homologated?: boolean;
 }
 
 export interface CatalogSummary {
@@ -243,6 +248,10 @@ export interface CatalogSummary {
   source_file: string;
   source_sha256: string;
   medication_count: number;
+  clinical_medication_count?: number;
+  pharmacologic_group_medication_count?: number;
+  pharmacologic_group_catalog_version?: string;
+  cie10_syndrome_row_count?: number;
   criterion_count: number;
   criteria_by_system: Record<"beers" | "stopp_start", number>;
   automated_criterion_count: number;
@@ -261,10 +270,32 @@ export interface PilotPatient {
   distinct_top_medications_2025: number;
   max_simultaneous_top_medications: number;
   index_date?: string;
-  medication_rows_2025: number;
-  raw_lab_rows_2025: number;
-  raw_diagnosis_rows_2025: number;
-  distinct_diagnosis_codes_2025: number;
+  medication_rows_2025: number | null;
+  raw_lab_rows_2025: number | null;
+  raw_diagnosis_rows_2025: number | null;
+  distinct_diagnosis_codes_2025: number | null;
+  polypharmacy_level?: string | null;
+  beers_screening_flag?: number | null;
+  ddinter_screening_flag?: number | null;
+  screening_alert_count?: number | null;
+  beers_screening_group_count?: number | null;
+  ddinter_potential_count?: number | null;
+  engine_alert_count?: number | null;
+  engine_beers_alert_count?: number | null;
+  engine_stopp_start_alert_count?: number | null;
+  engine_ddinter_alert_count?: number | null;
+  estimated_alert_count?: number | null;
+  simple_example_group?: "without_polypharmacy" | "prioritized" | "search";
+  example_cie10_code?: string | null;
+  example_cie10_description?: string | null;
+  example_cie10_syndrome?: string | null;
+}
+
+export interface PopulationPatientPage {
+  items: PilotPatient[];
+  total: number;
+  offset: number;
+  limit: number;
 }
 
 export interface PilotCasePrefill {

@@ -25,7 +25,7 @@ def list_catalog_criteria(
 
 @router.get("/catalog/v1/medications")
 def list_catalog_medications():
-    """Lista las 54 presentaciones, su agrupacion y los criterios asociados."""
+    """Lista grupos ampliados e identifica el subconjunto con reglas validadas."""
     return ClinicalCatalogService().medications_catalog()
 
 
