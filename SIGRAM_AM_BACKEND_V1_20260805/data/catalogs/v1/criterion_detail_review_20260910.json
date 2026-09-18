@@ -1,0 +1,345 @@
+{
+  "version": "2026-09-10-doctor-review",
+  "source_file": "match_criterios_evaluacion_sigram-AT20260910-Beers (1).xlsx",
+  "policy": "Solo asociaciones Confirmado o Ajustar; se excluyen Pendiente y Rechazado.",
+  "criteria": {
+    "STOPP-A1": [
+      {
+        "source_system": "STOPP",
+        "source_code": "001",
+        "source_type": "Indicación del medicamento",
+        "description": "Cualquier medicamento prescrito sin una indicación clínica.",
+        "review_status": "Confirmado",
+        "reviewer_note": null,
+        "source_row": 5
+      }
+    ],
+    "STOPP-A2": [
+      {
+        "source_system": "STOPP",
+        "source_code": "002",
+        "source_type": "Indicación del medicamento",
+        "description": "Cualquier medicamento prescrito más allá de la duración recomendada, cuando la duración del tratamiento esté bien definida.",
+        "review_status": "Confirmado",
+        "reviewer_note": null,
+        "source_row": 6
+      }
+    ],
+    "STOPP-A3": [
+      {
+        "source_system": "STOPP",
+        "source_code": "003",
+        "source_type": "Indicación del medicamento",
+        "description": "Cualquier prescripción duplicada de una misma clase farmacológica para uso diario regular (a diferencia del uso \"PRN\" o \"a demanda\"), por ejemplo, dos AINE, ISRS, diuréticos del asa, IECA, anticoagulantes, antipsicóticos o analgésicos opioides concurrentes. (Se debe priorizar la optimización de la monoterapia dentro de una misma clase farmacológica antes de considerar un nuevo fármaco).",
+        "review_status": "Confirmado",
+        "reviewer_note": null,
+        "source_row": 7
+      }
+    ],
+    "B09": [
+      {
+        "source_system": "Beers",
+        "source_code": "003",
+        "source_type": "Sistema Hematológico (Anticoagulación y Antiagregación)",
+        "description": "Evitar ácido acetilsalicílico (aspirina) para la prevención primaria de enfermedades cardiovasculares.\nEXCEPCIÓN: El ácido acetilsalicílico está generalmente indicado para la prevención secundaria en adultos mayores con enfermedad cardiovascular establecida.",
+        "review_status": "Confirmado",
+        "reviewer_note": "Los medicamentos del criterio no aparecen listados en SIGRAM-AM.",
+        "source_row": 197
+      }
+    ],
+    "B01": [
+      {
+        "source_system": "Beers",
+        "source_code": "017",
+        "source_type": "Sistema Nervioso Central",
+        "description": "Evitar benzodiacepinas:\n• Alprazolam\n• Clordiazepóxido (solo o combinado con amitriptilina o clidinio)\n• Clobazam\n• Clonazepam\n• Clorazepato\n• Diazepam\n• Estazolam\n• Lorazepam\n• Midazolam\n• Oxazepam\n• Temazepam\n• Triazolam\nEn general, todas las benzodiacepinas aumentan el riesgo de deterioro cognitivo, delirium, caídas, fracturas y accidentes de tránsito en adultos mayores.\nEXCEPCIÓN: Pueden ser apropiadas para tratar trastornos convulsivos, trastorno de conducta durante el sueño de movimientos oculares rápidos (sueño REM), abstinencia de benzodiacepinas, abstinencia alcohólica, trastorno de ansiedad generalizada grave y para la anestesia periprocedimiento.",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observa Alprazolam dentro del listado de medicamentos.",
+        "source_row": 211
+      }
+    ],
+    "B10": [
+      {
+        "source_system": "Beers",
+        "source_code": "024",
+        "source_type": "Sistema Endocrino",
+        "description": "Evitar sulfonilureas:\n• Gliclazida\n• Glimepirida\n• Glipizida\n• Gliburida (glibenclamida)\nMayor riesgo de eventos cardiovasculares, mortalidad por cualquier causa e hipoglucemia que otros medicamentos alternativos. Además, pueden aumentar el riesgo de muerte cardiovascular y accidente cerebrovascular isquémico.",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observa glibenclamida dentro del listado de medicamentos.",
+        "source_row": 218
+      }
+    ],
+    "B04": [
+      {
+        "source_system": "Beers",
+        "source_code": "028",
+        "source_type": "Sistema Gastrointestinal",
+        "description": "Evitar uso programado durante más de 8 semanas de los inhibidores de la bomba de protones:\n• Dexlansoprazol\n• Esomeprazol\n• Lansoprazol\n• Omeprazol\n• Pantoprazol\n• Rabeprazol\nRiesgo de infección por C. difficile, neumonía, neoplasias gastrointestinales, pérdida ósea y fracturas.\nEXCEPCIÓN: Pacientes de alto riesgo (por ejemplo, aquellos que reciben corticosteroides orales o utilizan AINE de manera crónica), con esofagitis erosiva, esófago de Barrett, una condición de hipersecreción patológica o una necesidad demostrada de tratamiento de mantenimiento.",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observa omeprazol dentro del listado de medicamentos.",
+        "source_row": 222
+      }
+    ],
+    "B05": [
+      {
+        "source_system": "Beers",
+        "source_code": "033",
+        "source_type": "Fármacos Analgésicos",
+        "description": "Evitar antiinflamatorios no esteroideos (AINE) orales no selectivos de la COX-2:\n• Ácido acetilsalicílico >325 mg/día\n• Diclofenaco\n• Diflunisal\n• Etodolaco\n• Flurbiprofeno\n• Ibuprofeno\n• Indometacina\n• Ketorolaco\n• Meloxicam\n• Nabumetona\n• Naproxeno\n• Oxaprozina\n• Piroxicam\n• Sulindaco\nMayor riesgo de hemorragia gastrointestinal o enfermedad ulcerosa péptica en grupos de alto riesgo, incluidas las personas mayores de 75 años o aquellas que reciben corticosteroides orales o parenterales, anticoagulantes o antiagregantes plaquetarios. También pueden aumentar la presión arterial y provocar lesión renal. Los riesgos están relacionados con la dosis.\nEXCEPCIÓN: Uso con un medicamento gastroprotector (inhibidor de la bomba de protones o misoprostol).",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observan acido acetilsalicilico, diclofenaco, naproxeno e ibuprofeno dentro del listado de medicamentos.",
+        "source_row": 227
+      }
+    ],
+    "B02": [
+      {
+        "source_system": "Beers",
+        "source_code": "036",
+        "source_type": "Sistema Musculoesquelético",
+        "description": "Evitar relajantes musculoesqueléticos:\n• Carisoprodol\n• Clorzoxazona\n• Ciclobenzaprina\n• Metaxalona\n• Metocarbamol\n• Orfenadrina\nPresencia de efectos adversos anticolinérgicos, sedación y mayor riesgo de fracturas.",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observa orfenadrina dentro del listado de medicamentos.\nB03 deberíamos unificarlo con la B02.",
+        "source_row": 230
+      }
+    ],
+    "B03": [
+      {
+        "source_system": "Beers",
+        "source_code": "036",
+        "source_type": "Sistema Musculoesquelético",
+        "description": "Evitar relajantes musculoesqueléticos:\n• Carisoprodol\n• Clorzoxazona\n• Ciclobenzaprina\n• Metaxalona\n• Metocarbamol\n• Orfenadrina\nPresencia de efectos adversos anticolinérgicos, sedación y mayor riesgo de fracturas.",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observa orfenadrina dentro del listado de medicamentos.\nB03 deberíamos unificarlo con la B02.",
+        "source_row": 230
+      }
+    ],
+    "B06": [
+      {
+        "source_system": "Beers",
+        "source_code": "039",
+        "source_type": "Sistema Cardiovascular",
+        "description": "Evitar en pacientes con insuficiencia cardíaca sintomática:\n• Dronedarona\n• AINE e inhibidores de la COX-2\n• Tiazolidinedionas\n• Pioglitazona",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observan acido acetilsalicilico, diclofenaco, naproxeno e ibuprifeno dentro del listado de medicamentos.",
+        "source_row": 233
+      }
+    ],
+    "B12": [
+      {
+        "source_system": "Beers",
+        "source_code": "043",
+        "source_type": "Sistema Nervioso Central",
+        "description": "Evitar fármacos con fuertes propiedades anticolinérgicas en adultos mayores con delirium o con alto riesgo de presentarlo, debido a la posibilidad de inducirlo o agravarlo. Entre estos tenemos los antidepresivos (Amitriptilina, Amoxapina, Clomipramina, Desipramina, Doxepina (>6 mg/día), Imipramina, Nortriptilina y Paroxetina), los antieméticos (Proclorperazina y Prometazina), los antihistamínicos de primera generación (Bromfeniramina, Clorfeniramina, Ciproheptadina, Dimenhidrinato, Difenhidramina, Doxilamina, Hidroxicina, Meclizina, Prometazina y Triprolidina), los antimuscarínicos para la incontinencia urinaria (Darifenacina, Fesoterodina, Flavoxato, Oxibutinina, Solifenacina, Tolterodina y Trospio), los antiparkinsonianos (Benzatropina y Trihexifenidilo), los antipsicóticos (Clorpromazina, Clozapina, Olanzapina y Perfenazina), los antiespasmódicos (Atropina, Clidinio-clordiazepóxido, Diciclomina, Homatropina, Hiosciamina y Escopolamina) y los relajantes del músculo esquelético (Ciclobenzaprina y Orfenadrina).",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observa orfenadrina dentro del listado de medicamentos.",
+        "source_row": 237
+      },
+      {
+        "source_system": "Beers",
+        "source_code": "045",
+        "source_type": "Sistema Nervioso Central",
+        "description": "Evitar el uso de corticosteroides orales y parenterales en adultos mayores con delirium o con alto riesgo de presentarlo, debido a la posibilidad de inducirlo o agravarlo. En caso sean necesarios, utilizar la dosis más baja posible durante el menor tiempo posible y vigilar la aparición de delirium.",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observa dexametasona dentro del listado de medicamentos.",
+        "source_row": 239
+      },
+      {
+        "source_system": "Beers",
+        "source_code": "046",
+        "source_type": "Sistema Nervioso Central",
+        "description": "Evitar el uso de opioides en adultos mayores con delirium o con alto riesgo de presentarlo, debido a la posibilidad de inducirlo o agravarlo.",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observa tramadol dentro del listado de medicamentos.",
+        "source_row": 240
+      }
+    ],
+    "B13": [
+      {
+        "source_system": "Beers",
+        "source_code": "049",
+        "source_type": "Sistema Nervioso Central",
+        "description": "En pacientes con demencia o deterioro cognitivo, evitar fármacos con fuertes propiedades anticolinérgicas debido a sus efectos adversos sobre el sistema nervioso central. Entre estos tenemos los antidepresivos (Amitriptilina, Amoxapina, Clomipramina, Desipramina, Doxepina (>6 mg/día), Imipramina, Nortriptilina y Paroxetina), los antieméticos (Proclorperazina y Prometazina), los antihistamínicos de primera generación (Bromfeniramina, Clorfeniramina, Ciproheptadina, Dimenhidrinato, Difenhidramina, Doxilamina, Hidroxicina, Meclizina, Prometazina y Triprolidina), los antimuscarínicos para la incontinencia urinaria (Darifenacina, Fesoterodina, Flavoxato, Oxibutinina, Solifenacina, Tolterodina y Trospio), los antiparkinsonianos (Benzatropina y Trihexifenidilo), los antipsicóticos (Clorpromazina, Clozapina, Olanzapina y Perfenazina), los antiespasmódicos (Atropina, Clidinio-clordiazepóxido, Diciclomina, Homatropina, Hiosciamina y Escopolamina) y los relajantes del músculo esquelético (Ciclobenzaprina y Orfenadrina).",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observa orfenadrina dentro del listado de medicamentos.",
+        "source_row": 243
+      },
+      {
+        "source_system": "Beers",
+        "source_code": "050",
+        "source_type": "Sistema Nervioso Central",
+        "description": "Evitar benzodiacepinas debido a sus efectos adversos sobre el sistema nervioso central, especialmente, en pacientes con demencia o deterioro cognitivo.",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observa Alprazolam dentro del listado de medicamentos.",
+        "source_row": 244
+      }
+    ],
+    "B14": [
+      {
+        "source_system": "Beers",
+        "source_code": "053",
+        "source_type": "Sistema Nervioso Central",
+        "description": "En pacientes con antecedentes de caídas o fracturas, evitar fármacos con fuertes propiedades anticolinérgicas debido a sus efectos adversos sobre el sistema nervioso central. Entre estos tenemos los antidepresivos (Amitriptilina, Amoxapina, Clomipramina, Desipramina, Doxepina (>6 mg/día), Imipramina, Nortriptilina y Paroxetina), los antieméticos (Proclorperazina y Prometazina), los antihistamínicos de primera generación (Bromfeniramina, Clorfeniramina, Ciproheptadina, Dimenhidrinato, Difenhidramina, Doxilamina, Hidroxicina, Meclizina, Prometazina y Triprolidina), los antimuscarínicos para la incontinencia urinaria (Darifenacina, Fesoterodina, Flavoxato, Oxibutinina, Solifenacina, Tolterodina y Trospio), los antiparkinsonianos (Benzatropina y Trihexifenidilo), los antipsicóticos (Clorpromazina, Clozapina, Olanzapina y Perfenazina), los antiespasmódicos (Atropina, Clidinio-clordiazepóxido, Diciclomina, Homatropina, Hiosciamina y Escopolamina) y los relajantes del músculo esquelético (Ciclobenzaprina y Orfenadrina).",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observa orfenadrina dentro del listado de medicamentos.",
+        "source_row": 247
+      },
+      {
+        "source_system": "Beers",
+        "source_code": "055",
+        "source_type": "Sistema Nervioso Central",
+        "description": "Evitar antiepilépticos en pacientes con antecedentes de caídas o fracturas porque pueden causas ataxia, deterioro de la función motora, síncope o caídas adicionales.\nEXCEPCIÓN: Tratamiento de convulsiones y trastornos del estado de ánimo.",
+        "review_status": "Ajustar",
+        "reviewer_note": "Los medicamentos del criterio no aparecen listados en SIGRAM-AM.",
+        "source_row": 249
+      },
+      {
+        "source_system": "Beers",
+        "source_code": "057",
+        "source_type": "Sistema Nervioso Central",
+        "description": "Evitar benzodiacepinas en pacientes con antecedentes de caídas o fracturas porque pueden causas ataxia, deterioro de la función motora, síncope o caídas adicionales.",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observa Alprazolam dentro del listado de medicamentos.",
+        "source_row": 251
+      },
+      {
+        "source_system": "Beers",
+        "source_code": "059",
+        "source_type": "Sistema Nervioso Central",
+        "description": "Evitar opioides en pacientes con antecedentes de caídas o fracturas porque pueden causar ataxia, deterioro de la función motora, síncope o caídas adicionales.\nEXCEPCIÓN: Control del dolor en casos de dolor agudo intenso.",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observa tramadol dentro del listado de medicamentos.",
+        "source_row": 253
+      }
+    ],
+    "B07": [
+      {
+        "source_system": "Beers",
+        "source_code": "062",
+        "source_type": "Sistema Gastrointestinal",
+        "description": "Evitar antiinflamatorios no esteroideos (AINE) no selectivos de la COX-2 y ácido acetilsalicílico con antecedentes de úlceras gástricas o duodenales.\nEXCEPCIÓN: Uso concomitantes de un inhibidor de la bomba de protones o misoprostol.",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observan acido acetilsalicilico, diclofenaco, naproxeno, ibuprofeno y ácido acetil salicílico dentro del listado de medicamentos.",
+        "source_row": 256
+      }
+    ],
+    "B11": [
+      {
+        "source_system": "Beers",
+        "source_code": "068",
+        "source_type": "Sistema Nervioso Central",
+        "description": "Utilizar con precaución los siguientes antidepresivos seleccionados (Mirtazapina, Inhibidores de la recaptación de serotonina y noradrenalina (IRSN), Inhibidores selectivos de la recaptación de serotonina (ISRS) y Antidepresivos tricíclicos (ATC)), Antiepilépticos seleccionados (Carbamazepina y Oxcarbazepina), Antipsicóticos, Diuréticos y Tramadol porque pueden exacerbar o causar síndrome de secreción inadecuada de hormona antidiurética (SIADH) o hiponatremia.",
+        "review_status": "Ajustar",
+        "reviewer_note": "Los medicamentos del criterio no aparecen listados en SIGRAM-AM.",
+        "source_row": 262
+      }
+    ],
+    "B21": [
+      {
+        "source_system": "Beers",
+        "source_code": "072",
+        "source_type": "Interacciones entre fármacos",
+        "description": "Evitar el uso habitual y simultáneo de dos o más inhibidores del sistema renina-angiotensina (SRA): IECA, ARA-II, ARNI y aliskireno, o de un inhibidor del SRA y un diurético ahorrador de potasio (amilorida y triamtereno), en pacientes con enfermedad renal crónica en estadio 3a o superior debido a un mayor riesgo de hiperpotasemia.",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observan losartan, irbesartan y enalapril dentro del listado de medicamentos.",
+        "source_row": 266
+      }
+    ],
+    "B15": [
+      {
+        "source_system": "Beers",
+        "source_code": "073",
+        "source_type": "Interacciones entre fármacos",
+        "description": "Evitar uso simultáneo de opioides y benzodiacepinas debido a un incremento en el riesgo de sobredosis y eventos adversos.",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observa tramadol y alprazolam dentro del listado de medicamentos.",
+        "source_row": 267
+      }
+    ],
+    "B16": [
+      {
+        "source_system": "Beers",
+        "source_code": "074",
+        "source_type": "Interacciones entre fármacos",
+        "description": "Evitar uso simultáneo de opioides y gabapentina o pregabalina debido a un mayor riesgo de eventos adversos graves relacionados con la sedación, incluidas la depresión respiratoria y la muerte.\nEXCEPCIÓN: Transición del tratamiento con opioides hacia gabapentina o pregabalina, o el uso de gabapentinoides para reducir la dosis de opioides.",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observan tramadol y gabapentina dentro del listado de medicamentos.",
+        "source_row": 268
+      }
+    ],
+    "B18": [
+      {
+        "source_system": "Beers",
+        "source_code": "075",
+        "source_type": "Interacciones entre fármacos",
+        "description": "Evitar el uso de más de un medicamento con propiedades anticolinérgicas porque aumentan el riesgo de deterioro cognitivo, delirium, caídas o fracturas.",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observa orfenadrina dentro del listado de medicamentos.",
+        "source_row": 269
+      }
+    ],
+    "B17": [
+      {
+        "source_system": "Beers",
+        "source_code": "076",
+        "source_type": "Interacciones entre fármacos",
+        "description": "Evitar el uso simultáneo de tres o más medicamentos con actividad sobre el SNC entre los que tenemos: Antiepilépticos (incluidos los gabapentinoides), Antidepresivos (ATC, ISRS e IRSN), Antipsicóticos, Benzodiacepinas, Hipnóticos no benzodiacepínicos agonistas de los receptores de benzodiacepinas (fármacos Z), Opioides y Relajantes del músculo esquelético. Mayor riesgo de caídas y fracturas.",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observan alprazolam y gabapentina dentro del listado de medicamentos.",
+        "source_row": 270
+      }
+    ],
+    "B22": [
+      {
+        "source_system": "Beers",
+        "source_code": "077",
+        "source_type": "Interacciones entre fármacos",
+        "description": "Evitar uso simultáneo de Litio con inhibidores de la enzima convertidora de angiotensina (IECA), antagonistas del receptor de angiotensina II (ARA-II), inhibidores del receptor de angiotensina/neprilisina (ARNI) o diuréticos de asa debido a un mayor riesgo de toxicidad por litio.",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observan losartan, irbesartan y enalapril dentro del listado de medicamentos.",
+        "source_row": 271
+      }
+    ],
+    "B19": [
+      {
+        "source_system": "Beers",
+        "source_code": "097",
+        "source_type": "Sistema Renal",
+        "description": "Utilizar con precaución Gabapentina cuando la depuración de creatinina sea < 60 mL/min debido a un mayor riesgo de efectos adversos sobre el sistema nervioso central.",
+        "review_status": "Confirmado",
+        "reviewer_note": null,
+        "source_row": 291
+      }
+    ],
+    "B08": [
+      {
+        "source_system": "Beers",
+        "source_code": "099",
+        "source_type": "Sistema Renal",
+        "description": "Evitar AINEs (no selectivos, selectivos de la COX-2 y salicilatos no acetilados; orales y parenterales) cuando la depuración de creatinina sea < 30 mL/min debido a que pueden aumentar el riesgo de lesión renal aguda y de deterioro adicional de la función renal.",
+        "review_status": "Ajustar",
+        "reviewer_note": "Sólo se observan acido acetilsalicilico, diclofenaco, naproxeno, ibuprofeno y ácido acetil salicílico dentro del listado de medicamentos.",
+        "source_row": 293
+      }
+    ],
+    "B20": [
+      {
+        "source_system": "Beers",
+        "source_code": "101",
+        "source_type": "Sistema Renal",
+        "description": "Evitar Tramadol de liberación prolongada cuando la depuración de creatinina sea < 30 mL/min debido a un mayor riesgo de efectos adversos sobre el sistema nervioso central.",
+        "review_status": "Confirmado",
+        "reviewer_note": null,
+        "source_row": 295
+      },
+      {
+        "source_system": "Beers",
+        "source_code": "102",
+        "source_type": "Sistema Renal",
+        "description": "Utilizar con precaución Tramadol de liberación inmediata cuando la depuración de creatinina sea < 30 mL/min debido a un mayor riesgo de efectos adversos sobre el sistema nervioso central.",
+        "review_status": "Confirmado",
+        "reviewer_note": null,
+        "source_row": 296
+      }
+    ]
+  }
+}

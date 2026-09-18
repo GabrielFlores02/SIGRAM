@@ -196,6 +196,7 @@ AUTOMATED_CODES = {
     "B18",
     "B19",
     "B21",
+    "B23",
     "STOPP-A3",
     "STOPP-B3",
     "STOPP-B12",
@@ -283,7 +284,7 @@ _BEERS_METADATA: dict[str, dict[str, Any]] = {
     "B18": {"recommendation_type": "avoid", "recommendation_text": "Evitar y minimizar el número de fármacos anticolinérgicos.", "quality_of_evidence": "Moderate", "strength_of_recommendation": "Strong"},
     "B19": {"recommendation_type": "reduce_dose", "recommendation_text": "Reducir dosis.", "quality_of_evidence": "Moderate", "strength_of_recommendation": "Strong"},
     "B20": {"recommendation_type": "conditional", "recommendation_text": "Liberación inmediata: reducir dosis. Liberación extendida: evitar.", "quality_of_evidence": "Low", "strength_of_recommendation": "Weak", "criterion_kind": "conditional_criterion"},
-    "B23": {"recommendation_type": "conditional", "recommendation_text": "Requiere evaluación clínica individual; los datos para bloqueadores alfa-1 selectivos son limitados.", "criterion_kind": "manual_review", "automation_mode": "manual_review"},
+    "B23": {"recommendation_type": "avoid", "recommendation_text": "Evitar bloqueadores alfa-1 periféricos no selectivos cuando el síncope sea atribuible a hipotensión ortostática."},
 }
 
 
@@ -467,15 +468,21 @@ class ClinicalCatalogService:
     _reference_catalog_signature: tuple[str, int, int] | None = None
     _reference_exact_index: dict[str, list[dict[str, Any]]] = {}
     _reference_root_index: dict[str, list[dict[str, Any]]] = {}
+    _review_details_cache: dict[str, Any] | None = None
+    _review_details_signature: tuple[str, int, int] | None = None
 
     def __init__(
         self,
         catalog_path: str | Path | None = None,
         reference_catalog_path: str | Path | None = None,
+        review_details_path: str | Path | None = None,
     ):
         self.catalog_path = Path(catalog_path or settings.CLINICAL_CATALOG_FILE)
         self.reference_catalog_path = Path(
             reference_catalog_path or settings.REFERENCE_CATALOG_FILE
+        )
+        self.review_details_path = Path(
+            review_details_path or settings.CRITERION_REVIEW_DETAILS_FILE
         )
 
     @staticmethod
@@ -541,6 +548,26 @@ class ClinicalCatalogService:
             ClinicalCatalogService._reference_catalog_signature = signature
         return ClinicalCatalogService._reference_catalog_cache
 
+    def _load_review_details(self) -> dict[str, Any]:
+        """Carga el detalle clínico revisado sin depender del Excel en producción."""
+        if not self.review_details_path.is_file():
+            return {"criteria": {}}
+        stat = self.review_details_path.stat()
+        signature = (
+            str(self.review_details_path.resolve()),
+            stat.st_mtime_ns,
+            stat.st_size,
+        )
+        if (
+            ClinicalCatalogService._review_details_cache is None
+            or ClinicalCatalogService._review_details_signature != signature
+        ):
+            ClinicalCatalogService._review_details_cache = json.loads(
+                self.review_details_path.read_text(encoding="utf-8")
+            )
+            ClinicalCatalogService._review_details_signature = signature
+        return ClinicalCatalogService._review_details_cache
+
     def _reference_matches(
         self, evaluation_name: str, essi_presentation: str = ""
     ) -> list[dict[str, Any]]:
@@ -585,6 +612,7 @@ class ClinicalCatalogService:
     def summary(self) -> dict[str, Any]:
         catalog = self._load_catalog()
         reference = self._load_reference_catalog()
+        review_details = self._load_review_details()
         criteria = catalog["criteria"]
         by_system = Counter(item["system"] for item in criteria)
         automated = sum(item["code"] in AUTOMATED_CODES for item in criteria)
@@ -594,19 +622,22 @@ class ClinicalCatalogService:
             "source_sha256": catalog["source_sha256"],
             "medication_count": catalog["medication_count"],
             "clinical_medication_count": catalog["medication_count"],
-            "pharmacologic_group_medication_count": reference["medication_count"],
+            "pharmacologic_group_medication_count": len(self.medications_catalog()),
             "pharmacologic_group_catalog_version": reference["catalog_version"],
             "cie10_syndrome_row_count": reference["syndrome_row_count"],
             "criterion_count": catalog["criterion_count"],
             "criteria_by_system": dict(by_system),
             "automated_criterion_count": automated,
             "manual_or_context_dependent_count": len(criteria) - automated,
+            "reviewed_detail_criterion_count": len(review_details.get("criteria", {})),
+            "review_details_version": review_details.get("version"),
             "population": catalog["population"],
             "status": "prototype_v1_screening_only",
         }
 
     def criteria_coverage(self, system: str | None = None) -> list[dict[str, Any]]:
         catalog = self._load_catalog()
+        review_details = self._load_review_details().get("criteria", {})
         output = []
         for criterion in catalog["criteria"]:
             if system and criterion["system"] != system:
@@ -627,6 +658,7 @@ class ClinicalCatalogService:
                         }
                         for field in required
                     ],
+                    "review_details": review_details.get(criterion["code"], []),
                 }
             if criterion["system"] == "beers":
                 payload.update(_beers_metadata(criterion["code"], criterion))
@@ -641,8 +673,11 @@ class ClinicalCatalogService:
         }
         reference = self._load_reference_catalog()
         output: list[dict[str, Any]] = []
+        included_clinical_names: set[str] = set()
         for item in reference.get("medications", []):
             clinical = clinical_by_name.get(_canonical(item["medication"]))
+            if clinical:
+                included_clinical_names.add(_canonical(clinical["medication"]))
             output.append(
                 {
                     **item,
@@ -658,6 +693,29 @@ class ClinicalCatalogService:
                     "reference_group_only": clinical is None,
                 }
             )
+        for clinical in self._load_catalog()["medications"]:
+            if _canonical(clinical["medication"]) in included_clinical_names:
+                continue
+            output.append(
+                {
+                    **clinical,
+                    "atc_code": clinical.get("atc_code"),
+                    "pharmacologic_group_level4": clinical.get(
+                        "pharmacologic_group_level4"
+                    ),
+                    "mapping_status": clinical.get(
+                        "mapping_status", "doctor_review_supplement"
+                    ),
+                    "catalog_version": clinical.get(
+                        "catalog_version", self._load_catalog()["catalog_version"]
+                    ),
+                    "clinical_rules_validated": True,
+                    "reference_group_only": False,
+                }
+            )
+        output.sort(key=lambda item: _canonical(item["medication"]))
+        for order, item in enumerate(output, start=1):
+            item["order"] = order
         return output
 
     def classify_medications(self, medications: list[Any]) -> list[dict[str, Any]]:
@@ -744,6 +802,20 @@ class ClinicalCatalogService:
             or getattr(medication, "normalized_active_ingredient", None)
             or ""
         )
+
+    @staticmethod
+    def _medication_regular_use(medication: Any) -> bool | None:
+        if isinstance(medication, str):
+            return None
+        frequency = str(getattr(medication, "frequency", None) or "").strip()
+        if not frequency:
+            return None
+        canonical = _canonical(frequency)
+        if any(term in canonical for term in ("SEGUN NECESIDAD", "PRN", "A DEMANDA")):
+            return False
+        if canonical == "NO ESTRUCTURADA":
+            return None
+        return True
 
     @staticmethod
     def _matches(input_name: str, catalog_name: str) -> bool:
@@ -1170,6 +1242,7 @@ class ClinicalCatalogService:
         present_names: list[str],
         present_groups: list[str],
         implicated_medications: list[str] | None = None,
+        regular_use: list[bool | None] | None = None,
     ) -> bool:
         names = [_canonical(item) for item in present_names]
         groups = [_canonical(item) for item in present_groups]
@@ -1265,8 +1338,19 @@ class ClinicalCatalogService:
                 and has_raas() >= 1
                 and not bool(context.get("lithium_level_monitoring"))
             )
+        if code == "B23":
+            return bool(context["syncope_history"]) and bool(
+                context["orthostatic_hypotension"]
+            )
         if code == "STOPP-A3":
-            return any(count >= 2 for count in Counter(groups).values())
+            regular_groups = [
+                group
+                for group, is_regular in zip(
+                    groups, regular_use or [None] * len(groups), strict=False
+                )
+                if is_regular is not False
+            ]
+            return any(count >= 2 for count in Counter(regular_groups).values())
         if code == "STOPP-B3":
             return has_group("BETABLOQUEADOR") and has_name("VERAPAMILO", "DILTIAZEM")
         if code == "STOPP-B12":
@@ -1377,6 +1461,8 @@ class ClinicalCatalogService:
         input_presentations = [
             self._entered_medication_name(item) for item in medications
         ]
+        input_regular_use = [self._medication_regular_use(item) for item in medications]
+        review_details = self._load_review_details().get("criteria", {})
 
         matched_rows: list[dict[str, Any]] = []
         for input_index, input_name in enumerate(input_names):
@@ -1443,6 +1529,10 @@ class ClinicalCatalogService:
                         item["beers_codes"]
                         + item["stopp_codes"]
                         + item["start_codes"]
+                    )
+                    and (
+                        code != "STOPP-A3"
+                        or input_regular_use[item["input_index"]] is not False
                     )
                 }
             )
@@ -1522,9 +1612,6 @@ class ClinicalCatalogService:
             elif criterion["system"] == "beers" and code == "B03":
                 status = CATALOG_STATUS_SUPPORTING_CLASSIFICATION
                 reason = "Clasificación Beers: anticolinérgico fuerte; no constituye un hallazgo clínico independiente."
-            elif criterion["system"] == "beers" and code == "B23":
-                status = CATALOG_STATUS_MANUAL_REVIEW
-                reason = "La aplicabilidad a tamsulosina requiere evaluación clínica individual; la evidencia es limitada."
             elif criterion["system"] == "beers" and code == "B04":
                 duration = self._context_value("medication_duration_days", context, present_groups, implicated)
                 maintenance = context.get("ppi_maintenance_indication")
@@ -1596,6 +1683,7 @@ class ClinicalCatalogService:
                     present_names,
                     present_groups,
                     implicated,
+                    input_regular_use,
                 )
                 status = (
                     CATALOG_STATUS_ALERT if triggered else CATALOG_STATUS_NO_ALERT
@@ -1755,6 +1843,7 @@ class ClinicalCatalogService:
                 "context_used": context_used,
                 "lab_evidence": lab_evidence,
                 "diagnosis_evidence": diagnosis_evidence,
+                "review_details": review_details.get(code, []),
                 **logic_details,
                 **beers_metadata,
             }
@@ -1794,6 +1883,7 @@ class ClinicalCatalogService:
                             "context_used": context_used,
                             "lab_evidence": lab_evidence,
                             "diagnosis_evidence": diagnosis_evidence,
+                            "doctor_review_details": review_details.get(code, []),
                             "triggering_evidence": logic_details[
                                 "triggering_evidence"
                             ],

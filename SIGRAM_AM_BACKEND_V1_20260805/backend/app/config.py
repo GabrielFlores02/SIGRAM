@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     DDINTER_ALIAS_FILE: str = "data/mappings/ddinter_name_aliases.csv"
     DDINTER_INCLUDE_UNKNOWN: bool = False
     CLINICAL_CATALOG_FILE: str = "data/catalogs/v1/clinical_catalog_v1.json"
+    CRITERION_REVIEW_DETAILS_FILE: str = (
+        "data/catalogs/v1/criterion_detail_review_20260910.json"
+    )
     REFERENCE_CATALOG_FILE: str = (
         "data/catalogs/reference/pharmacologic_groups_cie10_20260818.json"
     )

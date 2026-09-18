@@ -2,8 +2,9 @@ from pathlib import Path
 from datetime import datetime, timezone
 
 from backend.app.config import settings
+from backend.app.schemas.cases import MedicationCreate
 from backend.app.schemas.evaluations import EvaluationExecutionRead
-from backend.app.services.clinical_catalog_service import ClinicalCatalogService
+from backend.app.services.clinical_catalog_service import ClinicalCatalogService, _canonical
 
 
 def _result_by_code(results, code):
@@ -19,9 +20,9 @@ def test_catalog_code_fields_accept_empty_strings_and_delimited_text():
 def test_catalog_v1_has_expected_scope():
     summary = ClinicalCatalogService().summary()
     assert summary["catalog_version"] == "2026-07-30-top-medications-v1"
-    assert summary["medication_count"] == 54
-    assert summary["clinical_medication_count"] == 54
-    assert summary["pharmacologic_group_medication_count"] == 1008
+    assert summary["medication_count"] == 57
+    assert summary["clinical_medication_count"] == 57
+    assert summary["pharmacologic_group_medication_count"] == 1011
     assert summary["cie10_syndrome_row_count"] == 340
     assert summary["criterion_count"] == 97
     assert summary["criteria_by_system"] == {"beers": 23, "stopp_start": 74}
@@ -183,6 +184,30 @@ def test_beers_b02_b03_and_b18_keep_screening_separate_from_classification():
     assert not any(item["rule_code"] == "B03" for item in alerts)
 
 
+def test_stopp_a3_excludes_explicit_as_needed_medication_from_regular_duplication():
+    regular = MedicationCreate(
+        entered_name="DICLOFENACO",
+        normalized_active_ingredient="DICLOFENACO",
+        dose="50",
+        dose_unit="mg",
+        frequency="C/12h",
+        route="Oral",
+    )
+    as_needed = MedicationCreate(
+        entered_name="NAPROXENO",
+        normalized_active_ingredient="NAPROXENO",
+        dose="500",
+        dose_unit="mg",
+        frequency="Según necesidad",
+        route="Oral",
+    )
+    alerts, results = ClinicalCatalogService().evaluate(
+        [regular, as_needed], age=75, sex="F", clinical_context={}
+    )
+    assert _result_by_code(results, "STOPP-A3")["status"] == "no_alert"
+    assert not any(item["rule_code"] == "STOPP-A3" for item in alerts)
+
+
 def test_beers_b16_requires_opioid_and_returns_both_implicated_medications():
     _, gabapentin_only = ClinicalCatalogService().evaluate(
         ["GABAPENTINA"], age=75, sex="F", clinical_context={}
@@ -261,9 +286,9 @@ def test_beers_b04_requires_duration_and_maintenance_indication():
     assert _result_by_code(active_results, "B04")["status"] == "activated"
 
 
-def test_beers_b06_b19_b20_and_b23_expose_conditional_or_manual_state():
+def test_beers_b06_b19_and_b20_expose_conditional_state():
     _, results = ClinicalCatalogService().evaluate(
-        ["DICLOFENACO", "GABAPENTINA", "TRAMADOL", "TAMSULOSINA"],
+        ["DICLOFENACO", "GABAPENTINA", "TRAMADOL"],
         age=75,
         sex="M",
         clinical_context={
@@ -278,7 +303,43 @@ def test_beers_b06_b19_b20_and_b23_expose_conditional_or_manual_state():
     assert _result_by_code(results, "B19")["recommendation_type"] == "reduce_dose"
     assert _result_by_code(results, "B20")["status"] == "activated"
     assert _result_by_code(results, "B20")["recommendation_text"] == "Evitar la formulación de liberación extendida."
-    assert _result_by_code(results, "B23")["status"] == "manual_review"
+
+
+def test_beers_b23_uses_nonselective_alpha_blockers_and_excludes_tamsulosin():
+    service = ClinicalCatalogService()
+    alerts, results = service.evaluate(
+        ["DOXAZOSINA"],
+        age=75,
+        sex="M",
+        clinical_context={
+            "syncope_history": True,
+            "orthostatic_hypotension": True,
+        },
+    )
+    assert _result_by_code(results, "B23")["status"] == "activated"
+    assert any(item["rule_code"] == "B23" for item in alerts)
+
+    _, tamsulosin_results = service.evaluate(
+        ["TAMSULOSINA"],
+        age=75,
+        sex="M",
+        clinical_context={
+            "syncope_history": True,
+            "orthostatic_hypotension": True,
+        },
+    )
+    assert not any(item["criterion_code"] == "B23" for item in tamsulosin_results)
+
+
+def test_reviewed_excel_description_is_attached_to_alert_trace():
+    alerts, _ = ClinicalCatalogService().evaluate(
+        ["TRAMADOL", "GABAPENTINA"], age=75, sex="F", clinical_context={}
+    )
+    b16 = next(item for item in alerts if item["rule_code"] == "B16")
+    details = b16["trace_data"]["doctor_review_details"]
+    assert len(details) == 1
+    assert details[0]["source_system"] == "Beers"
+    assert "gabapentina o pregabalina" in details[0]["description"].lower()
 
 
 def test_beers_renal_rules_require_documented_creatinine_clearance_not_egfr():
@@ -401,14 +462,22 @@ def test_combination_precondition_prevents_irrelevant_missing_data():
 def test_catalog_and_source_endpoints(client):
     summary = client.get("/api/catalog/v1/summary")
     assert summary.status_code == 200
-    assert summary.json()["medication_count"] == 54
-    assert summary.json()["pharmacologic_group_medication_count"] == 1008
+    assert summary.json()["medication_count"] == 57
+    assert summary.json()["pharmacologic_group_medication_count"] == 1011
 
     medications = client.get("/api/catalog/v1/medications")
     assert medications.status_code == 200
-    assert len(medications.json()) == 1008
-    assert sum(item["clinical_rules_validated"] for item in medications.json()) == 54
+    catalog_rows = medications.json()
+    assert len(catalog_rows) == 1011
+    assert sum(item["clinical_rules_validated"] for item in catalog_rows) == 57
     assert all(item["pharmacologic_group"] for item in medications.json())
+    raw_catalog_rows = ClinicalCatalogService().medications_catalog()
+    assert [item["medication"] for item in raw_catalog_rows] == sorted(
+        (item["medication"] for item in raw_catalog_rows), key=_canonical
+    )
+    by_name = {item["medication"]: item for item in catalog_rows}
+    assert by_name["DOXAZOSINA"]["beers_codes"] == ["B23"]
+    assert by_name["TAMSULOSINA 0.4 MG (LIBERACIÓN PROLONGADA)"]["beers_codes"] == []
 
     sources = client.get("/api/pilot/v1/sources")
     large_sources_present = all(

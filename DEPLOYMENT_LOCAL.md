@@ -10,10 +10,9 @@ Abra PowerShell en esta carpeta y ejecute:
 
 Servicios:
 
-- Aplicación web: http://127.0.0.1:8088
-- API FastAPI: http://127.0.0.1:8001
-- Swagger: http://127.0.0.1:8001/docs
-- Salud a través del frontend: http://127.0.0.1:8088/health
+- Aplicación web: http://127.0.0.1:8089
+- API FastAPI: http://127.0.0.1:8002
+- Swagger: http://127.0.0.1:8002/docs
 
 ## Operación
 
@@ -23,7 +22,7 @@ docker compose logs --follow
 .\stop-local.ps1
 ```
 
-`stop-local.ps1` detiene los contenedores y conserva los casos simulados. El volumen persistente se llama `sigram_backend_data`.
+`stop-local.ps1` detiene los contenedores y conserva los casos simulados. El volumen persistente se llama `sigram_backend_data_dev`.
 
 No ejecute `docker compose down -v` salvo que quiera borrar de forma definitiva la base local de casos.
 
@@ -33,14 +32,14 @@ No ejecute `docker compose down -v` salvo que quiera borrar de forma definitiva 
 docker compose up --build --detach
 ```
 
-## Catálogo clínico de pruebas
+## Cohorte y catálogo Rebagliati 2025
 
-- Fuente inmutable: `SIGRAM_AM_BACKEND_V1_20260731/data/raw/top_meds_list_beers_stopp_start_v3-20260730.xlsx`.
-- SHA-256: `96912d52ed3ff8e30d8c5cc4545dd6bdcc5422e35b971448725b9b1073bed05f`.
-- Alcance: 54 medicamentos, 23 criterios Beers y 74 criterios STOPP/START.
-- Backend vigente: `SIGRAM_AM_BACKEND_V1_20260805`, con evidencia positiva y trazable de CIE-10 para la muestra pseudonimizada del piloto. La ausencia de un CIE-10 no se interpreta como ausencia de enfermedad.
-- El formulario utiliza solamente los 54 medicamentos del catálogo.
-- ATC y cuarto nivel de clasificación farmacológica permanecen pendientes de validación por el equipo clínico. El sistema no asigna valores inferidos.
+- La entrega se monta en modo solo lectura desde `SIGRAM_Rebagliati_2025_Entrega_Desarrollador`.
+- Directorio: 181,356 pacientes; medicamentos, CIE-10 y laboratorios se consultan con DuckDB por `patient_code`, sin cargarlos completos en cada solicitud.
+- La lista usa `GET /api/pilot/v1/sample-patients?offset=0&limit=50` y búsqueda opcional por `query`.
+- Alcance operativo de investigación: 54 medicamentos, 23 criterios Beers, 74 criterios STOPP/START y DDInter local. Las brechas de contexto permanecen como no evaluables y requieren revisión profesional.
+- La ausencia de una fila de laboratorio o CIE-10 se presenta como dato no registrado, nunca como normalidad o ausencia de enfermedad.
+- Antes de un despliegue, verifique `05_Manifiesto/CHECKSUMS_SHA256.txt` de la entrega.
 
 ## Seguridad metodológica
 

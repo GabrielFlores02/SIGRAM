@@ -5,6 +5,7 @@ import type {
   AlertResult,
   CatalogCriterion,
   CatalogMedication,
+  DoctorReviewDetail,
   CatalogSummary,
   ClinicalCase,
   ClinicalCaseInput,
@@ -23,6 +24,7 @@ import type {
 type Page = "cases" | "new" | "new-minimal" | "history" | "research" | "results";
 type VisibleSystem = AnalysisSystem;
 type DDInterLevel = "MAJOR" | "MODERATE" | "MINOR" | "UNKNOWN" | "UNSPECIFIED";
+type Cie10Option = { code: string; description: string };
 
 const EMPTY_MEDICATION: MedicationInput = {
   entered_name: "",
@@ -44,6 +46,10 @@ const EMPTY_MINIMAL_MEDICATION: MedicationInput = {
 };
 
 const ESSI_SIMULATOR_CODE = "SIM-ESSI-001";
+
+function normalizeClinicalSearch(value: string) {
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es").trim();
+}
 
 const NUMERIC_CONTEXT_FIELDS = new Set([
   "egfr_ml_min_1_73m2",
@@ -110,6 +116,12 @@ function formatDate(value?: string) {
   );
 }
 
+function formatCalendarDate(value?: string) {
+  if (!value) return "—";
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
+  return match ? `${match[3]}/${match[2]}/${match[1]}` : formatDate(value);
+}
+
 function sexLabel(value: string) {
   const normalized = value.toLowerCase();
   if (normalized.startsWith("f")) return "F";
@@ -166,6 +178,18 @@ function ddinterLevelLabel(level: DDInterLevel) {
 function traceStringList(alert: AlertResult, field: string) {
   const value = alert.trace_data[field];
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+}
+
+function doctorReviewDetails(alert: AlertResult): DoctorReviewDetail[] {
+  const details = alert.trace_data.doctor_review_details;
+  if (!Array.isArray(details)) return [];
+  return details.filter((item): item is DoctorReviewDetail => Boolean(
+    item && typeof item === "object" && typeof (item as DoctorReviewDetail).description === "string",
+  ));
+}
+
+function sortCatalogMedications(rows: CatalogMedication[]) {
+  return [...rows].sort((left, right) => left.medication.localeCompare(right.medication, "es", { sensitivity: "base" }));
 }
 
 function labFieldLabel(field: string) {
@@ -420,6 +444,11 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
   const [age, setAge] = useState("");
   const [sex, setSex] = useState("");
   const [diagnoses, setDiagnoses] = useState("");
+  const [cie10Options, setCie10Options] = useState<Cie10Option[]>([]);
+  const [cie10Status, setCie10Status] = useState<"loading" | "ready" | "error">("loading");
+  const [diagnosisMenuOpen, setDiagnosisMenuOpen] = useState(false);
+  const [activeDiagnosisIndex, setActiveDiagnosisIndex] = useState(0);
+  const diagnosisInputRef = useRef<HTMLTextAreaElement>(null);
   const [medications, setMedications] = useState<MedicationInput[]>([{ ...EMPTY_MEDICATION }]);
   const [criteria, setCriteria] = useState<CatalogCriterion[]>([]);
   const [catalogMedications, setCatalogMedications] = useState<CatalogMedication[]>([]);
@@ -448,10 +477,26 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
     Promise.all([api.listCriteria(), api.listCatalogMedications(), api.getCatalogSummary()])
       .then(([criteriaRows, medicationRows, summary]) => {
         setCriteria(criteriaRows);
-        setCatalogMedications(medicationRows);
+        setCatalogMedications(sortCatalogMedications(medicationRows));
         setCatalogSummary(summary);
       })
       .catch((reason: Error) => setError(reason.message));
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${import.meta.env.BASE_URL}data/cie10_minsa_oficial.json`)
+      .then((response) => {
+        if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
+        return response.json() as Promise<Cie10Option[]>;
+      })
+      .then((rows) => {
+        if (cancelled) return;
+        setCie10Options(rows.filter((row) => typeof row?.code === "string" && typeof row?.description === "string"));
+        setCie10Status("ready");
+      })
+      .catch(() => { if (!cancelled) setCie10Status("error"); });
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
@@ -479,6 +524,55 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
     (clinicalContext[item.field] ?? "") === "" || !committedContextFields.has(item.field)
   );
 
+  const diagnosisQuery = diagnoses.split(/\r?\n/).slice(-1)[0]?.trim() ?? "";
+  const diagnosisSuggestions = useMemo(() => {
+    const query = normalizeClinicalSearch(diagnosisQuery);
+    if (query.length < 2) return [];
+    const codeQuery = query.replace(/[^a-z0-9]/g, "");
+    const ranked: Array<{ option: Cie10Option; rank: number }> = [];
+    for (const option of cie10Options) {
+      const code = option.code.toLocaleLowerCase("es");
+      const description = normalizeClinicalSearch(option.description);
+      let rank = -1;
+      if (codeQuery && code === codeQuery) rank = 0;
+      else if (codeQuery && code.startsWith(codeQuery)) rank = 1;
+      else if (description.startsWith(query)) rank = 2;
+      else if (description.split(/\s+/).some((word) => word.startsWith(query))) rank = 3;
+      else if (description.includes(query)) rank = 4;
+      if (rank >= 0) ranked.push({ option, rank });
+    }
+    return ranked
+      .sort((left, right) => left.rank - right.rank || left.option.code.localeCompare(right.option.code, "es"))
+      .slice(0, 10)
+      .map((item) => item.option);
+  }, [cie10Options, diagnosisQuery]);
+
+  function selectDiagnosis(option: Cie10Option) {
+    const lines = diagnoses.split(/\r?\n/);
+    lines[lines.length - 1] = `${option.code} — ${option.description}`;
+    setDiagnoses(`${lines.join("\n")}\n`);
+    setDiagnosisMenuOpen(false);
+    setActiveDiagnosisIndex(0);
+    requestAnimationFrame(() => diagnosisInputRef.current?.focus());
+  }
+
+  function handleDiagnosisKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (!diagnosisMenuOpen || diagnosisSuggestions.length === 0) return;
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setActiveDiagnosisIndex((current) => (current + 1) % diagnosisSuggestions.length);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setActiveDiagnosisIndex((current) => (current - 1 + diagnosisSuggestions.length) % diagnosisSuggestions.length);
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      selectDiagnosis(diagnosisSuggestions[activeDiagnosisIndex] ?? diagnosisSuggestions[0]);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      setDiagnosisMenuOpen(false);
+    }
+  }
+
   const minimumComplete = Boolean(
     caseCode.trim() && Number(age) >= 60 && sex && diagnoses.trim() && medications.length &&
     medications.every((item) => item.entered_name.trim() && item.normalized_active_ingredient.trim() && item.dose.trim() && item.dose_unit && item.frequency && item.route),
@@ -493,7 +587,7 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
     setMedications((current) => current.map((item, position) => position === index ? {
       ...item,
       entered_name: value,
-      normalized_active_ingredient: selected?.medication ?? "",
+      normalized_active_ingredient: selected?.medication ?? value.trim(),
     } : item));
   }
 
@@ -699,7 +793,7 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
 
       <div className="catalog-notice compact-notice" role="status">
         <span>▤</span>
-        <div><strong className="heading-with-info">Catálogo farmacológico: {catalogSummary?.pharmacologic_group_medication_count ?? 1008} medicamentos; {catalogSummary?.clinical_medication_count ?? 54} con reglas clínicas <InfoTip text="Los grupos farmacológicos provienen de BD_MEDICAMENTOS-GF_SINDROMES_20260818. Solo el subconjunto clínico validado activa criterios Beers o STOPP/START; no se inventan reglas por pertenencia a un grupo." /></strong></div>
+        <div><strong className="heading-with-info">Catálogo farmacológico: {catalogSummary?.pharmacologic_group_medication_count ?? catalogMedications.length} medicamentos; {catalogSummary?.clinical_medication_count ?? 57} con reglas clínicas <InfoTip text="El listado incluye el catálogo disponible y suplementos clínicos revisados aunque no figuren en el stock institucional. También puede escribir un medicamento no listado; solo activará reglas cuando exista una asociación clínica validada." /></strong></div>
       </div>
 
       <section className="form-card">
@@ -728,7 +822,42 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
           <label>Código del caso *<input value={caseCode} onChange={(event) => setCaseCode(event.target.value)} placeholder="Ej. CASO-2025-001" /></label>
           <label>Edad (años) *<div className="suffix-input"><input type="number" min="60" value={age} onChange={(event) => setAge(event.target.value)} placeholder="≥ 60" /><span>AÑOS</span></div></label>
           <label>Sexo *<select value={sex} onChange={(event) => setSex(event.target.value)}><option value="">Seleccione…</option><option>Masculino</option><option>Femenino</option></select></label>
-          <label className="full-width">Diagnósticos / condiciones clínicas *<textarea value={diagnoses} onChange={(event) => setDiagnoses(event.target.value)} placeholder="Ingrese los diagnósticos o condiciones clínicas relevantes…" /></label>
+          <div className="full-width diagnosis-field">
+            <label htmlFor="case-diagnoses">Diagnósticos / condiciones clínicas *</label>
+            <div className="cie10-combobox">
+              <textarea
+                ref={diagnosisInputRef}
+                id="case-diagnoses"
+                value={diagnoses}
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded={diagnosisMenuOpen && diagnosisQuery.length >= 2}
+                aria-controls="cie10-suggestions"
+                aria-activedescendant={diagnosisSuggestions.length ? `cie10-option-${activeDiagnosisIndex}` : undefined}
+                onFocus={() => setDiagnosisMenuOpen(true)}
+                onBlur={() => setDiagnosisMenuOpen(false)}
+                onChange={(event) => { setDiagnoses(event.target.value); setDiagnosisMenuOpen(true); setActiveDiagnosisIndex(0); }}
+                onKeyDown={handleDiagnosisKeyDown}
+                placeholder="Escriba un código o una descripción CIE-10…"
+              />
+              {diagnosisMenuOpen && diagnosisQuery.length >= 2 && <div id="cie10-suggestions" className="cie10-suggestions" role="listbox" aria-label="Coincidencias CIE-10">
+                {cie10Status === "loading" && <p className="cie10-suggestion-status">Cargando catálogo CIE-10…</p>}
+                {cie10Status === "error" && <p className="cie10-suggestion-status error">No se pudo cargar el catálogo CIE-10.</p>}
+                {cie10Status === "ready" && diagnosisSuggestions.length === 0 && <p className="cie10-suggestion-status">No se encontraron coincidencias.</p>}
+                {diagnosisSuggestions.map((option, index) => <button
+                  id={`cie10-option-${index}`}
+                  type="button"
+                  role="option"
+                  aria-selected={index === activeDiagnosisIndex}
+                  className={index === activeDiagnosisIndex ? "active" : ""}
+                  key={option.code}
+                  onMouseDown={(event) => { event.preventDefault(); selectDiagnosis(option); }}
+                  onMouseEnter={() => setActiveDiagnosisIndex(index)}
+                ><span>{option.code}</span><strong>{option.description}</strong></button>)}
+              </div>}
+            </div>
+            <small className="cie10-help">Busque por descripción o código. Seleccione una opción para agregarla y continúe en la línea siguiente.</small>
+          </div>
         </div>
         <div className="clinical-entry-panels">
           <section className="pilot-triage-panel">
@@ -746,11 +875,11 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
       </section>
 
       <section className="form-card medication-card">
-        <div className="card-heading"><h2 className="heading-with-info">▤ Medicamentos activos <InfoTip text="Puede seleccionar entre 1,008 presentaciones con grupo farmacológico. La activación de criterios clínicos específicos permanece restringida a los 54 medicamentos validados. Si registra duración, use un número de días, por ejemplo: 120 días." /></h2><button type="button" className="small-primary" onClick={() => setMedications((current) => [...current, { ...EMPTY_MEDICATION }])}>＋ Agregar</button></div>
+        <div className="card-heading"><h2 className="heading-with-info">▤ Medicamentos activos <InfoTip text="La lista se presenta en orden alfabético. Si el medicamento no aparece, puede escribirlo; las reglas clínicas solo se activan cuando existe una asociación validada. Si registra duración, use un número de días, por ejemplo: 120 días." /></h2><button type="button" className="small-primary" onClick={() => setMedications((current) => [...current, { ...EMPTY_MEDICATION }])}>＋ Agregar</button></div>
         <div className="medication-list">
           {medications.map((medication, index) => (
             <div className="medication-row" key={index}>
-              <label>Medicamento del catálogo *<select value={medication.entered_name} onChange={(event) => selectCatalogMedication(index, event.target.value)}><option value="">Seleccione…</option>{!catalogMedications.some((item) => item.medication === medication.entered_name) && medication.entered_name && <option value={medication.entered_name}>{medication.entered_name} (historia cargada)</option>}{catalogMedications.map((item) => <option key={item.order} value={item.medication}>{item.medication}</option>)}</select></label>
+              <label>Medicamento *<input list="new-case-medication-catalog" value={medication.entered_name} onChange={(event) => selectCatalogMedication(index, event.target.value)} placeholder="Seleccione o escriba un medicamento" /></label>
               <label>Nombre normalizado<input readOnly value={medication.normalized_active_ingredient} placeholder="Se completa desde el catálogo" /></label>
               <label>Dosis<input value={medication.dose} onChange={(event) => updateMedication(index, "dose", event.target.value)} placeholder="10" /></label>
               <label>Unidad<select value={medication.dose_unit} onChange={(event) => updateMedication(index, "dose_unit", event.target.value)}>{medication.dose_unit === "no estructurada" && <option>no estructurada</option>}<option>mg</option><option>mcg</option><option>g</option><option>mL</option></select></label>
@@ -761,6 +890,7 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
             </div>
           ))}
         </div>
+        <datalist id="new-case-medication-catalog">{catalogMedications.map((item) => <option key={item.order} value={item.medication} />)}</datalist>
       </section>
 
       {selectedPatientCode && historyMedications.length > 0 && <details className="history-medications">
@@ -812,7 +942,7 @@ function MinimalCasePage() {
 
   useEffect(() => {
     api.listCatalogMedications()
-      .then(setCatalogMedications)
+      .then((rows) => setCatalogMedications(sortCatalogMedications(rows)))
       .catch((reason: Error) => setError(reason.message));
   }, []);
 
@@ -925,24 +1055,29 @@ function MinimalCasePage() {
           </select>
         </label>
         {!loadingPatients && patients.length === 0 && <p className="minimal-empty">No se encontraron pacientes con ese código.</p>}
-        {selectedPatient && <div className="minimal-patient-summary"><strong>{selectedPatient.patient_code}</strong><span>{selectedPatient.age} años · {selectedPatient.sex}</span><span>{selectedPatient.polypharmacy_level ?? "Polifarmacia no informada"} · máximo {selectedPatient.max_simultaneous_top_medications} medicamentos simultáneos</span></div>}
+        {selectedPatient && <div className="minimal-patient-summary"><strong>{selectedPatient.patient_code}</strong><span>{selectedPatient.age} años · {selectedPatient.sex}</span><span>{selectedPatient.polypharmacy_level ?? "Polifarmacia no informada"} · máximo {selectedPatient.max_simultaneous_top_medications} medicamentos simultáneos</span>{prefill && <span className="minimal-index-date"><b>Fecha índice:</b> {formatCalendarDate(prefill.medication_index_date)}</span>}</div>}
       </div>
     </section>
     {selectedPatientCode && <section className="form-card minimal-card">
       <div className="card-heading"><h2>▤ Medicamentos a evaluar</h2><button type="button" className="small-primary" disabled={loadingPatientData} onClick={() => { setMedications((current) => [...current, { ...EMPTY_MINIMAL_MEDICATION }]); setResult(undefined); }}>＋ Agregar</button></div>
       {loadingPatientData ? <div className="empty-state">Preparando medicamentos…</div> : <div className="minimal-medications">
-        {medications.map((medication, index) => <div className="minimal-medication-row" key={`${index}-${medication.entered_name}`}>
-          <label>Medicamento {index + 1}
-            <select value={medication.entered_name} onChange={(event) => selectMinimalMedication(index, event.target.value)}>
-              <option value="">Seleccione del catálogo…</option>
-              {!catalogMedications.some((item) => item.medication === medication.entered_name) && medication.entered_name && <option value={medication.entered_name}>{medication.entered_name} (historia cargada)</option>}
-              {catalogMedications.map((item) => <option value={item.medication} key={item.order}>{item.medication}</option>)}
-            </select>
-          </label>
-          <button type="button" className="delete-button" aria-label={`Eliminar medicamento ${index + 1}`} disabled={medications.length === 1} onClick={() => { setMedications((current) => current.filter((_, position) => position !== index)); setResult(undefined); }}>⌫</button>
-        </div>)}
+        {medications.map((medication, index) => {
+          const isCatalogMedication = catalogMedications.some((item) => item.medication === medication.entered_name);
+          return <div className="minimal-medication-row" key={`minimal-medication-${index}`}>
+            <label>Seleccionar medicamento {index + 1}
+              <select value={isCatalogMedication ? medication.entered_name : ""} onChange={(event) => selectMinimalMedication(index, event.target.value)}>
+                <option value="">Seleccione del catálogo…</option>
+                {catalogMedications.map((item) => <option value={item.medication} key={item.order}>{item.medication}</option>)}
+              </select>
+            </label>
+            <label>Ingresar medicamento no listado
+              <input value={isCatalogMedication ? "" : medication.entered_name} onChange={(event) => selectMinimalMedication(index, event.target.value)} placeholder="Escriba el nombre del medicamento" />
+            </label>
+            <button type="button" className="delete-button" aria-label={`Eliminar medicamento ${index + 1}`} disabled={medications.length === 1} onClick={() => { setMedications((current) => current.filter((_, position) => position !== index)); setResult(undefined); }}>⌫</button>
+          </div>;
+        })}
       </div>}
-      {!loadingPatientData && <p className="minimal-warning">Opcional: seleccione aquí uno o más medicamentos nuevos para agregarlos al tamizaje.</p>}
+      {!loadingPatientData && <p className="minimal-warning">Opcional: elija un medicamento del desplegable o ingrese por escrito uno que no figure en el catálogo.</p>}
     </section>}
     {selectedPatientCode && !loadingPatientData && historyMedications.length > 0 && <details className="history-medications minimal-history-medications">
       <summary>Medicamentos cargados del paciente ({historyMedications.length})</summary>
@@ -950,13 +1085,13 @@ function MinimalCasePage() {
       <ul>{historyMedications.map((medication, index) => <li key={`${medication.entered_name}-${index}`}><strong>{medication.entered_name}</strong><span>{medication.normalized_active_ingredient}{medication.duration ? ` · ${medication.duration}` : " · duración no estructurada"}</span></li>)}</ul>
     </details>}
     <div className="submit-bar minimal-submit"><span className={canSubmit ? "complete" : "incomplete"}>{canSubmit ? `✓ ${totalMedications} medicamentos listos` : selectedPatientCode ? "Espere la carga de la historia" : "Seleccione un paciente"}</span><button className="primary-button" disabled={!canSubmit || submitting}>{submitting ? "Validando…" : "✓ Validar prescripción"}</button></div>
-    {result && <QuickScreeningToast result={result} selectedAlertId={selectedAlertId} onSelectAlert={setSelectedAlertId} onClose={() => { setResult(undefined); setSelectedAlertId(undefined); }} />}
+    {result && <QuickScreeningToast result={result} indexDate={prefill?.medication_index_date} selectedAlertId={selectedAlertId} onSelectAlert={setSelectedAlertId} onClose={() => { setResult(undefined); setSelectedAlertId(undefined); }} />}
   </form>;
 }
 
-function QuickScreeningToast({ result, selectedAlertId, onSelectAlert, onClose }: { result: { patient: PilotPatient; evaluation: EvaluationExecution }; selectedAlertId?: number; onSelectAlert: (id?: number) => void; onClose: () => void }) {
-  type QuickTab = "pim" | "ddinter";
-  type PimGroup = { key: string; alerts: AlertResult[]; representative: AlertResult };
+function QuickScreeningToast({ result, indexDate, selectedAlertId, onSelectAlert, onClose }: { result: { patient: PilotPatient; evaluation: EvaluationExecution }; indexDate?: string; selectedAlertId?: number; onSelectAlert: (id?: number) => void; onClose: () => void }) {
+  type QuickTab = "mpi" | "opp" | "ifp";
+  type MpiGroup = { key: string; alerts: AlertResult[]; representative: AlertResult };
   const duplicateFamilies: Record<string, string> = {
     B09: "aspirin-primary-prevention", "STOPP-C16": "aspirin-primary-prevention",
     B07: "nsaid-ulcer-no-gastroprotection", "STOPP-H1": "nsaid-ulcer-no-gastroprotection",
@@ -965,50 +1100,70 @@ function QuickScreeningToast({ result, selectedAlertId, onSelectAlert, onClose }
     B23: "alpha-blocker-syncope-orthostasis", "STOPP-I5": "alpha-blocker-syncope-orthostasis",
   };
   const alerts = result.evaluation.alerts.filter((alert) => ["beers", "stopp_start", "ddinter"].includes(alert.analysis_system));
-  const pimAlerts = alerts.filter((alert) => alert.analysis_system === "beers" || alert.analysis_system === "stopp_start");
-  const pimGroups = Array.from(pimAlerts.reduce((groups, alert) => {
+  const mpiAlerts = alerts.filter((alert) => alert.analysis_system === "beers" || alert.rule_code.startsWith("STOPP-"));
+  const mpiGroups = Array.from(mpiAlerts.reduce((groups, alert) => {
     const key = duplicateFamilies[alert.rule_code] ?? alert.rule_code;
     const current = groups.get(key) ?? [];
     current.push(alert);
     groups.set(key, current);
     return groups;
-  }, new Map<string, AlertResult[]>())).map(([key, groupedAlerts]): PimGroup => ({
+  }, new Map<string, AlertResult[]>())).map(([key, groupedAlerts]): MpiGroup => ({
     key,
     alerts: groupedAlerts,
-    representative: groupedAlerts.find((alert) => alert.analysis_system === "stopp_start") ?? groupedAlerts[0],
+    representative: groupedAlerts.find((alert) => alert.rule_code.startsWith("STOPP-")) ?? groupedAlerts[0],
   }));
-  const ddinterAlerts = alerts.filter((alert) => alert.analysis_system === "ddinter");
+  const oppAlerts = alerts.filter((alert) => alert.rule_code.startsWith("START-"));
+  const ifpAlerts = alerts.filter((alert) => alert.analysis_system === "ddinter");
   const initiallySelected = alerts.find((alert) => alert.id === selectedAlertId);
-  const [activeTab, setActiveTab] = useState<QuickTab>(initiallySelected?.analysis_system === "ddinter" ? "ddinter" : "pim");
-  const selectedPimGroup = pimGroups.find((group) => group.alerts.some((alert) => alert.id === selectedAlertId));
-  const selectedDdinter = ddinterAlerts.find((alert) => alert.id === selectedAlertId);
-  const visibleCount = activeTab === "pim" ? pimGroups.length : ddinterAlerts.length;
-  const totalFindings = pimGroups.length + ddinterAlerts.length;
+  const initialTab: QuickTab = initiallySelected?.analysis_system === "ddinter" ? "ifp" : initiallySelected?.rule_code.startsWith("START-") ? "opp" : "mpi";
+  const [activeTab, setActiveTab] = useState<QuickTab>(initialTab);
+  const selectedMpiGroup = mpiGroups.find((group) => group.alerts.some((alert) => alert.id === selectedAlertId));
+  const selectedOpp = oppAlerts.find((alert) => alert.id === selectedAlertId);
+  const selectedIfp = ifpAlerts.find((alert) => alert.id === selectedAlertId);
+  const visibleCount = activeTab === "mpi" ? mpiGroups.length : activeTab === "opp" ? oppAlerts.length : ifpAlerts.length;
+  const totalFindings = mpiGroups.length + oppAlerts.length + ifpAlerts.length;
+  const selectedClinicalAlerts = selectedMpiGroup?.alerts ?? (selectedOpp ? [selectedOpp] : []);
+  const selectedReviewDetails = selectedClinicalAlerts.length
+    ? Array.from(new Map(selectedClinicalAlerts.flatMap(doctorReviewDetails).map((detail) => [`${detail.source_system}-${detail.source_code}-${detail.description}`, detail])).values())
+    : [];
 
   function selectTab(tab: QuickTab) {
     setActiveTab(tab);
-    onSelectAlert(tab === "pim" ? pimGroups[0]?.representative.id : ddinterAlerts[0]?.id);
+    onSelectAlert(tab === "mpi" ? mpiGroups[0]?.representative.id : tab === "opp" ? oppAlerts[0]?.id : ifpAlerts[0]?.id);
   }
 
   return <aside className="quick-screening-toast" role="status" aria-live="polite" aria-label="Resultado del tamizaje rápido">
-    <header><div><strong>{totalFindings} {totalFindings === 1 ? "hallazgo detectado" : "hallazgos detectados"}</strong><span>Paciente {result.patient.patient_code}</span></div><button type="button" onClick={onClose} aria-label="Cerrar resultado">×</button></header>
-    <div className="quick-alert-tabs" role="tablist" aria-label="Tipo de hallazgo">{(["pim", "ddinter"] as QuickTab[]).map((tab) => <button type="button" role="tab" aria-selected={activeTab === tab} className={`quick-alert-tab tab-${tab} ${activeTab === tab ? "active" : ""}`} onClick={() => selectTab(tab)} key={tab}><span>{tab === "pim" ? "PIM" : "DDInter"}</span><b>{tab === "pim" ? pimGroups.length : ddinterAlerts.length}</b></button>)}</div>
-    {visibleCount > 0 ? <div className="quick-alert-list" role="tabpanel" aria-label={`Hallazgos ${activeTab === "pim" ? "PIM" : "DDInter"}`}>
-      {activeTab === "pim" ? pimGroups.map((group) => <button type="button" key={group.key} className={group.alerts.some((alert) => alert.id === selectedAlertId) ? "active" : ""} onClick={() => onSelectAlert(group.representative.id)}><span>PIM · {group.alerts.map((alert) => alert.rule_code).join(" + ")}</span><strong>{group.representative.problem_identified}</strong></button>) : ddinterAlerts.map((alert) => <button type="button" key={alert.id} className={alert.id === selectedAlertId ? "active" : ""} onClick={() => onSelectAlert(alert.id)}><span>DDInter · {alert.rule_code}</span><strong>{alert.problem_identified}</strong></button>)}
-    </div> : <div className="quick-alert-empty" role="tabpanel">No se detectaron hallazgos {activeTab === "pim" ? "PIM" : "DDInter"} con los datos disponibles.</div>}
-    {activeTab === "pim" && selectedPimGroup && <section className="quick-alert-detail" aria-label="Detalle simple del PIM seleccionado">
-      <div><span>PIM</span><b>{selectedPimGroup.alerts.map((alert) => alert.rule_code).join(" + ")}</b></div>
-      <strong>{selectedPimGroup.representative.problem_identified}</strong>
-      <p><b>Medicamentos:</b> {Array.from(new Set(selectedPimGroup.alerts.flatMap((alert) => alert.implicated_medications))).join(", ") || "No consignados"}</p>
-      {selectedPimGroup.alerts.filter((alert) => alert.analysis_system === "stopp_start").map((alert) => <p key={`description-${alert.id}`}><b>Descripción STOPP/START ({alert.rule_code}):</b> {alert.problem_identified}</p>)}
-      {selectedPimGroup.representative.justification && <p><b>Motivo:</b> {selectedPimGroup.representative.justification}</p>}
-      {Array.from(new Set(selectedPimGroup.alerts.map((alert) => alert.recommendation).filter(Boolean))).map((recommendation) => <p key={recommendation}><b>Orientación:</b> {recommendation}</p>)}
+    <header><div><strong>{totalFindings} {totalFindings === 1 ? "hallazgo detectado" : "hallazgos detectados"}</strong><span>Paciente {result.patient.patient_code} · Fecha índice: {formatCalendarDate(indexDate)}</span></div><button type="button" onClick={onClose} aria-label="Cerrar resultado">×</button></header>
+    <div className="quick-alert-tabs" role="tablist" aria-label="Tipo de hallazgo">{(["mpi", "opp", "ifp"] as QuickTab[]).map((tab) => {
+      const label = tab === "mpi" ? "MPI" : tab === "opp" ? "OPP" : "IFP";
+      const count = tab === "mpi" ? mpiGroups.length : tab === "opp" ? oppAlerts.length : ifpAlerts.length;
+      const title = tab === "mpi" ? "Medicamentos potencialmente inapropiados" : tab === "opp" ? "Omisiones potenciales de prescripción" : "Interacciones farmacológicas potenciales";
+      return <button type="button" role="tab" title={title} aria-label={`${title}: ${count}`} aria-selected={activeTab === tab} className={`quick-alert-tab tab-${tab} ${activeTab === tab ? "active" : ""}`} onClick={() => selectTab(tab)} key={tab}><span>{label}</span><b>{count}</b></button>;
+    })}</div>
+    {visibleCount > 0 ? <div className="quick-alert-list" role="tabpanel" aria-label={`Hallazgos ${activeTab.toUpperCase()}`}>
+      {activeTab === "mpi" ? mpiGroups.map((group) => <button type="button" key={group.key} className={group.alerts.some((alert) => alert.id === selectedAlertId) ? "active" : ""} onClick={() => onSelectAlert(group.representative.id)}><span>MPI · {group.alerts.map((alert) => alert.rule_code).join(" + ")}</span><strong>{group.representative.problem_identified}</strong></button>) : activeTab === "opp" ? oppAlerts.map((alert) => <button type="button" key={alert.id} className={alert.id === selectedAlertId ? "active" : ""} onClick={() => onSelectAlert(alert.id)}><span>OPP · {alert.rule_code}</span><strong>{alert.problem_identified}</strong></button>) : ifpAlerts.map((alert) => <button type="button" key={alert.id} className={alert.id === selectedAlertId ? "active" : ""} onClick={() => onSelectAlert(alert.id)}><span>IFP · {alert.rule_code}</span><strong>{alert.problem_identified}</strong></button>)}
+    </div> : <div className="quick-alert-empty" role="tabpanel">No se detectaron hallazgos {activeTab.toUpperCase()} con los datos disponibles.</div>}
+    {activeTab === "mpi" && selectedMpiGroup && <section className="quick-alert-detail" aria-label="Detalle del MPI seleccionado">
+      <div><span>MPI</span><b>{selectedMpiGroup.alerts.map((alert) => alert.rule_code).join(" + ")}</b></div>
+      <strong>{selectedMpiGroup.representative.problem_identified}</strong>
+      <p><b>Medicamentos:</b> {Array.from(new Set(selectedMpiGroup.alerts.flatMap((alert) => alert.implicated_medications))).join(", ") || "No consignados"}</p>
+      {selectedMpiGroup.alerts.filter((alert) => alert.rule_code.startsWith("STOPP-")).map((alert) => <p key={`description-${alert.id}`}><b>Descripción STOPP ({alert.rule_code}):</b> {alert.problem_identified}</p>)}
+      {selectedMpiGroup.representative.justification && <p><b>Motivo:</b> {selectedMpiGroup.representative.justification}</p>}
+      {Array.from(new Set(selectedMpiGroup.alerts.map((alert) => alert.recommendation).filter(Boolean))).map((recommendation) => <p key={recommendation}><b>Orientación:</b> {recommendation}</p>)}
+      {selectedReviewDetails.length > 0 && <details className="quick-review-more"><summary>Ver más</summary><div><b>Descripción ampliada revisada por el equipo clínico</b>{selectedReviewDetails.map((detail) => <article key={`${detail.source_system}-${detail.source_code}-${detail.source_row}`}><span>{detail.source_system} {detail.source_code}</span><p>{detail.description}</p></article>)}</div></details>}
     </section>}
-    {activeTab === "ddinter" && selectedDdinter && <section className="quick-alert-detail" aria-label="Detalle simple de la interacción seleccionada">
-      <div><span>DDInter</span><b>{selectedDdinter.rule_code}</b></div><strong>{selectedDdinter.problem_identified}</strong>
-      <p><b>Medicamentos:</b> {selectedDdinter.implicated_medications.join(", ") || "No consignados"}</p>
-      {selectedDdinter.justification && <p><b>Motivo:</b> {selectedDdinter.justification}</p>}
-      {selectedDdinter.recommendation && <p><b>Orientación:</b> {selectedDdinter.recommendation}</p>}
+    {activeTab === "opp" && selectedOpp && <section className="quick-alert-detail" aria-label="Detalle de la OPP seleccionada">
+      <div><span>OPP</span><b>{selectedOpp.rule_code}</b></div><strong>{selectedOpp.problem_identified}</strong>
+      <p><b>Medicamentos relacionados:</b> {selectedOpp.implicated_medications.join(", ") || "No consignados"}</p>
+      {selectedOpp.justification && <p><b>Motivo:</b> {selectedOpp.justification}</p>}
+      {selectedOpp.recommendation && <p><b>Orientación:</b> {selectedOpp.recommendation}</p>}
+      {selectedReviewDetails.length > 0 && <details className="quick-review-more"><summary>Ver más</summary><div><b>Descripción ampliada revisada por el equipo clínico</b>{selectedReviewDetails.map((detail) => <article key={`${detail.source_system}-${detail.source_code}-${detail.source_row}`}><span>{detail.source_system} {detail.source_code}</span><p>{detail.description}</p></article>)}</div></details>}
+    </section>}
+    {activeTab === "ifp" && selectedIfp && <section className="quick-alert-detail" aria-label="Detalle de la IFP seleccionada">
+      <div><span>IFP</span><b>{selectedIfp.rule_code}</b></div><strong>{selectedIfp.problem_identified}</strong>
+      <p><b>Medicamentos:</b> {selectedIfp.implicated_medications.join(", ") || "No consignados"}</p>
+      {selectedIfp.justification && <p><b>Motivo:</b> {selectedIfp.justification}</p>}
+      {selectedIfp.recommendation && <p><b>Orientación:</b> {selectedIfp.recommendation}</p>}
     </section>}
   </aside>;
 }

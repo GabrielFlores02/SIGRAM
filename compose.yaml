@@ -15,6 +15,7 @@ services:
       SIGRAM_PATIENT_SUMMARY_FILE: /app/rebagliati/01_Datos_Plataforma/patient_summary_rebagliati_2025.parquet
       SIGRAM_ENGINE_RANKING_FILE: /app/data/processed/engine_patient_ranking_rebagliati_2025.json
       CLINICAL_CATALOG_FILE: /app/data/catalogs/v1/clinical_catalog_v1.json
+      CRITERION_REVIEW_DETAILS_FILE: /app/data/catalogs/v1/criterion_detail_review_20260910.json
       REFERENCE_CATALOG_FILE: /app/data/catalogs/reference/pharmacologic_groups_cie10_20260818.json
       DDINTER_DATA_DIR: /app/rebagliati/02_Catalogos_Motor/ddinter2
       DDINTER_ALIAS_FILE: /app/rebagliati/02_Catalogos_Motor/ddinter_name_aliases.csv

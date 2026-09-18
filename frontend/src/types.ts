@@ -158,6 +158,16 @@ export interface AlertResult {
   created_at: string;
 }
 
+export interface DoctorReviewDetail {
+  source_system: string;
+  source_code: string;
+  source_type: string;
+  description: string;
+  review_status: "Confirmado" | "Ajustar";
+  reviewer_note?: string | null;
+  source_row: number;
+}
+
 export interface AnalysisMethodResult {
   system: AnalysisSystem;
   label: string;
@@ -236,7 +246,7 @@ export interface CatalogMedication {
   beers_codes: string[];
   atc_code: string | null;
   pharmacologic_group_level4: string | null;
-  mapping_status: "pending_clinical_validation" | "reference_group_only";
+  mapping_status: "pending_clinical_validation" | "reference_group_only" | "doctor_review_supplement";
   catalog_version: string;
   clinical_rules_validated?: boolean;
   reference_group_only?: boolean;
@@ -256,6 +266,8 @@ export interface CatalogSummary {
   criteria_by_system: Record<"beers" | "stopp_start", number>;
   automated_criterion_count: number;
   manual_or_context_dependent_count: number;
+  reviewed_detail_criterion_count?: number;
+  review_details_version?: string | null;
   population: string;
   status: string;
   atc_mapping_status: "pending_clinical_validation";

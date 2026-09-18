@@ -7,7 +7,7 @@
     "beers_original_min_age": 65,
     "beers_60_64_is_protocol_adaptation": true
   },
-  "medication_count": 54,
+  "medication_count": 57,
   "criterion_count": 97,
   "medications": [
     {
@@ -435,9 +435,7 @@
       "start_codes": [
         "START-I1"
       ],
-      "beers_codes": [
-        "B23"
-      ]
+      "beers_codes": []
     },
     {
       "order": 26,
@@ -889,6 +887,39 @@
       ],
       "start_codes": [],
       "beers_codes": []
+    },
+    {
+      "order": 55,
+      "medication": "DOXAZOSINA",
+      "pharmacologic_group": "Bloqueador alfa-1 periférico no selectivo",
+      "stopp_codes": [],
+      "start_codes": [],
+      "beers_codes": [
+        "B23"
+      ],
+      "mapping_status": "doctor_review_supplement"
+    },
+    {
+      "order": 56,
+      "medication": "PRAZOSINA",
+      "pharmacologic_group": "Bloqueador alfa-1 periférico no selectivo",
+      "stopp_codes": [],
+      "start_codes": [],
+      "beers_codes": [
+        "B23"
+      ],
+      "mapping_status": "doctor_review_supplement"
+    },
+    {
+      "order": 57,
+      "medication": "TERAZOSINA",
+      "pharmacologic_group": "Bloqueador alfa-1 periférico no selectivo",
+      "stopp_codes": [],
+      "start_codes": [],
+      "beers_codes": [
+        "B23"
+      ],
+      "mapping_status": "doctor_review_supplement"
     }
   ],
   "criteria": [
@@ -1072,8 +1103,8 @@
       "code": "B23",
       "system": "beers",
       "type": "BEERS",
-      "section": "Síncope y bloqueadores alfa-1 selectivos",
-      "statement": "En pacientes con síncope, considerar que los datos son limitados para bloqueadores alfa-1 periféricos selectivos como tamsulosina, pero el criterio de hipotensión ortostática podría ser aplicable; requiere evaluación clínica individual.",
+      "section": "Síncope y bloqueadores alfa-1 periféricos no selectivos",
+      "statement": "Evitar doxazosina, prazosina o terazosina en pacientes con síncope atribuible a hipotensión ortostática. Tamsulosina y silodosina no forman parte de este criterio por ser bloqueadores alfa-1 periféricos selectivos.",
       "location": "p. 16 del PDF (página del artículo: 16)"
     },
     {
