@@ -556,6 +556,28 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
     requestAnimationFrame(() => diagnosisInputRef.current?.focus());
   }
 
+  function formatHistoricalDiagnoses(value: string) {
+    const descriptionsByCode = new Map(
+      cie10Options.map((option) => [option.code.replace(/[^a-z0-9]/gi, "").toUpperCase(), option.description.trim()])
+    );
+    return value
+      .split(/[\r\n,;]+/)
+      .map((entry) => entry.trim())
+      .filter(Boolean)
+      .map((entry) => {
+        const match = entry.match(/^([A-Z]\d{2}(?:\.[A-Z0-9]{1,4}|\d{1,2})?)(?:\s*[—-]\s*(.+))?$/i);
+        if (!match) return entry;
+        const code = match[1].toUpperCase();
+        const normalizedCode = code.replace(/[^A-Z0-9]/g, "");
+        const fallbackDescription = normalizedCode.length === 3
+          ? cie10Options.find((option) => option.code.replace(/[^a-z0-9]/gi, "").toUpperCase().startsWith(normalizedCode))?.description.trim()
+          : undefined;
+        const description = match[2]?.trim() || descriptionsByCode.get(normalizedCode) || fallbackDescription;
+        return description ? `${code} — ${description}` : code;
+      })
+      .join("\n");
+  }
+
   function handleDiagnosisKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (!diagnosisMenuOpen || diagnosisSuggestions.length === 0) return;
     if (event.key === "ArrowDown") {
@@ -619,7 +641,7 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
       if (patientCode === ESSI_SIMULATOR_CODE) {
         const simulator = await api.getEssiSimulator();
         const loaded = simulator.case;
-        setAge(String(loaded.age)); setSex(loaded.sex); setDiagnoses(loaded.diagnoses); setCaseCode(loaded.case_code);
+        setAge(String(loaded.age)); setSex(loaded.sex); setDiagnoses(formatHistoricalDiagnoses(loaded.diagnoses)); setCaseCode(loaded.case_code);
         setMedications(loaded.medications.map(({ id: _id, case_id: _caseId, created_at: _createdAt, ...medication }) => medication));
         const mappedContext: Record<string, string> = Object.create(null);
         for (const [field, value] of Object.entries(loaded.clinical_context)) {
@@ -635,7 +657,7 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
       const prefill = await api.getPilotCasePrefill(patientCode);
       setAge(String(prefill.age));
       setSex(prefill.sex);
-      setDiagnoses(prefill.diagnoses);
+      setDiagnoses(formatHistoricalDiagnoses(prefill.diagnoses));
       setCaseCode(patientCode);
       // La cohorte piloto se presenta como historia previa de solo lectura.
       // Las filas de arriba representan exclusivamente la nueva receta a simular.
