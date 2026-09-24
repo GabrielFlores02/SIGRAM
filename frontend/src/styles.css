@@ -356,6 +356,13 @@ textarea { min-height: 84px; resize: vertical; }
 .drawer-content p { margin: 7px 0 0; line-height: 1.55; }
 .drawer-content ul { margin: 8px 0 0; padding-left: 20px; }
 .drawer-label { display: block; color: var(--outline); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 7px; }
+.criterion-clinical-data { padding: 14px; border: 1px solid #b6dbe7; border-radius: 8px; background: #f5fbfd; }
+.criterion-clinical-data dl { display: grid; gap: 12px; margin: 0; }
+.criterion-clinical-data dt { margin-bottom: 4px; color: #315363; font-size: 12px; font-weight: 700; }
+.criterion-clinical-data dd { margin: 0; color: #253b46; font-size: 13px; line-height: 1.45; }
+.criterion-medication-list, .criterion-context-list { display: grid; gap: 7px; margin: 0 !important; padding-left: 18px; }
+.criterion-medication-list li { display: grid; gap: 2px; }
+.criterion-medication-list span { color: #516771; font-size: 12px; }
 .detail-drawer footer { display: flex; justify-content: flex-end; padding: 16px 20px; background: var(--surface-low); border-top: 1px solid var(--outline-soft); }
 .drawer-intro { padding: 12px; color: #00465f; background: #e7f7fd; border: 1px solid #9fd9ef; border-radius: 5px; font-size: 12px; }
 .drawer-form-grid { display: grid; gap: 14px; }

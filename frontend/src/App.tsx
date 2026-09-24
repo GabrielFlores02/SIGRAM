@@ -188,6 +188,40 @@ function doctorReviewDetails(alert: AlertResult): DoctorReviewDetail[] {
   ));
 }
 
+const CLINICAL_CONTEXT_LABELS: Record<string, string> = {
+  egfr_ml_min_1_73m2: "TFGe / TFG reportada",
+  creatinine_clearance_ml_min: "Depuración de creatinina (CrCl)",
+  serum_creatinine_mg_dl: "Creatinina sérica",
+  serum_creatinine_date: "Fecha de creatinina",
+  medication_duration_days: "Duración estructurada del tratamiento",
+  daily_dose_mg: "Dosis diaria",
+  indication_confirmed: "Indicación clínica confirmada",
+  gastroprotection: "Gastroprotección",
+  heart_failure_status: "Estado de insuficiencia cardiaca",
+  cognitive_impairment: "Deterioro cognitivo",
+  falls_history: "Antecedente de caídas",
+  peptic_ulcer_history: "Antecedente de úlcera péptica",
+  bleeding_risk: "Riesgo de sangrado",
+};
+
+function clinicalFieldLabel(field: string) {
+  return CLINICAL_CONTEXT_LABELS[field] ?? field.replace(/_/g, " ");
+}
+
+function recordedValue(value: unknown) {
+  if (value === null || value === undefined || value === "") return "No registrado";
+  if (typeof value === "boolean") return value ? "Sí" : "No";
+  if (Array.isArray(value)) return value.length ? value.map((item) => String(item)).join(", ") : "No registrado";
+  if (typeof value === "object") return "Registrado";
+  return String(value);
+}
+
+function medicationNamesMatch(left: string, right: string) {
+  const a = normalizeClinicalSearch(left).replace(/[^a-z0-9]/g, "");
+  const b = normalizeClinicalSearch(right).replace(/[^a-z0-9]/g, "");
+  return Boolean(a && b && (a.includes(b) || b.includes(a)));
+}
+
 function sortCatalogMedications(rows: CatalogMedication[]) {
   return [...rows].sort((left, right) => left.medication.localeCompare(right.medication, "es", { sensitivity: "base" }));
 }
@@ -1190,7 +1224,39 @@ function QuickScreeningToast({ result, indexDate, selectedAlertId, onSelectAlert
   </aside>;
 }
 
-function DetailDrawer({ criterion, alert, onClose }: { criterion: CriterionResult; alert?: AlertResult; onClose: () => void }) {
+function ClinicalDataForReview({ clinicalCase, implicatedMedications, contextUsed = {} }: { clinicalCase: ClinicalCase; implicatedMedications: string[]; contextUsed?: Record<string, unknown> }) {
+  const matchingMedications = clinicalCase.medications.filter((medication) => implicatedMedications.some((name) =>
+    medicationNamesMatch(name, medication.entered_name) || medicationNamesMatch(name, medication.normalized_active_ingredient),
+  ));
+  const medicationsToShow = matchingMedications.length ? matchingMedications : clinicalCase.medications;
+  const medicationFacts = Array.isArray(clinicalCase.clinical_context.medication_facts)
+    ? clinicalCase.clinical_context.medication_facts.filter((item): item is Record<string, unknown> => Boolean(item && typeof item === "object"))
+    : [];
+  const renalItems: Array<[string, unknown, string?]> = [
+    ["Creatinina sérica", clinicalCase.clinical_context.serum_creatinine_mg_dl, "mg/dL"],
+    ["Fecha de creatinina", clinicalCase.clinical_context.serum_creatinine_date],
+    ["Depuración de creatinina (CrCl)", clinicalCase.clinical_context.creatinine_clearance_ml_min, "mL/min"],
+    ["TFGe / TFG reportada", clinicalCase.clinical_context.egfr_ml_min_1_73m2, "mL/min/1.73 m²"],
+  ];
+  const usedItems = Object.entries(contextUsed).filter(([, value]) => value !== null && value !== undefined && value !== "");
+  const medicationHeading = matchingMedications.length ? "Medicamentos relacionados con el criterio" : "Medicamentos registrados para el cruce";
+
+  return <section className="criterion-clinical-data">
+    <span className="drawer-label">Datos registrados para la revisión clínica</span>
+    <dl>
+      <div><dt>Diagnósticos / condiciones</dt><dd>{clinicalCase.diagnoses || "No registrados"}</dd></div>
+      <div><dt>{medicationHeading}</dt><dd>{medicationsToShow.length ? <ul className="criterion-medication-list">{medicationsToShow.map((medication) => {
+        const fact = medicationFacts.find((item) => typeof item.active_ingredient === "string" && medicationNamesMatch(item.active_ingredient, medication.normalized_active_ingredient));
+        const duration = medication.duration || (fact ? recordedValue(fact.duration_days) : "No registrada");
+        return <li key={medication.id}><b>{medication.entered_name}</b><span>Dosis: {medication.dose || "No registrada"} {medication.dose_unit || ""} · Frecuencia: {medication.frequency || "No registrada"} · Vía: {medication.route || "No registrada"} · Duración: {duration}</span></li>;
+      })}</ul> : "No hay medicamentos registrados."}</dd></div>
+      <div><dt>Función renal / creatinina</dt><dd><ul className="criterion-context-list">{renalItems.map(([label, value, unit]) => <li key={label}><b>{label}:</b> {recordedValue(value)}{value !== null && value !== undefined && value !== "" && unit ? ` ${unit}` : ""}</li>)}</ul></dd></div>
+      {usedItems.length > 0 && <div><dt>Variables aplicadas por el motor</dt><dd><ul className="criterion-context-list">{usedItems.map(([field, value]) => <li key={field}><b>{clinicalFieldLabel(field)}:</b> {recordedValue(value)}</li>)}</ul></dd></div>}
+    </dl>
+  </section>;
+}
+
+function DetailDrawer({ criterion, alert, clinicalCase, onClose }: { criterion: CriterionResult; alert?: AlertResult; clinicalCase: ClinicalCase; onClose: () => void }) {
   const isBeers = criterion.system === "beers";
   return <div className="drawer-layer" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
     <button className="drawer-backdrop" onClick={onClose} aria-label="Cerrar detalle" />
@@ -1202,6 +1268,7 @@ function DetailDrawer({ criterion, alert, onClose }: { criterion: CriterionResul
         {isBeers && criterion.rationale && <section><span className="drawer-label">Fundamento clínico — rationale</span><p>{criterion.rationale}</p></section>}
         <section><span className="drawer-label">Medicamentos implicados</span><p>{criterion.implicated_medications.length ? criterion.implicated_medications.join(", ") : "Ninguno registrado"}</p></section>
         {isBeers && <section><span className="drawer-label">Motivo del hallazgo</span><p>{criterion.reason}</p></section>}
+        <ClinicalDataForReview clinicalCase={clinicalCase} implicatedMedications={criterion.implicated_medications} contextUsed={criterion.context_used} />
         <section><span className="drawer-label">Datos faltantes</span>{criterion.missing_data.length ? <ul>{criterion.missing_data.map((item, index) => <li key={index}>{String(item.label ?? item.field ?? JSON.stringify(item))}</li>)}</ul> : <p>No se reportaron datos faltantes.</p>}</section>
         {(criterion.lab_evidence?.length ?? 0) > 0 && <section><span className="drawer-label">Exámenes usados por el backend</span><ul>{criterion.lab_evidence.map((item) => <li key={`${item.field}-${item.source_row_sha256}`}><b>{labFieldLabel(item.field)}:</b> {labValueLabel(item)}; {formatDate(item.result_date)}; código ESSI {item.exam_code}; {item.applied ? "aplicado" : "no aplicado (prioridad al contexto manual)"}.</li>)}</ul></section>}
         {criterion.diagnosis_evidence.length > 0 && <section><span className="drawer-label">Evidencia CIE-10</span><ul>{criterion.diagnosis_evidence.map((item, index) => <li key={`${item.field ?? "cie"}-${index}`}><b>{item.label ?? item.field ?? "Contexto clínico"}:</b> {item.matched_codes?.map((code) => code.code).filter(Boolean).join(", ") || "evidencia documentada"}.</li>)}</ul></section>}
@@ -1224,7 +1291,7 @@ function DetailDrawer({ criterion, alert, onClose }: { criterion: CriterionResul
   </div>;
 }
 
-function DDInterDetailDrawer({ alert, onClose }: { alert: AlertResult; onClose: () => void }) {
+function DDInterDetailDrawer({ alert, clinicalCase, onClose }: { alert: AlertResult; clinicalCase: ClinicalCase; onClose: () => void }) {
   const level = ddinterLevel(alert);
   const catalogIds = traceStringList(alert, "catalog_ids");
   const catalogFiles = traceStringList(alert, "catalog_files");
@@ -1237,6 +1304,7 @@ function DDInterDetailDrawer({ alert, onClose }: { alert: AlertResult; onClose: 
         <section><span className="drawer-label">Nivel DDInter</span><span className={`ddinter-level ddinter-${level.toLowerCase()}`}>{ddinterLevelLabel(level)}</span></section>
         <section><span className="drawer-label">Código de interacción</span><p><code>{alert.rule_code}</code></p></section>
         <section><span className="drawer-label">Medicamentos implicados</span><p>{alert.implicated_medications.join(", ") || "No consignados"}</p></section>
+        <ClinicalDataForReview clinicalCase={clinicalCase} implicatedMedications={alert.implicated_medications} />
         <section><span className="drawer-label">Hallazgo</span><p>{alert.problem_identified}</p></section>
         <section><span className="drawer-label">Orientación del catálogo</span><p>{alert.recommendation}</p></section>
         <section><span className="drawer-label">Justificación</span><p>{alert.justification}</p></section>
@@ -1358,8 +1426,8 @@ function ResultsPage({ clinicalCase, evaluation, dataAvailability }: { clinicalC
       const items = beersCriteria.filter((item) => item.status === status);
       return items.length ? <section className="analysis-section" key={status}><h3 className={status}>{title}</h3><div className="table-scroll"><table><thead><tr><th>Código</th><th>Motivo</th><th>Acción</th></tr></thead><tbody>{items.map((item) => <tr key={`technical-${item.system}-${item.criterion_code}`}><td><code>{item.criterion_code}</code></td><td>{item.reason}</td><td><button className="outline-button" onClick={() => setSelected(item)}>Ver detalle</button></td></tr>)}</tbody></table></div></section> : null;
     }) : <><p><b>Requieren información adicional:</b> {(evaluation.data_gaps ?? []).filter((item) => item.system === system).length}. <b>Revisión manual:</b> {(evaluation.manual_review_findings ?? []).filter((item) => item.system === system).length}.</p><div className="table-scroll"><table><thead><tr><th>Código</th><th>Estado</th><th>Motivo</th><th>Acción</th></tr></thead><tbody>{evaluation.criteria_report.filter((item) => item.system === system).map((item) => <tr key={`technical-${item.system}-${item.criterion_code}`}><td><code>{item.criterion_code}</code></td><td><span className={`status-pill ${item.status}`}>{statusLabel(item.status)}</span></td><td>{item.reason}</td><td><button className="outline-button" onClick={() => setSelected(item)}>Ver detalle</button></td></tr>)}</tbody></table></div></>}</div></details>}
-    {selected && <DetailDrawer criterion={selected} alert={selectedAlert} onClose={() => setSelected(undefined)} />}
-    {selectedInteraction && <DDInterDetailDrawer alert={selectedInteraction} onClose={() => setSelectedInteraction(undefined)} />}
+    {selected && <DetailDrawer criterion={selected} alert={selectedAlert} clinicalCase={clinicalCase} onClose={() => setSelected(undefined)} />}
+    {selectedInteraction && <DDInterDetailDrawer alert={selectedInteraction} clinicalCase={clinicalCase} onClose={() => setSelectedInteraction(undefined)} />}
   </section>;
 }
 
