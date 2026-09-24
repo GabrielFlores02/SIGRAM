@@ -85,6 +85,11 @@ class CriterionEvaluationResult(BaseModel):
     automation_mode: Optional[str] = None
     counts_as_clinical_finding: Optional[bool] = None
     trigger_facts: dict = Field(default_factory=dict)
+    # Correspondencia clínica revisada por el equipo médico.  Debe formar
+    # parte del esquema público; de otro modo Pydantic descarta este campo
+    # aunque el motor lo calcule, y la interfaz vuelve a mostrar códigos
+    # internos como STOPP-A3 en lugar del código fuente (p. ej. STOPP-003).
+    review_details: List[dict] = Field(default_factory=list)
 
 
 class EvaluationExecutionRead(BaseModel):
