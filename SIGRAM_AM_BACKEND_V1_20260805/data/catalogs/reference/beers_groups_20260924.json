@@ -1,0 +1,3133 @@
+{
+  "catalog_version": "2026-09-24-beers-groups",
+  "source_file": "Cuadro_grupos_farmacologicos_y_farmacos_Beers.xlsx",
+  "source_sha256": "4935d3f249381532a521f173be52ecd8b036227ed70901a5650f433f0cf7b655",
+  "medication_count": 347,
+  "group_count": 76,
+  "policy": "Catálogo complementario de reconocimiento farmacológico. No asigna reglas clínicas nuevas sin validación explícita.",
+  "medications": [
+    {
+      "order": 1,
+      "medication": "Clonidina",
+      "pharmacologic_group": "Agonistas alfa centrales",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 2,
+      "medication": "Guanfacina",
+      "pharmacologic_group": "Agonistas alfa centrales",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 3,
+      "medication": "Ácido acetilsalicílico >325 mg/día",
+      "pharmacologic_group": "AINE no selectivos de COX-2",
+      "included_route": "Oral",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 4,
+      "medication": "Diclofenaco",
+      "pharmacologic_group": "AINE no selectivos de COX-2",
+      "included_route": "Oral",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 5,
+      "medication": "Diflunisal",
+      "pharmacologic_group": "AINE no selectivos de COX-2",
+      "included_route": "Oral",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 6,
+      "medication": "Etodolaco",
+      "pharmacologic_group": "AINE no selectivos de COX-2",
+      "included_route": "Oral",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 7,
+      "medication": "Flurbiprofeno",
+      "pharmacologic_group": "AINE no selectivos de COX-2",
+      "included_route": "Oral",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 8,
+      "medication": "Ibuprofeno",
+      "pharmacologic_group": "AINE no selectivos de COX-2",
+      "included_route": "Oral",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 9,
+      "medication": "Indometacina",
+      "pharmacologic_group": "AINE no selectivos de COX-2",
+      "included_route": "Oral",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 10,
+      "medication": "Ketorolaco",
+      "pharmacologic_group": "AINE no selectivos de COX-2",
+      "included_route": "Oral | Parenteral",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 11,
+      "medication": "Meloxicam",
+      "pharmacologic_group": "AINE no selectivos de COX-2",
+      "included_route": "Oral",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 12,
+      "medication": "Nabumetona",
+      "pharmacologic_group": "AINE no selectivos de COX-2",
+      "included_route": "Oral",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 13,
+      "medication": "Naproxeno",
+      "pharmacologic_group": "AINE no selectivos de COX-2",
+      "included_route": "Oral",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 14,
+      "medication": "Oxaprozina",
+      "pharmacologic_group": "AINE no selectivos de COX-2",
+      "included_route": "Oral",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 15,
+      "medication": "Piroxicam",
+      "pharmacologic_group": "AINE no selectivos de COX-2",
+      "included_route": "Oral",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 16,
+      "medication": "Sulindaco",
+      "pharmacologic_group": "AINE no selectivos de COX-2",
+      "included_route": "Oral",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 17,
+      "medication": "Desmopresina",
+      "pharmacologic_group": "Análogo de vasopresina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 18,
+      "medication": "Metiltestosterona",
+      "pharmacologic_group": "Andrógeno",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 19,
+      "medication": "Testosterona",
+      "pharmacologic_group": "Andrógeno",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 20,
+      "medication": "Warfarina",
+      "pharmacologic_group": "Antagonista de la vitamina K",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 21,
+      "medication": "Losartán",
+      "pharmacologic_group": "Antagonista del receptor de angiotensina II (ARA-II)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 22,
+      "medication": "Valsartán",
+      "pharmacologic_group": "Antagonista del receptor de angiotensina II (ARA-II)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 23,
+      "medication": "Irbesartán",
+      "pharmacologic_group": "Antagonista del receptor de angiotensina II (ARA-II)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 24,
+      "medication": "Candesartán",
+      "pharmacologic_group": "Antagonista del receptor de angiotensina II (ARA-II)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 25,
+      "medication": "Telmisartán",
+      "pharmacologic_group": "Antagonista del receptor de angiotensina II (ARA-II)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 26,
+      "medication": "Olmesartán medoxomilo",
+      "pharmacologic_group": "Antagonista del receptor de angiotensina II (ARA-II)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 27,
+      "medication": "Azilsartán medoxomilo",
+      "pharmacologic_group": "Antagonista del receptor de angiotensina II (ARA-II)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 28,
+      "medication": "Eprosartán",
+      "pharmacologic_group": "Antagonista del receptor de angiotensina II (ARA-II)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 29,
+      "medication": "Espironolactona",
+      "pharmacologic_group": "Antagonista del receptor mineralocorticoide",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 30,
+      "medication": "Metoclopramida",
+      "pharmacologic_group": "Antagonista dopaminérgico | Antiemético | Procinético",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 31,
+      "medication": "Domperidona",
+      "pharmacologic_group": "Antagonista dopaminérgico | Antiemético | Procinético",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza este principio activo."
+    },
+    {
+      "order": 32,
+      "medication": "Proclorperazina",
+      "pharmacologic_group": "Antagonista dopaminérgico | Antiemético",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 33,
+      "medication": "Prometazina",
+      "pharmacologic_group": "Antagonista dopaminérgico | Antiemético | Antihistamínico H1 de primera generación",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 34,
+      "medication": "Cimetidina",
+      "pharmacologic_group": "Antagonista H2",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 35,
+      "medication": "Famotidina",
+      "pharmacologic_group": "Antagonista H2",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 36,
+      "medication": "Nizatidina",
+      "pharmacologic_group": "Antagonista H2",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 37,
+      "medication": "Dextrometorfano",
+      "pharmacologic_group": "Antagonista NMDA | Antitusígeno",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado como parte de la combinación dextrometorfano–quinidina."
+    },
+    {
+      "order": 38,
+      "medication": "Ácido acetilsalicílico (aspirina)",
+      "pharmacologic_group": "Antiagregante plaquetario",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 39,
+      "medication": "Dipiridamol",
+      "pharmacologic_group": "Antiagregante plaquetario",
+      "included_route": "Oral",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 40,
+      "medication": "Cilostazol",
+      "pharmacologic_group": "Antiagregante plaquetario",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 41,
+      "medication": "Prasugrel",
+      "pharmacologic_group": "Antiagregante plaquetario",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 42,
+      "medication": "Ticagrelor",
+      "pharmacologic_group": "Antiagregante plaquetario",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 43,
+      "medication": "Clopidogrel",
+      "pharmacologic_group": "Antiagregante plaquetario",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado como comparador terapéutico de prasugrel y ticagrelor."
+    },
+    {
+      "order": 44,
+      "medication": "Amiodarona",
+      "pharmacologic_group": "Antiarrítmico clase I y III",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 45,
+      "medication": "Dronedarona",
+      "pharmacologic_group": "Antiarrítmico clase I y III",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 46,
+      "medication": "Dofetilida",
+      "pharmacologic_group": "Antiarrítmico clase I y III",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 47,
+      "medication": "Quinidina",
+      "pharmacologic_group": "Antiarrítmico clase I y III",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrada como parte de la combinación dextrometorfano–quinidina."
+    },
+    {
+      "order": 48,
+      "medication": "Nitrofurantoína",
+      "pharmacologic_group": "Antibiótico | Antiinfeccioso",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 49,
+      "medication": "Trimetoprima–sulfametoxazol",
+      "pharmacologic_group": "Antibiótico | Antiinfeccioso",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 50,
+      "medication": "Ciprofloxacino",
+      "pharmacologic_group": "Antibiótico | Antiinfeccioso",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 51,
+      "medication": "Azitromicina",
+      "pharmacologic_group": "Antibiótico | Antiinfeccioso",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 52,
+      "medication": "Apixabán",
+      "pharmacologic_group": "Anticoagulante oral directo (ACOD)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 53,
+      "medication": "Dabigatrán",
+      "pharmacologic_group": "Anticoagulante oral directo (ACOD)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 54,
+      "medication": "Edoxabán",
+      "pharmacologic_group": "Anticoagulante oral directo (ACOD)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 55,
+      "medication": "Rivaroxabán",
+      "pharmacologic_group": "Anticoagulante oral directo (ACOD)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 56,
+      "medication": "Enoxaparina",
+      "pharmacologic_group": "Anticoagulante parenteral",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 57,
+      "medication": "Fondaparinux",
+      "pharmacologic_group": "Anticoagulante parenteral",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 58,
+      "medication": "Amitriptilina",
+      "pharmacologic_group": "Antidepresivo con fuerte actividad anticolinérgica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 59,
+      "medication": "Amoxapina",
+      "pharmacologic_group": "Antidepresivo con fuerte actividad anticolinérgica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 60,
+      "medication": "Clomipramina",
+      "pharmacologic_group": "Antidepresivo con fuerte actividad anticolinérgica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 61,
+      "medication": "Desipramina",
+      "pharmacologic_group": "Antidepresivo con fuerte actividad anticolinérgica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 62,
+      "medication": "Doxepina",
+      "pharmacologic_group": "Antidepresivo con fuerte actividad anticolinérgica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 63,
+      "medication": "Imipramina",
+      "pharmacologic_group": "Antidepresivo con fuerte actividad anticolinérgica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 64,
+      "medication": "Nortriptilina",
+      "pharmacologic_group": "Antidepresivo con fuerte actividad anticolinérgica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 65,
+      "medication": "Paroxetina",
+      "pharmacologic_group": "Antidepresivo con fuerte actividad anticolinérgica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 66,
+      "medication": "Mirtazapina",
+      "pharmacologic_group": "Antidepresivo no tricíclico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 67,
+      "medication": "Paroxetina",
+      "pharmacologic_group": "Antidepresivo no tricíclico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 68,
+      "medication": "Duloxetina",
+      "pharmacologic_group": "Antidepresivo no tricíclico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 69,
+      "medication": "Amitriptilina",
+      "pharmacologic_group": "Antidepresivo tricíclico (ATC)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 70,
+      "medication": "Clomipramina",
+      "pharmacologic_group": "Antidepresivo tricíclico (ATC)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 71,
+      "medication": "Desipramina",
+      "pharmacologic_group": "Antidepresivo tricíclico (ATC)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 72,
+      "medication": "Doxepina",
+      "pharmacologic_group": "Antidepresivo tricíclico (ATC)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 73,
+      "medication": "Imipramina",
+      "pharmacologic_group": "Antidepresivo tricíclico (ATC)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 74,
+      "medication": "Nortriptilina",
+      "pharmacologic_group": "Antidepresivo tricíclico (ATC)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 75,
+      "medication": "Carbamazepina",
+      "pharmacologic_group": "Antiepilépticos | Anticonvulsivante",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 76,
+      "medication": "Oxcarbazepina",
+      "pharmacologic_group": "Antiepilépticos | Anticonvulsivante",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 77,
+      "medication": "Fenitoína",
+      "pharmacologic_group": "Antiepilépticos | Anticonvulsivante",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 78,
+      "medication": "Levetiracetam",
+      "pharmacologic_group": "Antiepilépticos | Anticonvulsivante",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 79,
+      "medication": "Gabapentina",
+      "pharmacologic_group": "Antiepilépticos | Anticonvulsivante",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 80,
+      "medication": "Pregabalina",
+      "pharmacologic_group": "Antiepilépticos | Anticonvulsivante",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 81,
+      "medication": "Fenobarbital",
+      "pharmacologic_group": "Antiepilépticos | Anticonvulsivante",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 82,
+      "medication": "Primidona",
+      "pharmacologic_group": "Antiepilépticos | Anticonvulsivante",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 83,
+      "medication": "Clobazam",
+      "pharmacologic_group": "Antiepilépticos | Anticonvulsivante",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 84,
+      "medication": "Atropina",
+      "pharmacologic_group": "Antiespasmódico gastrointestinal con fuerte actividad anticolinérgica",
+      "included_route": "No especificada",
+      "excluded_route": "Oftálmica",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 85,
+      "medication": "Clidinio",
+      "pharmacologic_group": "Antiespasmódico gastrointestinal con fuerte actividad anticolinérgica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 86,
+      "medication": "Diciclomina",
+      "pharmacologic_group": "Antiespasmódico gastrointestinal con fuerte actividad anticolinérgica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 87,
+      "medication": "Homatropina",
+      "pharmacologic_group": "Antiespasmódico gastrointestinal con fuerte actividad anticolinérgica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 88,
+      "medication": "Hiosciamina",
+      "pharmacologic_group": "Antiespasmódico gastrointestinal con fuerte actividad anticolinérgica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 89,
+      "medication": "Escopolamina",
+      "pharmacologic_group": "Antiespasmódico gastrointestinal con fuerte actividad anticolinérgica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 90,
+      "medication": "Colchicina",
+      "pharmacologic_group": "Antigotoso | Antiinflamatorio para gota",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 91,
+      "medication": "Bromfeniramina",
+      "pharmacologic_group": "Antihistamínico H1 de primera generación",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 92,
+      "medication": "Clorfeniramina",
+      "pharmacologic_group": "Antihistamínico H1 de primera generación",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 93,
+      "medication": "Ciproheptadina",
+      "pharmacologic_group": "Antihistamínico H1 de primera generación",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 94,
+      "medication": "Dimenhidrinato",
+      "pharmacologic_group": "Antihistamínico H1 de primera generación",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 95,
+      "medication": "Difenhidramina",
+      "pharmacologic_group": "Antihistamínico H1 de primera generación",
+      "included_route": "Oral",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 96,
+      "medication": "Doxilamina",
+      "pharmacologic_group": "Antihistamínico H1 de primera generación",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 97,
+      "medication": "Hidroxicina",
+      "pharmacologic_group": "Antihistamínico H1 de primera generación",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 98,
+      "medication": "Meclizina",
+      "pharmacologic_group": "Antihistamínico H1 de primera generación",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 99,
+      "medication": "Prometazina",
+      "pharmacologic_group": "Antihistamínico H1 de primera generación",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 100,
+      "medication": "Triprolidina",
+      "pharmacologic_group": "Antihistamínico H1 de primera generación",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 101,
+      "medication": "Ácido acetilsalicílico >325 mg/día",
+      "pharmacologic_group": "Antiinflamatorio no esteroideo (AINE)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 102,
+      "medication": "Diclofenaco",
+      "pharmacologic_group": "Antiinflamatorio no esteroideo (AINE)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 103,
+      "medication": "Diflunisal",
+      "pharmacologic_group": "Antiinflamatorio no esteroideo (AINE)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 104,
+      "medication": "Etodolaco",
+      "pharmacologic_group": "Antiinflamatorio no esteroideo (AINE)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 105,
+      "medication": "Flurbiprofeno",
+      "pharmacologic_group": "Antiinflamatorio no esteroideo (AINE)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 106,
+      "medication": "Ibuprofeno",
+      "pharmacologic_group": "Antiinflamatorio no esteroideo (AINE)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 107,
+      "medication": "Indometacina",
+      "pharmacologic_group": "Antiinflamatorio no esteroideo (AINE)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 108,
+      "medication": "Ketorolaco",
+      "pharmacologic_group": "Antiinflamatorio no esteroideo (AINE)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 109,
+      "medication": "Meloxicam",
+      "pharmacologic_group": "Antiinflamatorio no esteroideo (AINE)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 110,
+      "medication": "Nabumetona",
+      "pharmacologic_group": "Antiinflamatorio no esteroideo (AINE)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 111,
+      "medication": "Naproxeno",
+      "pharmacologic_group": "Antiinflamatorio no esteroideo (AINE)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 112,
+      "medication": "Oxaprozina",
+      "pharmacologic_group": "Antiinflamatorio no esteroideo (AINE)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 113,
+      "medication": "Piroxicam",
+      "pharmacologic_group": "Antiinflamatorio no esteroideo (AINE)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 114,
+      "medication": "Sulindaco",
+      "pharmacologic_group": "Antiinflamatorio no esteroideo (AINE)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 115,
+      "medication": "Darifenacina",
+      "pharmacologic_group": "Antimuscarínico urinario",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 116,
+      "medication": "Fesoterodina",
+      "pharmacologic_group": "Antimuscarínico urinario",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 117,
+      "medication": "Flavoxato",
+      "pharmacologic_group": "Antimuscarínico urinario",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 118,
+      "medication": "Oxibutinina",
+      "pharmacologic_group": "Antimuscarínico urinario",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 119,
+      "medication": "Solifenacina",
+      "pharmacologic_group": "Antimuscarínico urinario",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 120,
+      "medication": "Tolterodina",
+      "pharmacologic_group": "Antimuscarínico urinario",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 121,
+      "medication": "Trospio",
+      "pharmacologic_group": "Antimuscarínico urinario",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 122,
+      "medication": "Benzatropina | Benztropina",
+      "pharmacologic_group": "Antiparkinsoniano anticolinérgico",
+      "included_route": "Oral",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 123,
+      "medication": "Trihexifenidilo",
+      "pharmacologic_group": "Antiparkinsoniano anticolinérgico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 124,
+      "medication": "Aripiprazol",
+      "pharmacologic_group": "Antipsicótico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 125,
+      "medication": "Brexpiprazol",
+      "pharmacologic_group": "Antipsicótico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 126,
+      "medication": "Cariprazina",
+      "pharmacologic_group": "Antipsicótico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 127,
+      "medication": "Clorpromazina",
+      "pharmacologic_group": "Antipsicótico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 128,
+      "medication": "Clozapina",
+      "pharmacologic_group": "Antipsicótico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 129,
+      "medication": "Flufenazina",
+      "pharmacologic_group": "Antipsicótico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 130,
+      "medication": "Haloperidol",
+      "pharmacologic_group": "Antipsicótico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 131,
+      "medication": "Lurasidona",
+      "pharmacologic_group": "Antipsicótico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 132,
+      "medication": "Olanzapina",
+      "pharmacologic_group": "Antipsicótico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 133,
+      "medication": "Paliperidona",
+      "pharmacologic_group": "Antipsicótico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 134,
+      "medication": "Perfenazina",
+      "pharmacologic_group": "Antipsicótico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 135,
+      "medication": "Pimavanserina",
+      "pharmacologic_group": "Antipsicótico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 136,
+      "medication": "Quetiapina",
+      "pharmacologic_group": "Antipsicótico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 137,
+      "medication": "Risperidona",
+      "pharmacologic_group": "Antipsicótico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 138,
+      "medication": "Ziprasidona",
+      "pharmacologic_group": "Antipsicótico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 139,
+      "medication": "Butalbital",
+      "pharmacologic_group": "Barbitúrico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 140,
+      "medication": "Fenobarbital",
+      "pharmacologic_group": "Barbitúrico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 141,
+      "medication": "Primidona",
+      "pharmacologic_group": "Barbitúrico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 142,
+      "medication": "Alprazolam",
+      "pharmacologic_group": "Benzodiacepina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 143,
+      "medication": "Clordiazepóxido",
+      "pharmacologic_group": "Benzodiacepina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 144,
+      "medication": "Clobazam",
+      "pharmacologic_group": "Benzodiacepina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 145,
+      "medication": "Clonazepam",
+      "pharmacologic_group": "Benzodiacepina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 146,
+      "medication": "Clorazepato",
+      "pharmacologic_group": "Benzodiacepina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 147,
+      "medication": "Diazepam",
+      "pharmacologic_group": "Benzodiacepina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 148,
+      "medication": "Estazolam",
+      "pharmacologic_group": "Benzodiacepina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 149,
+      "medication": "Lorazepam",
+      "pharmacologic_group": "Benzodiacepina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 150,
+      "medication": "Midazolam",
+      "pharmacologic_group": "Benzodiacepina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 151,
+      "medication": "Oxazepam",
+      "pharmacologic_group": "Benzodiacepina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 152,
+      "medication": "Temazepam",
+      "pharmacologic_group": "Benzodiacepina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 153,
+      "medication": "Triazolam",
+      "pharmacologic_group": "Benzodiacepina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 154,
+      "medication": "Doxazosina",
+      "pharmacologic_group": "Bloqueador alfa-1 periférico selectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 155,
+      "medication": "Prazosina",
+      "pharmacologic_group": "Bloqueador alfa-1 periférico selectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 156,
+      "medication": "Terazosina",
+      "pharmacologic_group": "Bloqueador alfa-1 periférico selectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 157,
+      "medication": "Tamsulosina",
+      "pharmacologic_group": "Bloqueador alfa-1 periférico selectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Nombrado en los criterios compartidos."
+    },
+    {
+      "order": 158,
+      "medication": "Silodosina",
+      "pharmacologic_group": "Bloqueador alfa-1 periférico selectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Nombrado en los criterios compartidos."
+    },
+    {
+      "order": 159,
+      "medication": "Nifedipino de liberación inmediata",
+      "pharmacologic_group": "Bloqueador de canales de calcio dihidropiridínicos de acción corta",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 160,
+      "medication": "Diltiazem",
+      "pharmacologic_group": "Bloqueador de canales de calcio no dihidropiridínicos",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 161,
+      "medication": "Verapamilo",
+      "pharmacologic_group": "Bloqueador de canales de calcio no dihidropiridínicos",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 162,
+      "medication": "Hidrocortisona",
+      "pharmacologic_group": "Corticosteroide sistémico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Los criterios mencionan corticosteroides orales y parenterales, pero no nombran un principio activo concreto."
+    },
+    {
+      "order": 163,
+      "medication": "Acetato de cortisona",
+      "pharmacologic_group": "Corticosteroide sistémico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Los criterios mencionan corticosteroides orales y parenterales, pero no nombran un principio activo concreto."
+    },
+    {
+      "order": 164,
+      "medication": "Prednisona",
+      "pharmacologic_group": "Corticosteroide sistémico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Los criterios mencionan corticosteroides orales y parenterales, pero no nombran un principio activo concreto."
+    },
+    {
+      "order": 165,
+      "medication": "Prednisolona",
+      "pharmacologic_group": "Corticosteroide sistémico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Los criterios mencionan corticosteroides orales y parenterales, pero no nombran un principio activo concreto."
+    },
+    {
+      "order": 166,
+      "medication": "Metilprednisolona",
+      "pharmacologic_group": "Corticosteroide sistémico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Los criterios mencionan corticosteroides orales y parenterales, pero no nombran un principio activo concreto."
+    },
+    {
+      "order": 167,
+      "medication": "Dexametasona",
+      "pharmacologic_group": "Corticosteroide sistémico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Los criterios mencionan corticosteroides orales y parenterales, pero no nombran un principio activo concreto."
+    },
+    {
+      "order": 168,
+      "medication": "Betametasona",
+      "pharmacologic_group": "Corticosteroide sistémico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Los criterios mencionan corticosteroides orales y parenterales, pero no nombran un principio activo concreto."
+    },
+    {
+      "order": 169,
+      "medication": "Triamcinolona",
+      "pharmacologic_group": "Corticosteroide sistémico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Los criterios mencionan corticosteroides orales y parenterales, pero no nombran un principio activo concreto."
+    },
+    {
+      "order": 170,
+      "medication": "Deflazacort",
+      "pharmacologic_group": "Corticosteroide sistémico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Los criterios mencionan corticosteroides orales y parenterales, pero no nombran un principio activo concreto."
+    },
+    {
+      "order": 171,
+      "medication": "Amilorida",
+      "pharmacologic_group": "Diurético",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 172,
+      "medication": "Espironolactona",
+      "pharmacologic_group": "Diurético",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 173,
+      "medication": "Triamtereno",
+      "pharmacologic_group": "Diurético",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 174,
+      "medication": "Amilorida",
+      "pharmacologic_group": "Diurético ahorrador de potasio",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 175,
+      "medication": "Espironolactona",
+      "pharmacologic_group": "Diurético ahorrador de potasio",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 176,
+      "medication": "Triamtereno",
+      "pharmacologic_group": "Diurético ahorrador de potasio",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 177,
+      "medication": "Furosemida",
+      "pharmacologic_group": "Diurético de asa",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 178,
+      "medication": "Bumetanida",
+      "pharmacologic_group": "Diurético de asa",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 179,
+      "medication": "Torasemida | Torsemida",
+      "pharmacologic_group": "Diurético de asa",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 180,
+      "medication": "Ácido etacrínico",
+      "pharmacologic_group": "Diurético de asa",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 181,
+      "medication": "Estradiol",
+      "pharmacologic_group": "Estrógeno tópico",
+      "included_route": "Vaginal",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Se mencionan estrógenos intravaginales, sin especificar principio activo."
+    },
+    {
+      "order": 182,
+      "medication": "Estriol",
+      "pharmacologic_group": "Estrógeno tópico",
+      "included_route": "Vaginal",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Se mencionan estrógenos intravaginales, sin especificar principio activo."
+    },
+    {
+      "order": 183,
+      "medication": "Estrógenos conjugados",
+      "pharmacologic_group": "Estrógeno tópico",
+      "included_route": "Vaginal",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Se mencionan estrógenos intravaginales, sin especificar principio activo."
+    },
+    {
+      "order": 184,
+      "medication": "Promestrieno",
+      "pharmacologic_group": "Estrógeno tópico",
+      "included_route": "Vaginal",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Se mencionan estrógenos intravaginales, sin especificar principio activo."
+    },
+    {
+      "order": 185,
+      "medication": "Amitriptilina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 186,
+      "medication": "Amoxapina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 187,
+      "medication": "Atropina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 188,
+      "medication": "Benzatropina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 189,
+      "medication": "Bromfeniramina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 190,
+      "medication": "Clidinio",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 191,
+      "medication": "Clomipramina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 192,
+      "medication": "Clorfeniramina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 193,
+      "medication": "Ciclobenzaprina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 194,
+      "medication": "Ciproheptadina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 195,
+      "medication": "Clorpromazina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 196,
+      "medication": "Clozapina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 197,
+      "medication": "Darifenacina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 198,
+      "medication": "Desipramina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 199,
+      "medication": "Diciclomina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 200,
+      "medication": "Difenhidramina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 201,
+      "medication": "Dimenhidrinato",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 202,
+      "medication": "Doxepina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 203,
+      "medication": "Doxilamina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 204,
+      "medication": "Escopolamina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 205,
+      "medication": "Fesoterodina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 206,
+      "medication": "Flavoxato",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 207,
+      "medication": "Hidroxicina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 208,
+      "medication": "Homatropina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 209,
+      "medication": "Hiosciamina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 210,
+      "medication": "Imipramina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 211,
+      "medication": "Meclizina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 212,
+      "medication": "Nortriptilina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 213,
+      "medication": "Olanzapina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 214,
+      "medication": "Orfenadrina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 215,
+      "medication": "Oxibutinina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 216,
+      "medication": "Paroxetina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 217,
+      "medication": "Perfenazina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 218,
+      "medication": "Proclorperazina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 219,
+      "medication": "Prometazina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 220,
+      "medication": "Solifenacina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 221,
+      "medication": "Tolterodina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 222,
+      "medication": "Trihexifenidilo",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 223,
+      "medication": "Triprolidina",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 224,
+      "medication": "Trospio",
+      "pharmacologic_group": "Fármaco con fuerte actividad anticolinérgica/antimuscarínica",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 225,
+      "medication": "Ciprofloxacino",
+      "pharmacologic_group": "Fluoroquinolona",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 226,
+      "medication": "Gabapentina",
+      "pharmacologic_group": "Gabapentinoide",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 227,
+      "medication": "Pregabalina",
+      "pharmacologic_group": "Gabapentinoide",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 228,
+      "medication": "Digoxina",
+      "pharmacologic_group": "Glucósido cardíaco",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 229,
+      "medication": "Eszopiclona",
+      "pharmacologic_group": "Hipnótico no benzodiacepínico (fármaco Z)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 230,
+      "medication": "Zaleplón",
+      "pharmacologic_group": "Hipnótico no benzodiacepínico (fármaco Z)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 231,
+      "medication": "Zolpidem",
+      "pharmacologic_group": "Hipnótico no benzodiacepínico (fármaco Z)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 232,
+      "medication": "Estradiol oral o transdérmico",
+      "pharmacologic_group": "Estrógeno sistémico",
+      "included_route": "Oral | Transdérmico",
+      "excluded_route": "Vaginal",
+      "explicitly_named_in_beers": false,
+      "observation": "Se mencionan estrógenos orales, transdérmicos, naturales y sintéticos, sin especificar principio activo."
+    },
+    {
+      "order": 233,
+      "medication": "Estradiol valerato",
+      "pharmacologic_group": "Estrógeno sistémico",
+      "included_route": "Oral | Parenteral",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Se mencionan estrógenos orales, transdérmicos, naturales y sintéticos, sin especificar principio activo."
+    },
+    {
+      "order": 234,
+      "medication": "Estradiol cipionato",
+      "pharmacologic_group": "Estrógeno sistémico",
+      "included_route": "Parenteral",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Se mencionan estrógenos orales, transdérmicos, naturales y sintéticos, sin especificar principio activo."
+    },
+    {
+      "order": 235,
+      "medication": "Estrógenos conjugados",
+      "pharmacologic_group": "Estrógeno sistémico",
+      "included_route": "Oral | Transdérmico",
+      "excluded_route": "Vaginal",
+      "explicitly_named_in_beers": false,
+      "observation": "Se mencionan estrógenos orales, transdérmicos, naturales y sintéticos, sin especificar principio activo."
+    },
+    {
+      "order": 236,
+      "medication": "Estrógenos esterificados",
+      "pharmacologic_group": "Estrógeno sistémico",
+      "included_route": "Oral | Transdérmico",
+      "excluded_route": "Vaginal",
+      "explicitly_named_in_beers": false,
+      "observation": "Se mencionan estrógenos orales, transdérmicos, naturales y sintéticos, sin especificar principio activo."
+    },
+    {
+      "order": 237,
+      "medication": "Estropipato",
+      "pharmacologic_group": "Estrógeno sistémico",
+      "included_route": "Oral | Transdérmico",
+      "excluded_route": "Vaginal",
+      "explicitly_named_in_beers": false,
+      "observation": "Se mencionan estrógenos orales, transdérmicos, naturales y sintéticos, sin especificar principio activo."
+    },
+    {
+      "order": 238,
+      "medication": "Etinilestradiol",
+      "pharmacologic_group": "Estrógeno sistémico",
+      "included_route": "Oral | Transdérmico",
+      "excluded_route": "Vaginal",
+      "explicitly_named_in_beers": false,
+      "observation": "Se mencionan estrógenos orales, transdérmicos, naturales y sintéticos, sin especificar principio activo."
+    },
+    {
+      "order": 239,
+      "medication": "Tiroides desecada",
+      "pharmacologic_group": "Hormonas y preparados tiroideos",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 240,
+      "medication": "Donepezilo",
+      "pharmacologic_group": "Inhibidor de acetilcolinesterasa",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 241,
+      "medication": "Galantamina",
+      "pharmacologic_group": "Inhibidor de acetilcolinesterasa",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 242,
+      "medication": "Rivastigmina",
+      "pharmacologic_group": "Inhibidor de acetilcolinesterasa",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 243,
+      "medication": "Cilostazol",
+      "pharmacologic_group": "Inhibidor de fosfodiesterasa tipo 3/antiagregantes",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 244,
+      "medication": "Dexlansoprazol",
+      "pharmacologic_group": "Inhibidor de la bomba de protones (IBP)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 245,
+      "medication": "Esomeprazol",
+      "pharmacologic_group": "Inhibidor de la bomba de protones (IBP)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 246,
+      "medication": "Lansoprazol",
+      "pharmacologic_group": "Inhibidor de la bomba de protones (IBP)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 247,
+      "medication": "Omeprazol",
+      "pharmacologic_group": "Inhibidor de la bomba de protones (IBP)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 248,
+      "medication": "Pantoprazol",
+      "pharmacologic_group": "Inhibidor de la bomba de protones (IBP)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 249,
+      "medication": "Rabeprazol",
+      "pharmacologic_group": "Inhibidor de la bomba de protones (IBP)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 250,
+      "medication": "Captopril",
+      "pharmacologic_group": "Inhibidor de la enzima convertidora de angiotensina (IECA)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 251,
+      "medication": "Enalapril",
+      "pharmacologic_group": "Inhibidor de la enzima convertidora de angiotensina (IECA)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 252,
+      "medication": "Lisinopril",
+      "pharmacologic_group": "Inhibidor de la enzima convertidora de angiotensina (IECA)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 253,
+      "medication": "Ramipril",
+      "pharmacologic_group": "Inhibidor de la enzima convertidora de angiotensina (IECA)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 254,
+      "medication": "Perindopril",
+      "pharmacologic_group": "Inhibidor de la enzima convertidora de angiotensina (IECA)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 255,
+      "medication": "Benazepril",
+      "pharmacologic_group": "Inhibidor de la enzima convertidora de angiotensina (IECA)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 256,
+      "medication": "Fosinopril",
+      "pharmacologic_group": "Inhibidor de la enzima convertidora de angiotensina (IECA)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 257,
+      "medication": "Quinapril",
+      "pharmacologic_group": "Inhibidor de la enzima convertidora de angiotensina (IECA)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 258,
+      "medication": "Trandolapril",
+      "pharmacologic_group": "Inhibidor de la enzima convertidora de angiotensina (IECA)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 259,
+      "medication": "Cilazapril",
+      "pharmacologic_group": "Inhibidor de la enzima convertidora de angiotensina (IECA)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 260,
+      "medication": "Zofenopril",
+      "pharmacologic_group": "Inhibidor de la enzima convertidora de angiotensina (IECA)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 261,
+      "medication": "Imidapril",
+      "pharmacologic_group": "Inhibidor de la enzima convertidora de angiotensina (IECA)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 262,
+      "medication": "Moexipril",
+      "pharmacologic_group": "Inhibidor de la enzima convertidora de angiotensina (IECA)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 263,
+      "medication": "Duloxetina",
+      "pharmacologic_group": "Inhibidor de la recaptación de serotonina y noradrenalina (IRSN)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 264,
+      "medication": "Canagliflozina",
+      "pharmacologic_group": "Inhibidor de SGLT2",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 265,
+      "medication": "Dapagliflozina",
+      "pharmacologic_group": "Inhibidor de SGLT2",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 266,
+      "medication": "Empagliflozina",
+      "pharmacologic_group": "Inhibidor de SGLT2",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 267,
+      "medication": "Ertugliflozina",
+      "pharmacologic_group": "Inhibidor de SGLT2",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 268,
+      "medication": "Apixabán",
+      "pharmacologic_group": "Inhibidor del factor Xa",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 269,
+      "medication": "Edoxabán",
+      "pharmacologic_group": "Inhibidor del factor Xa",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 270,
+      "medication": "Fondaparinux",
+      "pharmacologic_group": "Inhibidor del factor Xa",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 271,
+      "medication": "Rivaroxabán",
+      "pharmacologic_group": "Inhibidor del factor Xa",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 272,
+      "medication": "Sacubitrilo/Valsartán",
+      "pharmacologic_group": "Inhibidor del receptor de angiotensina y neprilisina (ARNI)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 273,
+      "medication": "Aliskireno",
+      "pharmacologic_group": "Inhibidor del sistema renina-angiotensina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 274,
+      "medication": "Aliskireno",
+      "pharmacologic_group": "Inhibidor directos de renina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 275,
+      "medication": "Dabigatrán",
+      "pharmacologic_group": "Inhibidor directos de trombina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 276,
+      "medication": "Clopidogrel",
+      "pharmacologic_group": "Inhibidor P2Y12",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 277,
+      "medication": "Prasugrel",
+      "pharmacologic_group": "Inhibidor P2Y12",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 278,
+      "medication": "Ticagrelor",
+      "pharmacologic_group": "Inhibidor P2Y12",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 279,
+      "medication": "Celecoxib",
+      "pharmacologic_group": "Inhibidor selectivos de COX-2",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 280,
+      "medication": "Etoricoxib",
+      "pharmacologic_group": "Inhibidor selectivos de COX-2",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 281,
+      "medication": "Parecoxib",
+      "pharmacologic_group": "Inhibidor selectivos de COX-2",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona la clase farmacológica, pero no individualiza un principio activo."
+    },
+    {
+      "order": 282,
+      "medication": "Paroxetina",
+      "pharmacologic_group": "Inhibidor selectivos de la recaptación de serotonina (ISRS)",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 283,
+      "medication": "Insulina humana regular",
+      "pharmacologic_group": "Insulina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Se menciona insulina de acción corta o rápida y basal o de acción prolongada, sin principio activo individual."
+    },
+    {
+      "order": 284,
+      "medication": "Insulina humana nph o isófana",
+      "pharmacologic_group": "Insulina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Se menciona insulina de acción corta o rápida y basal o de acción prolongada, sin principio activo individual."
+    },
+    {
+      "order": 285,
+      "medication": "Insulina lispro",
+      "pharmacologic_group": "Insulina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Se menciona insulina de acción corta o rápida y basal o de acción prolongada, sin principio activo individual."
+    },
+    {
+      "order": 286,
+      "medication": "Insulina aspart",
+      "pharmacologic_group": "Insulina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Se menciona insulina de acción corta o rápida y basal o de acción prolongada, sin principio activo individual."
+    },
+    {
+      "order": 287,
+      "medication": "Insulina glulisina",
+      "pharmacologic_group": "Insulina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Se menciona insulina de acción corta o rápida y basal o de acción prolongada, sin principio activo individual."
+    },
+    {
+      "order": 288,
+      "medication": "Insulina glargina",
+      "pharmacologic_group": "Insulina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Se menciona insulina de acción corta o rápida y basal o de acción prolongada, sin principio activo individual."
+    },
+    {
+      "order": 289,
+      "medication": "Insulina detemir",
+      "pharmacologic_group": "Insulina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Se menciona insulina de acción corta o rápida y basal o de acción prolongada, sin principio activo individual."
+    },
+    {
+      "order": 290,
+      "medication": "Insulina degludec",
+      "pharmacologic_group": "Insulina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Se menciona insulina de acción corta o rápida y basal o de acción prolongada, sin principio activo individual."
+    },
+    {
+      "order": 291,
+      "medication": "Insulina humana inhalada",
+      "pharmacologic_group": "Insulina",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "Se menciona insulina de acción corta o rápida y basal o de acción prolongada, sin principio activo individual."
+    },
+    {
+      "order": 292,
+      "medication": "Aceite mineral",
+      "pharmacologic_group": "Laxante | Laxante osmótico | Lubricante intestinal",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 293,
+      "medication": "Litio",
+      "pharmacologic_group": "Litio/estabilizadores del ánimo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 294,
+      "medication": "Azitromicina",
+      "pharmacologic_group": "Macrólidos",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrada expresamente como excepción dentro de los macrólidos en una interacción con warfarina."
+    },
+    {
+      "order": 295,
+      "medication": "Dihidroergotoxina",
+      "pharmacologic_group": "Mesilatos ergoloides",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 296,
+      "medication": "Mesilato de codergocrina",
+      "pharmacologic_group": "Mesilatos ergoloides",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 297,
+      "medication": "Teofilina",
+      "pharmacologic_group": "Metilxantinas",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 298,
+      "medication": "Meperidina",
+      "pharmacologic_group": "Opioides",
+      "included_route": "Oral",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 299,
+      "medication": "Tramadol",
+      "pharmacologic_group": "Opioides",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 300,
+      "medication": "Meprobamato",
+      "pharmacologic_group": "Otros sedantes/ansiolíticos",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 301,
+      "medication": "Megestrol",
+      "pharmacologic_group": "Progestágenos/estimulantes del apetito",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 302,
+      "medication": "Baclofeno",
+      "pharmacologic_group": "Relajantes musculoesqueléticos/antiespásticos",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 303,
+      "medication": "Carisoprodol",
+      "pharmacologic_group": "Relajantes musculoesqueléticos/antiespásticos",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 304,
+      "medication": "Clorzoxazona",
+      "pharmacologic_group": "Relajantes musculoesqueléticos/antiespásticos",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 305,
+      "medication": "Ciclobenzaprina",
+      "pharmacologic_group": "Relajantes musculoesqueléticos/antiespásticos",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 306,
+      "medication": "Metaxalona",
+      "pharmacologic_group": "Relajantes musculoesqueléticos/antiespásticos",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 307,
+      "medication": "Metocarbamol",
+      "pharmacologic_group": "Relajantes musculoesqueléticos/antiespásticos",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 308,
+      "medication": "Orfenadrina",
+      "pharmacologic_group": "Relajantes musculoesqueléticos/antiespásticos",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 309,
+      "medication": "Ácido acetilsalicílico (aspirina)",
+      "pharmacologic_group": "Salicilatos",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 310,
+      "medication": "Somatropina",
+      "pharmacologic_group": "Análogo de la hormona del crecimiento",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona hormona del crecimiento, pero no utiliza el nombre de un principio activo específico."
+    },
+    {
+      "order": 311,
+      "medication": "Somapacitán",
+      "pharmacologic_group": "Análogo de la hormona del crecimiento",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona hormona del crecimiento, pero no utiliza el nombre de un principio activo específico."
+    },
+    {
+      "order": 312,
+      "medication": "Lonapegsomatropina",
+      "pharmacologic_group": "Análogo de la hormona del crecimiento",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona hormona del crecimiento, pero no utiliza el nombre de un principio activo específico."
+    },
+    {
+      "order": 313,
+      "medication": "Somatrogón",
+      "pharmacologic_group": "Análogo de la hormona del crecimiento",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio menciona hormona del crecimiento, pero no utiliza el nombre de un principio activo específico."
+    },
+    {
+      "order": 314,
+      "medication": "Gliclazida",
+      "pharmacologic_group": "Sulfonilurea",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 315,
+      "medication": "Glimepirida",
+      "pharmacologic_group": "Sulfonilurea",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 316,
+      "medication": "Glipizida",
+      "pharmacologic_group": "Sulfonilurea",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 317,
+      "medication": "Gliburida (glibenclamida)",
+      "pharmacologic_group": "Sulfonilurea",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 318,
+      "medication": "Pioglitazona",
+      "pharmacologic_group": "Tiazolidinediona",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 319,
+      "medication": "Probenecid",
+      "pharmacologic_group": "Uricosúrico",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": true,
+      "observation": "Nombrado expresamente en los criterios compartidos."
+    },
+    {
+      "order": 320,
+      "medication": "Alprenolol",
+      "pharmacologic_group": "Betabloqueador no selectivo | Betabloqueante no selectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 321,
+      "medication": "Oxprenolol",
+      "pharmacologic_group": "Betabloqueador no selectivo | Betabloqueante no selectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 322,
+      "medication": "Pindolol",
+      "pharmacologic_group": "Betabloqueador no selectivo | Betabloqueante no selectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 323,
+      "medication": "Propranolol",
+      "pharmacologic_group": "Betabloqueador no selectivo | Betabloqueante no selectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 324,
+      "medication": "Timolol",
+      "pharmacologic_group": "Betabloqueador no selectivo | Betabloqueante no selectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 325,
+      "medication": "Sotalol",
+      "pharmacologic_group": "Betabloqueador no selectivo | Betabloqueante no selectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 326,
+      "medication": "Nadolol",
+      "pharmacologic_group": "Betabloqueador no selectivo | Betabloqueante no selectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 327,
+      "medication": "Mepindolol",
+      "pharmacologic_group": "Betabloqueador no selectivo | Betabloqueante no selectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 328,
+      "medication": "Carteolol",
+      "pharmacologic_group": "Betabloqueador no selectivo | Betabloqueante no selectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 329,
+      "medication": "Tertatolol",
+      "pharmacologic_group": "Betabloqueador no selectivo | Betabloqueante no selectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 330,
+      "medication": "Bopindolol",
+      "pharmacologic_group": "Betabloqueador no selectivo | Betabloqueante no selectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 331,
+      "medication": "Bupranolol",
+      "pharmacologic_group": "Betabloqueador no selectivo | Betabloqueante no selectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 332,
+      "medication": "Penbutolol",
+      "pharmacologic_group": "Betabloqueador no selectivo | Betabloqueante no selectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 333,
+      "medication": "Cloranolol",
+      "pharmacologic_group": "Betabloqueador no selectivo | Betabloqueante no selectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 334,
+      "medication": "Practolol",
+      "pharmacologic_group": "Betabloqueador selectivo | Betabloqueante cardioselectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 335,
+      "medication": "Metoprolol",
+      "pharmacologic_group": "Betabloqueador selectivo | Betabloqueante cardioselectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 336,
+      "medication": "Atenolol",
+      "pharmacologic_group": "Betabloqueador selectivo | Betabloqueante cardioselectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 337,
+      "medication": "Acebutolol",
+      "pharmacologic_group": "Betabloqueador selectivo | Betabloqueante cardioselectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 338,
+      "medication": "Betaxolol",
+      "pharmacologic_group": "Betabloqueador selectivo | Betabloqueante cardioselectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 339,
+      "medication": "Bevantolol",
+      "pharmacologic_group": "Betabloqueador selectivo | Betabloqueante cardioselectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 340,
+      "medication": "Bisoprolol",
+      "pharmacologic_group": "Betabloqueador selectivo | Betabloqueante cardioselectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 341,
+      "medication": "Celiprolol",
+      "pharmacologic_group": "Betabloqueador selectivo | Betabloqueante cardioselectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 342,
+      "medication": "Esmolol",
+      "pharmacologic_group": "Betabloqueador selectivo | Betabloqueante cardioselectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 343,
+      "medication": "Epanolol",
+      "pharmacologic_group": "Betabloqueador selectivo | Betabloqueante cardioselectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 344,
+      "medication": "S-atenolol",
+      "pharmacologic_group": "Betabloqueador selectivo | Betabloqueante cardioselectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 345,
+      "medication": "Nebivolol",
+      "pharmacologic_group": "Betabloqueador selectivo | Betabloqueante cardioselectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 346,
+      "medication": "Talinolol",
+      "pharmacologic_group": "Betabloqueador selectivo | Betabloqueante cardioselectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    },
+    {
+      "order": 347,
+      "medication": "Landiolol",
+      "pharmacologic_group": "Betabloqueador selectivo | Betabloqueante cardioselectivo",
+      "included_route": "No especificada",
+      "excluded_route": "No especificada",
+      "explicitly_named_in_beers": false,
+      "observation": "El criterio no menciona la clase farmacológica ni un principio activo."
+    }
+  ]
+}

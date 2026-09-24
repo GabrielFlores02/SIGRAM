@@ -91,6 +91,7 @@ export interface CriterionResult {
   automation_mode?: string;
   counts_as_clinical_finding?: boolean;
   trigger_facts: Record<string, unknown>;
+  review_details?: DoctorReviewDetail[];
 }
 
 export interface EvidenceTrace {

@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     REFERENCE_CATALOG_FILE: str = (
         "data/catalogs/reference/pharmacologic_groups_cie10_20260818.json"
     )
+    BEERS_GROUPS_CATALOG_FILE: str = (
+        "data/catalogs/reference/beers_groups_20260924.json"
+    )
     PILOT_COHORT_FILE: str = "data/raw/cohorte.parquet"
     PILOT_LABS_FILE: str = "data/raw/sigram.parquet"
     PILOT_DIAGNOSES_FILE: str = (

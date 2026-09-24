@@ -317,6 +317,7 @@ textarea { min-height: 84px; resize: vertical; }
 .quick-screening-toast > header button { width: 30px; height: 30px; padding: 0; color: white; background: transparent; border: 0; border-radius: 50%; font-size: 23px; }
 .quick-screening-toast > header button:hover { background: rgba(255,255,255,.14); }
 .quick-alert-tabs { flex: 0 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #cfdce2; border-bottom: 1px solid #c3d8e0; }
+.result-category-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; margin: 18px 0; overflow: hidden; border: 1px solid #c3d8e0; border-radius: 8px; background: #cfdce2; }
 .quick-alert-tab { min-height: 48px; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 8px 5px 6px; border: 0; border-bottom: 4px solid transparent; transition: filter .15s ease, box-shadow .15s ease; }
 .quick-alert-tab:hover { filter: brightness(.97); }
 .quick-alert-tab span { font-size: 10px; font-weight: 800; }

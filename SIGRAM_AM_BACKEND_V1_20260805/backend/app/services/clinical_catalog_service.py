@@ -481,6 +481,7 @@ class ClinicalCatalogService:
         self.reference_catalog_path = Path(
             reference_catalog_path or settings.REFERENCE_CATALOG_FILE
         )
+        self.beers_groups_catalog_path = Path(settings.BEERS_GROUPS_CATALOG_FILE)
         self.review_details_path = Path(
             review_details_path or settings.CRITERION_REVIEW_DETAILS_FILE
         )
@@ -520,20 +521,37 @@ class ClinicalCatalogService:
         return ClinicalCatalogService._catalog_cache
 
     def _load_reference_catalog(self) -> dict[str, Any]:
-        """Carga grupos farmacológicos y CIE-10 sin convertirlos en reglas clínicas."""
+        """Carga grupos farmacológicos, incluidos los grupos Beers, sin inventar reglas."""
         stat = self.reference_catalog_path.stat()
+        beers_stat = self.beers_groups_catalog_path.stat() if self.beers_groups_catalog_path.is_file() else None
         signature = (
             str(self.reference_catalog_path.resolve()),
             stat.st_mtime_ns,
             stat.st_size,
+            str(self.beers_groups_catalog_path.resolve()) if beers_stat else "",
+            beers_stat.st_mtime_ns if beers_stat else 0,
+            beers_stat.st_size if beers_stat else 0,
         )
         if (
             ClinicalCatalogService._reference_catalog_cache is None
             or ClinicalCatalogService._reference_catalog_signature != signature
         ):
-            ClinicalCatalogService._reference_catalog_cache = json.loads(
+            base_catalog = json.loads(
                 self.reference_catalog_path.read_text(encoding="utf-8")
             )
+            beers_catalog = (
+                json.loads(self.beers_groups_catalog_path.read_text(encoding="utf-8"))
+                if beers_stat else {"medications": []}
+            )
+            ClinicalCatalogService._reference_catalog_cache = {
+                **base_catalog,
+                "medications": [
+                    *base_catalog.get("medications", []),
+                    *beers_catalog.get("medications", []),
+                ],
+                "beers_group_catalog_version": beers_catalog.get("catalog_version"),
+                "beers_group_medication_count": beers_catalog.get("medication_count", 0),
+            }
             exact_index: dict[str, list[dict[str, Any]]] = {}
             root_index: dict[str, list[dict[str, Any]]] = {}
             for item in ClinicalCatalogService._reference_catalog_cache.get(

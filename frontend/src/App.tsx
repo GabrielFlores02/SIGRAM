@@ -22,7 +22,6 @@ import type {
 } from "./types";
 
 type Page = "cases" | "new" | "new-minimal" | "history" | "research" | "results";
-type VisibleSystem = AnalysisSystem;
 type DDInterLevel = "MAJOR" | "MODERATE" | "MINOR" | "UNKNOWN" | "UNSPECIFIED";
 type Cie10Option = { code: string; description: string };
 
@@ -186,6 +185,21 @@ function doctorReviewDetails(alert: AlertResult): DoctorReviewDetail[] {
   return details.filter((item): item is DoctorReviewDetail => Boolean(
     item && typeof item === "object" && typeof (item as DoctorReviewDetail).description === "string",
   ));
+}
+
+function criterionSourceDetails(criterion: CriterionResult) {
+  return criterion.review_details ?? [];
+}
+
+function criterionDisplayCode(criterion: CriterionResult) {
+  const details = criterionSourceDetails(criterion);
+  if (!details.length) return criterion.criterion_code;
+  return details.map((detail) => `${detail.source_system.toUpperCase()}-${String(detail.source_code).padStart(3, "0")}`).join(" / ");
+}
+
+function criterionSourceDescription(criterion: CriterionResult) {
+  const descriptions = Array.from(new Set(criterionSourceDetails(criterion).map((detail) => detail.description).filter(Boolean)));
+  return descriptions.join("\n\n") || criterion.statement;
 }
 
 const CLINICAL_CONTEXT_LABELS: Record<string, string> = {
@@ -1261,10 +1275,11 @@ function DetailDrawer({ criterion, alert, clinicalCase, onClose }: { criterion: 
   return <div className="drawer-layer" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
     <button className="drawer-backdrop" onClick={onClose} aria-label="Cerrar detalle" />
     <aside className="detail-drawer">
-      <header><div><span className={`status-dot ${criterion.status}`} /><h2 id="drawer-title">Detalle del criterio {criterion.criterion_code}</h2></div><button onClick={onClose} aria-label="Cerrar">×</button></header>
+      <header><div><span className={`status-dot ${criterion.status}`} /><h2 id="drawer-title">Detalle del criterio {criterionDisplayCode(criterion)}</h2></div><button onClick={onClose} aria-label="Cerrar">×</button></header>
       <div className="drawer-content">
         <section><span className="drawer-label">{isBeers ? "Recomendación AGS Beers 2023" : "Estado"}</span>{isBeers ? <span className={`beers-recommendation ${criterion.recommendation_type ?? "conditional"}`}>{beersRecommendationLabel(criterion)}</span> : <span className={`status-pill ${criterion.status}`}>{statusLabel(criterion.status)}</span>}</section>
         <section><span className="drawer-label">{isBeers ? "Criterio / situación evaluada" : "Criterio"}</span><p>{isBeers ? criterion.evaluated_situation ?? criterion.statement : criterion.statement}</p></section>
+        <section><span className="drawer-label">Descripción fuente</span><p className="source-description">{criterionSourceDescription(criterion)}</p></section>
         {isBeers && criterion.rationale && <section><span className="drawer-label">Fundamento clínico — rationale</span><p>{criterion.rationale}</p></section>}
         <section><span className="drawer-label">Medicamentos implicados</span><p>{criterion.implicated_medications.length ? criterion.implicated_medications.join(", ") : "Ninguno registrado"}</p></section>
         {isBeers && <section><span className="drawer-label">Motivo del hallazgo</span><p>{criterion.reason}</p></section>}
@@ -1320,16 +1335,20 @@ function DDInterDetailDrawer({ alert, clinicalCase, onClose }: { alert: AlertRes
 }
 
 function ResultsPage({ clinicalCase, evaluation, dataAvailability }: { clinicalCase: ClinicalCase; evaluation: EvaluationExecution; dataAvailability?: PilotEvaluationResponse["data_availability"] }) {
-  const [system, setSystem] = useState<VisibleSystem>("beers");
+  type ResultCategory = "mpi" | "opp" | "ifp";
+  const [system, setSystem] = useState<ResultCategory>("mpi");
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | CriterionResult["status"]>("all");
   const [ddinterLevelFilter, setDdinterLevelFilter] = useState<"all" | DDInterLevel>("all");
   const [selected, setSelected] = useState<CriterionResult>();
   const [selectedInteraction, setSelectedInteraction] = useState<AlertResult>();
 
-  const analysis = evaluation.analysis_results.find((item) => item.system === system);
-  const isBeers = system === "beers";
-  const visibleCriteria = (evaluation.clinical_findings ?? evaluation.criteria_report.filter((item) => item.status === "alert" || item.status === "activated")).filter((item) => item.system === system);
+  const isClinicalCategory = system !== "ifp";
+  const categoryMatches = (item: CriterionResult) => system === "mpi"
+    ? item.system === "beers" || (item.system === "stopp_start" && item.criterion_type === "STOPP")
+    : system === "opp" ? item.system === "stopp_start" && item.criterion_type === "START" : false;
+  const visibleCriteria = (evaluation.clinical_findings ?? evaluation.criteria_report.filter((item) => item.status === "alert" || item.status === "activated")).filter(categoryMatches);
+  const categoryCriteria = evaluation.criteria_report.filter(categoryMatches);
   const ddinterAlerts = evaluation.alerts.filter((item) => item.analysis_system === "ddinter");
   const rows = visibleCriteria.filter((item) => {
     const haystack = `${item.criterion_code} ${item.statement} ${item.reason} ${item.implicated_medications.join(" ")}`.toLowerCase();
@@ -1340,19 +1359,7 @@ function ResultsPage({ clinicalCase, evaluation, dataAvailability }: { clinicalC
     return haystack.includes(query.toLowerCase()) && (ddinterLevelFilter === "all" || ddinterLevel(item) === ddinterLevelFilter);
   });
   const selectedAlert = selected ? evaluation.alerts.find((item) => item.analysis_system === selected.system && item.rule_code === selected.criterion_code) : undefined;
-  const beersCriteria = evaluation.criteria_report.filter((item) => item.system === "beers");
-  const beersCount = (status: CriterionResult["status"]) => beersCriteria.filter((item) => item.status === status).length;
-  const beersAnalysisSections: Array<[CriterionResult["status"], string]> = [
-    ["activated", "Criterios activados"],
-    ["not_evaluable", "Requieren información adicional"],
-    ["manual_review", "Requieren revisión clínica"],
-    ["no_alert", "Sin hallazgo en los datos observados"],
-    ["supporting_classification", "Clasificaciones de apoyo"],
-    ["out_of_scope", "Fuera del ámbito"],
-    ["not_applicable", "Criterios no aplicables"],
-  ];
-
-  function selectSystem(nextSystem: VisibleSystem) {
+  function selectSystem(nextSystem: ResultCategory) {
     setSystem(nextSystem);
     setQuery("");
     setStatusFilter("all");
@@ -1369,26 +1376,15 @@ function ResultsPage({ clinicalCase, evaluation, dataAvailability }: { clinicalC
     {dataAvailability && <div className="pilot-period"><span><b>Medicamentos activos:</b> {formatDate(dataAvailability.medication_index_date)}</span><span><b>Observación clínica:</b> {formatDate(dataAvailability.clinical_observation_start_date)} — {formatDate(dataAvailability.clinical_observation_end_date)}</span></div>}
     <div className="info-banner"><span>ⓘ</span><div><strong>Resultado de tamizaje</strong><p>Este reporte es una herramienta de apoyo y <b>requiere revisión por un profesional de salud</b>. No constituye una recomendación clínica directa.</p></div></div>
     {dataAvailability && <LaboratoryEvidencePanel availability={dataAvailability} />}
-    <div className="criteria-tabs"><button className={system === "beers" ? "active" : ""} onClick={() => selectSystem("beers")}>Criterios Beers</button><button className={system === "stopp_start" ? "active" : ""} onClick={() => selectSystem("stopp_start")}>Criterios STOPP/START</button><button className={system === "ddinter" ? "active" : ""} onClick={() => selectSystem("ddinter")}>Interacciones DDInter</button></div>
-    {system === "ddinter" ? <div className="ddinter-overview">
-      <div><strong className="metric-alert">{analysis?.alert_count ?? 0}</strong><span>Interacciones detectadas</span></div>
-      <div><strong>DDInter local</strong><span>{analysis?.catalog ?? "Catálogo no informado"}</span></div>
+    <div className="result-category-tabs" role="tablist" aria-label="Tipo de hallazgo"><button role="tab" aria-selected={system === "mpi"} className={`quick-alert-tab tab-mpi ${system === "mpi" ? "active" : ""}`} onClick={() => selectSystem("mpi")}><span>MPI</span><b>{(evaluation.clinical_findings ?? []).filter((item) => item.system === "beers" || (item.system === "stopp_start" && item.criterion_type === "STOPP")).length}</b></button><button role="tab" aria-selected={system === "opp"} className={`quick-alert-tab tab-opp ${system === "opp" ? "active" : ""}`} onClick={() => selectSystem("opp")}><span>OPP</span><b>{(evaluation.clinical_findings ?? []).filter((item) => item.system === "stopp_start" && item.criterion_type === "START").length}</b></button><button role="tab" aria-selected={system === "ifp"} className={`quick-alert-tab tab-ifp ${system === "ifp" ? "active" : ""}`} onClick={() => selectSystem("ifp")}><span>IFP</span><b>{ddinterAlerts.length}</b></button></div>
+    {system === "ifp" ? <div className="ddinter-overview">
+      <div><strong className="metric-alert">{ddinterAlerts.length}</strong><span>Interacciones detectadas</span></div>
+      <div><strong>DDInter local</strong><span>Catálogo configurado en el backend</span></div>
       <div><strong>Coincidencia</strong><span>Exacta o alias provisional</span></div>
-    </div> : isBeers ? <><div className="metric-grid">
-      <div><strong className="metric-alert">{analysis?.alert_count ?? 0}</strong><span>Criterios activados</span></div>
-      <div><strong>{analysis?.not_evaluable_count ?? 0}</strong><span>Requieren información adicional</span></div>
-      <div><strong className="metric-manual">{analysis?.manual_review_count ?? 0}</strong><span>Requieren revisión clínica</span></div>
-      <div><strong className="metric-primary">{beersCount("no_alert")}</strong><span>Sin hallazgo en los datos observados</span></div>
-    </div><p className="coverage-note">{beersCriteria.length} criterios Beers candidatos considerados en esta evaluación.{(analysis?.out_of_scope_count ?? 0) > 0 ? ` ${(analysis?.out_of_scope_count ?? 0)} fuera del ámbito.` : ""}</p></> : <div className="metric-grid">
-      <div><strong className="metric-alert">{analysis?.alert_count ?? 0}</strong><span>{isBeers ? "Criterios activados" : "Alertas"}</span></div>
-      <div><strong className="metric-primary">{analysis?.evaluated_count ?? 0}</strong><span>{isBeers ? "Candidatos analizados" : "Evaluados"}</span></div>
-      <div><strong>{analysis?.not_evaluable_count ?? 0}</strong><span>Requieren información adicional</span></div>
-      <div><strong className="metric-manual">{analysis?.manual_review_count ?? 0}</strong><span>Revisión manual</span></div>
-    </div>}
-    {system === "beers" && clinicalCase.age < 65 && <div className="method-note">ⓘ Fuera del ámbito etario original de AGS Beers 2023 (65 años o más). No se muestran estos resultados como aplicación canónica.</div>}
-    {system === "stopp_start" && <div className="method-note">▧ STOPP/START está activo como tamizaje de investigación; los resultados requieren interpretación y validación clínica.</div>}
-    {system === "ddinter" && <div className="method-note">ⓘ {analysis?.note ?? "El resultado DDInter se reporta según el catálogo local configurado en el backend."}</div>}
-    {system === "ddinter" ? <div className="results-card">
+    </div> : <div className="metric-grid"><div><strong className="metric-alert">{visibleCriteria.length}</strong><span>Alertas confirmadas</span></div><div><strong className="metric-primary">{categoryCriteria.filter((item) => ["alert", "activated", "no_alert"].includes(item.status)).length}</strong><span>Evaluados</span></div><div><strong>{categoryCriteria.filter((item) => item.status === "not_evaluable").length}</strong><span>Requieren información adicional</span></div><div><strong className="metric-manual">{categoryCriteria.filter((item) => item.status === "manual_review").length}</strong><span>Revisión manual</span></div></div>}
+    {system === "mpi" && clinicalCase.age < 65 && <div className="method-note">ⓘ Los criterios Beers se interpretan para 65 años o más; STOPP se mantiene como tamizaje de investigación.</div>}
+    {system === "ifp" && <div className="method-note">ⓘ Interacciones farmacológicas potenciales según el catálogo DDInter local.</div>}
+    {system === "ifp" ? <div className="results-card">
       <div className="results-toolbar"><div><strong>Interacciones farmacológicas</strong><span>{ddinterAlerts.length} hallazgos</span></div><div><label className="search-field"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Filtrar…" /></label><select aria-label="Filtrar por nivel DDInter" value={ddinterLevelFilter} onChange={(event) => setDdinterLevelFilter(event.target.value as typeof ddinterLevelFilter)}><option value="all">Todos los niveles</option><option value="MAJOR">Major</option><option value="MODERATE">Moderate</option><option value="MINOR">Minor</option><option value="UNKNOWN">Unknown</option></select></div></div>
       <div className="table-scroll"><table className="results-table"><thead><tr><th>Nivel DDInter</th><th>Código</th><th>Medicamentos implicados</th><th>Hallazgo</th><th>Fuente / trazabilidad</th><th>Acción</th></tr></thead><tbody>
         {interactionRows.map((alert) => {
@@ -1405,27 +1401,24 @@ function ResultsPage({ clinicalCase, evaluation, dataAvailability }: { clinicalC
       </tbody></table>{interactionRows.length === 0 && <div className="empty-state">No se detectaron interacciones DDInter para los medicamentos evaluados.</div>}</div>
       <div className="table-footer">Mostrando {interactionRows.length} de {ddinterAlerts.length} hallazgos</div>
     </div> : <div className="results-card">
-      <div className="results-toolbar"><div><strong>{isBeers ? "Hallazgos Beers" : "Hallazgos clínicos"}</strong><span>{visibleCriteria.length} {isBeers ? "criterios activados" : "alertas confirmadas"}</span></div><div><label className="search-field"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Filtrar…" /></label></div></div>
-      <div className="table-scroll"><table className="results-table"><thead>{isBeers ? <tr><th aria-label="Criterio activado" /><th>Código</th><th>Medicamento(s)</th><th>Recomendación AGS Beers 2023</th><th>Motivo del hallazgo</th><th>Acción</th></tr> : <tr><th>Gravedad</th><th>Código</th><th>Medicamento(s)</th><th>Estado</th><th>Justificación / Datos faltantes</th><th>Acción</th></tr>}</thead><tbody>
+      <div className="results-toolbar"><div><strong>{system === "mpi" ? "Medicamentos potencialmente inapropiados" : "Omisiones potenciales de prescripción"}</strong><span>{visibleCriteria.length} alertas confirmadas</span></div><div><label className="search-field"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Filtrar…" /></label></div></div>
+      <div className="table-scroll"><table className="results-table"><thead><tr><th>Gravedad</th><th>Código fuente</th><th>Medicamento(s)</th><th>Estado</th><th>Descripción fuente</th><th>Acción</th></tr></thead><tbody>
         {rows.map((criterion) => {
           const alert = evaluation.alerts.find((item) => item.analysis_system === criterion.system && item.rule_code === criterion.criterion_code);
           const explanation = criterion.missing_data.length ? `Dato faltante: ${criterion.missing_data.map((item) => item.label ?? item.field).join(", ")}` : alert?.justification || criterion.reason;
           return <tr key={`${criterion.system}-${criterion.criterion_code}`} className={criterion.status === "no_alert" ? "no-alert-row" : ""}>
-            <td><span className={`severity-bar ${criterion.status}`} title={isBeers ? "Criterio activado por el tamizaje" : statusLabel(criterion.status)} /></td>
-            <td><code>{criterion.criterion_code}</code></td>
+            <td><span className={`severity-bar ${criterion.status}`} title={statusLabel(criterion.status)} /></td>
+            <td><code>{criterionDisplayCode(criterion)}</code></td>
             <td>{criterion.implicated_medications.length ? criterion.implicated_medications.join(", ") : "—"}</td>
-            <td>{isBeers ? <span className={`beers-recommendation ${criterion.recommendation_type ?? "conditional"}`}>{beersRecommendationLabel(criterion)}</span> : <span className={`status-pill ${criterion.status}`}>{statusLabel(criterion.status)}</span>}</td>
-            <td>{criterion.missing_data.length > 0 && <b className="missing-label">⚠ Dato faltante</b>}<span>{isBeers ? criterion.reason : explanation || "Evaluación completada."}</span></td>
+            <td><span className={`status-pill ${criterion.status}`}>{statusLabel(criterion.status)}</span></td>
+            <td><span>{criterionSourceDescription(criterion)}</span>{criterion.missing_data.length > 0 && <b className="missing-label">⚠ Dato faltante</b>}<small>{explanation || "Evaluación completada."}</small></td>
             <td><button className="outline-button" onClick={() => setSelected(criterion)}>Ver detalle</button></td>
           </tr>;
         })}
       </tbody></table>{rows.length === 0 && <div className="empty-state">No hay resultados para los filtros seleccionados.</div>}</div>
       <div className="table-footer">Mostrando {rows.length} de {visibleCriteria.length} registros</div>
     </div>}
-    {system !== "ddinter" && <details className="full-analysis"><summary>Ver más: análisis completo</summary><div className="full-analysis-content">{isBeers ? beersAnalysisSections.map(([status, title]) => {
-      const items = beersCriteria.filter((item) => item.status === status);
-      return items.length ? <section className="analysis-section" key={status}><h3 className={status}>{title}</h3><div className="table-scroll"><table><thead><tr><th>Código</th><th>Motivo</th><th>Acción</th></tr></thead><tbody>{items.map((item) => <tr key={`technical-${item.system}-${item.criterion_code}`}><td><code>{item.criterion_code}</code></td><td>{item.reason}</td><td><button className="outline-button" onClick={() => setSelected(item)}>Ver detalle</button></td></tr>)}</tbody></table></div></section> : null;
-    }) : <><p><b>Requieren información adicional:</b> {(evaluation.data_gaps ?? []).filter((item) => item.system === system).length}. <b>Revisión manual:</b> {(evaluation.manual_review_findings ?? []).filter((item) => item.system === system).length}.</p><div className="table-scroll"><table><thead><tr><th>Código</th><th>Estado</th><th>Motivo</th><th>Acción</th></tr></thead><tbody>{evaluation.criteria_report.filter((item) => item.system === system).map((item) => <tr key={`technical-${item.system}-${item.criterion_code}`}><td><code>{item.criterion_code}</code></td><td><span className={`status-pill ${item.status}`}>{statusLabel(item.status)}</span></td><td>{item.reason}</td><td><button className="outline-button" onClick={() => setSelected(item)}>Ver detalle</button></td></tr>)}</tbody></table></div></>}</div></details>}
+    {isClinicalCategory && <details className="full-analysis"><summary>Ver más: análisis completo</summary><div className="full-analysis-content"><p><b>Requieren información adicional:</b> {categoryCriteria.filter((item) => item.status === "not_evaluable").length}. <b>Revisión manual:</b> {categoryCriteria.filter((item) => item.status === "manual_review").length}.</p><div className="table-scroll"><table><thead><tr><th>Código fuente</th><th>Estado</th><th>Descripción fuente</th><th>Acción</th></tr></thead><tbody>{categoryCriteria.map((item) => <tr key={`technical-${item.system}-${item.criterion_code}`}><td><code>{criterionDisplayCode(item)}</code></td><td><span className={`status-pill ${item.status}`}>{statusLabel(item.status)}</span></td><td>{criterionSourceDescription(item)}</td><td><button className="outline-button" onClick={() => setSelected(item)}>Ver detalle</button></td></tr>)}</tbody></table></div></div></details>}
     {selected && <DetailDrawer criterion={selected} alert={selectedAlert} clinicalCase={clinicalCase} onClose={() => setSelected(undefined)} />}
     {selectedInteraction && <DDInterDetailDrawer alert={selectedInteraction} clinicalCase={clinicalCase} onClose={() => setSelectedInteraction(undefined)} />}
   </section>;
