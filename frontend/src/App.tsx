@@ -203,7 +203,7 @@ function criterionSourceDescription(criterion: CriterionResult) {
 }
 
 const CLINICAL_CONTEXT_LABELS: Record<string, string> = {
-  egfr_ml_min_1_73m2: "TFGe / TFG reportada",
+  egfr_ml_min_1_73m2: "TFGe / TFG (reportada o calculada)",
   creatinine_clearance_ml_min: "Depuración de creatinina (CrCl)",
   serum_creatinine_mg_dl: "Creatinina sérica",
   serum_creatinine_date: "Fecha de creatinina",
@@ -284,7 +284,7 @@ function labValueLabel(evidence: LabEvidence) {
 function labWarningLabel(warning: string) {
   const messages: Record<string, string> = {
     "VALID_RESULT is preserved but its value semantics are not documented.": "VALID_RESULT se conserva, pero su semántica no está documentada.",
-    "Only direct mappings are used; eGFR is accepted only when ESSI reports TFG directly and is not calculated from creatinine.": "Solo se usan mapeos directos; TFGe se acepta únicamente si ESSI reporta TFG directamente y no se calcula desde creatinina.",
+    "Direct TFG reported by ESSI has priority; when it is absent, SIGRAM may calculate eGFR from serum creatinine with CKD-EPI 2021.": "La TFG reportada directamente por ESSI tiene prioridad; si no existe, SIGRAM puede calcular TFGe desde creatinina sérica con CKD-EPI 2021.",
     "The 365-day lookback is a provisional pilot rule requiring clinical validation.": "La ventana retrospectiva de 365 días es una regla provisional que requiere validación clínica.",
   };
   return messages[warning] ?? warning;
@@ -418,7 +418,7 @@ function PilotContextDrawer({ patient, onClose, onEvaluate }: { patient: PilotPa
   const [values, setValues] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const fields = [
-    ["egfr_ml_min_1_73m2", "TFGe / TFG reportada (mL/min/1.73 m²)", "number"],
+    ["egfr_ml_min_1_73m2", "TFGe / TFG (mL/min/1.73 m²)", "number"],
     ["creatinine_clearance_ml_min", "Depuración de creatinina - CrCl (mL/min)", "number"],
     ["potassium_mmol_l", "Potasio (mmol/L)", "number"],
     ["sodium_mmol_l", "Sodio (mmol/L)", "number"],
@@ -810,6 +810,18 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
     return (sex === "Femenino" ? base * 0.85 : base).toFixed(1);
   }, [age, sex, weightKg, serumCreatinineMgDl]);
 
+  const estimatedEgfr = useMemo(() => {
+    const years = Number(age);
+    const creatinine = Number(serumCreatinineMgDl);
+    if (!(years >= 18 && creatinine > 0) || !sex) return null;
+    const female = sex === "Femenino";
+    const kappa = female ? 0.7 : 0.9;
+    const alpha = female ? -0.241 : -0.302;
+    const ratio = creatinine / kappa;
+    const estimate = 142 * Math.min(ratio, 1) ** alpha * Math.max(ratio, 1) ** -1.2 * 0.9938 ** years * (female ? 1.012 : 1);
+    return estimate.toFixed(1);
+  }, [age, sex, serumCreatinineMgDl]);
+
   function setContextValue(field: string, value: string, commit = false) {
     setClinicalContext((current) => ({ ...current, [field]: value }));
     if (!value) {
@@ -960,8 +972,8 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
             <div className="triage-grid"><label>Peso (kg)<input type="number" min="1" step="0.1" value={weightKg} onChange={(event) => updateTriage("weight", event.target.value)} placeholder="Ej. 68.5" /></label><label>Talla (cm)<input type="number" min="1" step="0.1" value={heightCm} onChange={(event) => updateTriage("height", event.target.value)} placeholder="Ej. 160" /></label><label>Índice de masa corporal<input readOnly value={clinicalContext.bmi ?? ""} placeholder="Se calcula con peso y talla" /></label></div>
           </section>
           <section className="pilot-renal-panel">
-            <div className="pilot-panel-heading"><span>ETAPA PILOTO</span><strong className="heading-with-info">Creatinina y función renal <InfoTip text="Datos para estimar la depuración de creatinina de forma trazable. La CrCl se calcula en el backend con Cockcroft–Gault y peso actual; se guardan las entradas utilizadas." /></strong></div>
-            <div className="renal-grid"><label>Creatinina sérica (mg/dL)<input type="number" min="0.1" step="0.01" value={serumCreatinineMgDl} onChange={(event) => updateSerumCreatinine(event.target.value)} placeholder="Ej. 1.20" /></label><label>Fecha de creatinina<input type="date" value={serumCreatinineDate} onChange={(event) => updateSerumCreatinineDate(event.target.value)} /></label><label>CrCl estimada (mL/min)<input readOnly value={estimatedCrCl ?? ""} placeholder="Complete edad, sexo, peso y creatinina" /></label></div>
+            <div className="pilot-panel-heading"><span>ETAPA PILOTO</span><strong className="heading-with-info">Creatinina y función renal <InfoTip text="La TFGe se calcula con CKD-EPI 2021 (edad, sexo y creatinina). La CrCl se calcula por separado con Cockcroft–Gault y además requiere peso; ambas estimaciones quedan trazables." /></strong></div>
+            <div className="renal-grid"><label>Creatinina sérica (mg/dL)<input type="number" min="0.1" step="0.01" value={serumCreatinineMgDl} onChange={(event) => updateSerumCreatinine(event.target.value)} placeholder="Ej. 1.20" /></label><label>Fecha de creatinina<input type="date" value={serumCreatinineDate} onChange={(event) => updateSerumCreatinineDate(event.target.value)} /></label><label>TFGe CKD-EPI 2021 (mL/min/1.73 m²)<input readOnly value={estimatedEgfr ?? ""} placeholder="Complete edad, sexo y creatinina" /></label><label>CrCl Cockcroft–Gault (mL/min)<input readOnly value={estimatedCrCl ?? ""} placeholder="Además complete el peso" /></label></div>
           </section>
         </div>
         {historyLoading && <p className="field-help">Cargando historia pseudonimizada…</p>}
@@ -1275,7 +1287,7 @@ function ClinicalDataForReview({ clinicalCase, implicatedMedications, contextUse
     ["Creatinina sérica", clinicalCase.clinical_context.serum_creatinine_mg_dl, "mg/dL"],
     ["Fecha de creatinina", clinicalCase.clinical_context.serum_creatinine_date],
     ["Depuración de creatinina (CrCl)", clinicalCase.clinical_context.creatinine_clearance_ml_min, "mL/min"],
-    ["TFGe / TFG reportada", clinicalCase.clinical_context.egfr_ml_min_1_73m2, "mL/min/1.73 m²"],
+    ["TFGe / TFG (reportada o calculada)", clinicalCase.clinical_context.egfr_ml_min_1_73m2, "mL/min/1.73 m²"],
   ];
   const usedItems = Object.entries(contextUsed).filter(([, value]) => value !== null && value !== undefined && value !== "");
   const medicationHeading = matchingMedications.length ? "Medicamentos relacionados con el criterio" : "Medicamentos registrados para el cruce";

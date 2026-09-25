@@ -14,14 +14,16 @@ import polars as pl
 from backend.app.config import settings
 
 
-CIE10_PATTERN = re.compile(r"^[A-Z][0-9]{2}(?:\.[0-9A-Z]{1,4})?$")
+CIE10_COMPACT_PATTERN = re.compile(r"^[A-Z][0-9]{2}[0-9A-Z]{0,4}$")
 
 
 def normalize_cie10(value: str) -> str | None:
-    code = re.sub(r"\s+", "", str(value or "").upper())
-    if not CIE10_PATTERN.fullmatch(code):
+    compact = re.sub(r"[.\s]+", "", str(value or "").upper())
+    if not CIE10_COMPACT_PATTERN.fullmatch(compact):
         return None
-    return code
+    if len(compact) == 3:
+        return compact
+    return f"{compact[:3]}.{compact[3:]}"
 
 
 def _matches(code: str, pattern: str) -> bool:

@@ -104,13 +104,32 @@ class DDInterCsvProvider(InteractionProvider):
         self._catalog_cache[cache_key] = catalog
         return catalog
 
+    def _catalog_name(self, medication: str) -> tuple[str, str]:
+        """Resolve an ESSI presentation through explicit aliases only."""
+        local_name = self._normalized(medication)
+        exact = self.aliases.get(local_name)
+        if exact is not None:
+            return exact, local_name
+
+        padded_name = f" {local_name} "
+        matching_aliases = [
+            alias
+            for alias in self.aliases
+            if f" {alias} " in padded_name
+            or padded_name.startswith(f" {alias} (")
+            or padded_name.startswith(f" {alias} +")
+        ]
+        if matching_aliases:
+            best_alias = max(matching_aliases, key=len)
+            return self.aliases[best_alias], best_alias
+        return local_name, local_name
+
     def find_interactions(
         self, normalized_medications: List[str]
     ) -> List[Dict[str, Any]]:
         input_by_catalog_name: dict[str, str] = {}
         for medication in normalized_medications:
-            local_name = self._normalized(medication)
-            catalog_name = self.aliases.get(local_name, local_name)
+            catalog_name, local_name = self._catalog_name(medication)
             input_by_catalog_name.setdefault(catalog_name, local_name)
 
         interactions: list[dict[str, Any]] = []

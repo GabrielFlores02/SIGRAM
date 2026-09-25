@@ -3,7 +3,10 @@ from datetime import date
 import polars as pl
 
 from backend.app.services.clinical_catalog_service import ClinicalCatalogService
-from backend.app.services.diagnosis_context_service import DiagnosisContextService
+from backend.app.services.diagnosis_context_service import (
+    DiagnosisContextService,
+    normalize_cie10,
+)
 
 
 def _row(**overrides):
@@ -34,6 +37,36 @@ def test_maps_positive_cie10_and_excludes_future_rows():
     assert "osteoporosis_or_fragility_fracture" not in result["updates"]
     assert result["future_diagnosis_rows_excluded"] == 1
     assert result["diagnosis_code_counts"] == {"M19.9": 1, "N18.2": 1}
+
+
+def test_normalizes_compact_minsa_cie10_codes():
+    assert normalize_cie10("W190") == "W19.0"
+    assert normalize_cie10("R296") == "R29.6"
+    assert normalize_cie10("I10") == "I10"
+
+
+def test_stopp_121_uses_compact_fall_cie10_and_tramadol():
+    diagnosis = DiagnosisContextService().extract(
+        pl.DataFrame([_row(diagnosis_code="W190")]),
+        index_date=date(2025, 7, 1),
+        existing_context={},
+    )
+
+    assert diagnosis["updates"]["falls_history"] is True
+    _, criteria = ClinicalCatalogService().evaluate(
+        ["TRAMADOL (CLORHIDRATO) 50 MG"],
+        age=75,
+        sex="F",
+        clinical_context={
+            **diagnosis["updates"],
+            "diagnosis_provenance": diagnosis["evidence"],
+        },
+    )
+    stopp_k7 = next(item for item in criteria if item["criterion_code"] == "STOPP-K7")
+
+    assert stopp_k7["status"] == "alert"
+    assert stopp_k7["context_used"]["falls_history"] is True
+    assert stopp_k7["diagnosis_evidence"][0]["matched_codes"][0]["code"] == "W19.0"
 
 
 def test_manual_context_has_priority_over_cie10_mapping():

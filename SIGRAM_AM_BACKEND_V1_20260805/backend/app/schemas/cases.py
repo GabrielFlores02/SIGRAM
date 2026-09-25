@@ -64,6 +64,9 @@ class ClinicalContext(BaseModel):
     height_cm: Optional[float] = Field(default=None, gt=0)
     serum_creatinine_mg_dl: Optional[float] = Field(default=None, gt=0)
     serum_creatinine_date: Optional[str] = None
+    egfr_source: Optional[str] = None
+    egfr_method: Optional[str] = None
+    egfr_inputs: dict = Field(default_factory=dict)
     creatinine_clearance_source: Optional[str] = None
     creatinine_clearance_method: Optional[str] = None
     creatinine_clearance_inputs: dict = Field(default_factory=dict)

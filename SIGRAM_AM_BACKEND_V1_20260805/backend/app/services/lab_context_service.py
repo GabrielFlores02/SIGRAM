@@ -34,6 +34,24 @@ DIRECT_ANALYTES: dict[str, tuple[str, set[int], set[str], str]] = {
         {"MG/24H"},
         "mg/24h",
     ),
+    "CREATININA": (
+        "serum_creatinine_mg_dl",
+        {82565},
+        {"MG/DL"},
+        "mg/dL",
+    ),
+    "CREATININA EN SANGRE": (
+        "serum_creatinine_mg_dl",
+        {82565},
+        {"MG/DL"},
+        "mg/dL",
+    ),
+    "CREATININA SERICA": (
+        "serum_creatinine_mg_dl",
+        {82565},
+        {"MG/DL"},
+        "mg/dL",
+    ),
     "TFG FORMULA CKD EPI 2021": (
         "egfr_ml_min_1_73m2",
         {82565},
@@ -49,6 +67,7 @@ DIRECT_ANALYTES: dict[str, tuple[str, set[int], set[str], str]] = {
 }
 DIRECT_TEST_DESCRIPTIONS = {
     "egfr_ml_min_1_73m2": {"DOSAJE DE CREATININA EN SANGRE"},
+    "serum_creatinine_mg_dl": {"DOSAJE DE CREATININA EN SANGRE"},
 }
 FREE_T4_ANALYTES = {"T4 LIBRE", "HORMONA T4 LIBRE"}
 RELEVANT_TOKENS = (
@@ -57,6 +76,7 @@ RELEVANT_TOKENS = (
     "TSH",
     "T4 LIBRE",
     "PROTEINAS EN ORINA 24 HORAS",
+    "CREATININA",
     "FILTRADO GLOMERULAR",
     "TFG",
     "EGFR",
@@ -250,7 +270,7 @@ class LabContextService:
         evidence: list[dict[str, Any]] = []
         warnings = [
             "VALID_RESULT is preserved but its value semantics are not documented.",
-            "Only direct mappings are used; eGFR is accepted only when ESSI reports TFG directly and is not calculated from creatinine.",
+            "Direct TFG reported by ESSI has priority; when it is absent, SIGRAM may calculate eGFR from serum creatinine with CKD-EPI 2021.",
             "The 365-day lookback is a provisional pilot rule requiring clinical validation.",
         ]
         for field, field_candidates in sorted(candidates.items()):

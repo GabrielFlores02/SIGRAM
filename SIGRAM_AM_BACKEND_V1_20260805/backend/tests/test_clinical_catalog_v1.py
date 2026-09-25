@@ -4,7 +4,11 @@ from datetime import datetime, timezone
 from backend.app.config import settings
 from backend.app.schemas.cases import MedicationCreate
 from backend.app.schemas.evaluations import EvaluationExecutionRead
-from backend.app.services.clinical_catalog_service import ClinicalCatalogService, _canonical
+from backend.app.services.clinical_catalog_service import (
+    CHRONIC_CONDITION_EVIDENCE_FIELDS,
+    ClinicalCatalogService,
+    _canonical,
+)
 
 
 def _result_by_code(results, code):
@@ -588,3 +592,29 @@ def test_response_schema_preserves_legacy_rows_and_builds_frontend_views():
     assert response.clinical_findings == []
     assert response.data_gaps
     assert all(item.status == "not_evaluable" for item in response.data_gaps)
+
+
+def test_every_operational_criterion_is_reachable_from_its_medication_mapping():
+    service = ClinicalCatalogService()
+    catalog = service._load_catalog()
+    medications_by_code: dict[str, list[str]] = {}
+    for medication in catalog["medications"]:
+        for code in (
+            medication["beers_codes"]
+            + medication["stopp_codes"]
+            + medication["start_codes"]
+        ):
+            medications_by_code.setdefault(code, []).append(medication["medication"])
+
+    criterion_codes = {item["code"] for item in catalog["criteria"]}
+    assert criterion_codes == set(medications_by_code)
+    for code in sorted(criterion_codes):
+        if code in CHRONIC_CONDITION_EVIDENCE_FIELDS:
+            continue
+        _, report = service.evaluate(
+            [medications_by_code[code][0]],
+            age=75,
+            sex="F",
+            clinical_context={},
+        )
+        assert code in {item["criterion_code"] for item in report}

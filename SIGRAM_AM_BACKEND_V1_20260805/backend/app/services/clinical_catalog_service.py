@@ -215,6 +215,11 @@ AUTOMATED_CODES = {
     "STOPP-H7",
     "STOPP-J1",
     "STOPP-J9",
+    "STOPP-K1",
+    "STOPP-K3",
+    "STOPP-K5",
+    "STOPP-K7",
+    "STOPP-K10",
     "STOPP-L2",
     "STOPP-L6",
     "STOPP-M1",
@@ -1462,6 +1467,22 @@ class ClinicalCatalogService:
                 has_name("LEVOTIROXINA")
                 and bool(context["free_t4_normal"])
                 and 0 < context["tsh_miu_l"] < 10
+            )
+        if code == "STOPP-K1":
+            return has_benzo and bool(context["falls_history"])
+        if code == "STOPP-K3":
+            return bool(context["falls_history"]) and bool(
+                context["orthostatic_hypotension"]
+            )
+        if code == "STOPP-K5":
+            return has_group("ANTICONVULSIVANTE") and bool(context["falls_history"])
+        if code == "STOPP-K7":
+            return has_opioid and bool(context["falls_history"])
+        if code == "STOPP-K10":
+            return (
+                has_group("ANTAGONISTA ALFA")
+                and not has_name("SILODOSINA")
+                and bool(context["falls_history"])
             )
         if code == "STOPP-L2":
             return has_opioid and bool(context["opioid_regular_use"]) and not has_laxative

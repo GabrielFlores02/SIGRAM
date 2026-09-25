@@ -174,6 +174,27 @@ def test_maps_only_directly_reported_egfr_with_exact_essi_identity():
     assert result["evidence"][0]["derived_method"] == "direct_numeric_result"
 
 
+def test_maps_serum_creatinine_for_derived_renal_estimates():
+    rows = pl.DataFrame(
+        [
+            _row(
+                exam_code=82565,
+                test_description="DOSAJE DE CREATININA EN SANGRE",
+                analyte="CREATININA",
+                unit="mg/dL",
+                result_value_raw="1.20",
+            )
+        ]
+    )
+
+    result = LabContextService.extract(
+        rows, index_date=date(2025, 7, 1), existing_context={}
+    )
+
+    assert result["updates"] == {"serum_creatinine_mg_dl": 1.2}
+    assert result["evidence"][0]["standardized_unit"] == "mg/dL"
+
+
 def test_rejects_tfg_label_when_essi_test_identity_does_not_match():
     rows = pl.DataFrame(
         [
