@@ -237,7 +237,32 @@ function medicationNamesMatch(left: string, right: string) {
 }
 
 function sortCatalogMedications(rows: CatalogMedication[]) {
-  return [...rows].sort((left, right) => left.medication.localeCompare(right.medication, "es", { sensitivity: "base" }));
+  const unique = new Map<string, CatalogMedication>();
+  rows.forEach((item) => {
+    const key = normalizeClinicalSearch(item.medication).replace(/[^a-z0-9]+/g, "");
+    if (!key) return;
+    const existing = unique.get(key);
+    if (!existing) {
+      unique.set(key, { ...item });
+      return;
+    }
+    const groups = new Set(
+      [existing.pharmacologic_group, item.pharmacologic_group]
+        .flatMap((value) => value.split(" | "))
+        .map((value) => value.trim())
+        .filter(Boolean),
+    );
+    unique.set(key, {
+      ...existing,
+      pharmacologic_group: [...groups].sort((left, right) => left.localeCompare(right, "es", { sensitivity: "base" })).join(" | "),
+      beers_codes: [...new Set([...existing.beers_codes, ...item.beers_codes])],
+      stopp_codes: [...new Set([...existing.stopp_codes, ...item.stopp_codes])],
+      start_codes: [...new Set([...existing.start_codes, ...item.start_codes])],
+      clinical_rules_validated: Boolean(existing.clinical_rules_validated || item.clinical_rules_validated),
+      reference_group_only: Boolean(existing.reference_group_only && item.reference_group_only),
+    });
+  });
+  return [...unique.values()].sort((left, right) => left.medication.localeCompare(right.medication, "es", { sensitivity: "base" }));
 }
 
 function labFieldLabel(field: string) {

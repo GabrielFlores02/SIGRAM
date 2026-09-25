@@ -342,6 +342,20 @@ def test_reviewed_excel_description_is_attached_to_alert_trace():
     assert "gabapentina o pregabalina" in details[0]["description"].lower()
 
 
+def test_medication_selector_deduplicates_names_and_preserves_groups():
+    rows = ClinicalCatalogService().medications_catalog()
+    normalized_names = [
+        "".join(character for character in item["medication"].upper() if character.isalnum())
+        for item in rows
+    ]
+    assert len(normalized_names) == len(set(normalized_names))
+    spironolactone = next(
+        item for item in rows if item["medication"].casefold() == "espironolactona"
+    )
+    assert "Diurético" in spironolactone["pharmacologic_group"]
+    assert "ahorrador de potasio" in spironolactone["pharmacologic_group"]
+
+
 def test_beers_renal_rules_require_documented_creatinine_clearance_not_egfr():
     _, only_egfr = ClinicalCatalogService().evaluate(
         ["DICLOFENACO", "GABAPENTINA", "TRAMADOL"],
