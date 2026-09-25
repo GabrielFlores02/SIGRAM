@@ -684,7 +684,7 @@ class ClinicalCatalogService:
         return output
 
     def medications_catalog(self) -> list[dict[str, Any]]:
-        """Expone grupos ampliados; solo el subconjunto clínico conserva reglas."""
+        """Expone un selector único por fármaco; conserva todos sus grupos."""
         clinical_by_name = {
             _canonical(item["medication"]): item
             for item in self._load_catalog()["medications"]
@@ -692,14 +692,41 @@ class ClinicalCatalogService:
         reference = self._load_reference_catalog()
         output: list[dict[str, Any]] = []
         included_clinical_names: set[str] = set()
+        # La fuente Beers relaciona el mismo fármaco con más de un grupo (por
+        # ejemplo Doxepina figura como antidepresivo tricíclico y como fuerte
+        # anticolinérgico). Para el selector eso no equivale a medicamentos
+        # diferentes: consolidamos la opción y mostramos sus grupos juntos.
+        reference_by_medication: dict[str, dict[str, Any]] = {}
         for item in reference.get("medications", []):
-            clinical = clinical_by_name.get(_canonical(item["medication"]))
+            canonical = _canonical(item["medication"])
+            existing = reference_by_medication.get(canonical)
+            if not existing:
+                reference_by_medication[canonical] = {
+                    **item,
+                    "_pharmacologic_groups": {
+                        str(item.get("pharmacologic_group") or "").strip()
+                    }
+                    - {""},
+                }
+                continue
+            group = str(item.get("pharmacologic_group") or "").strip()
+            if group:
+                existing["_pharmacologic_groups"].add(group)
+            existing["explicitly_named_in_beers"] = bool(
+                existing.get("explicitly_named_in_beers")
+                or item.get("explicitly_named_in_beers")
+            )
+
+        for canonical, item in reference_by_medication.items():
+            clinical = clinical_by_name.get(canonical)
             if clinical:
                 included_clinical_names.add(_canonical(clinical["medication"]))
             output.append(
                 {
-                    **item,
-                    "pharmacologic_group": item["pharmacologic_group"],
+                    **{key: value for key, value in item.items() if key != "_pharmacologic_groups"},
+                    "pharmacologic_group": " | ".join(
+                        sorted(item["_pharmacologic_groups"], key=_canonical)
+                    ),
                     "beers_codes": list(clinical.get("beers_codes", [])) if clinical else [],
                     "stopp_codes": list(clinical.get("stopp_codes", [])) if clinical else [],
                     "start_codes": list(clinical.get("start_codes", [])) if clinical else [],
