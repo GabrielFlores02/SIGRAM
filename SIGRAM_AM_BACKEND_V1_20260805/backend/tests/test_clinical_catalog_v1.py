@@ -22,7 +22,7 @@ def test_catalog_v1_has_expected_scope():
     assert summary["catalog_version"] == "2026-07-30-top-medications-v1"
     assert summary["medication_count"] == 57
     assert summary["clinical_medication_count"] == 57
-    assert summary["pharmacologic_group_medication_count"] == 1011
+    assert summary["pharmacologic_group_medication_count"] == 1269
     assert summary["cie10_syndrome_row_count"] == 340
     assert summary["criterion_count"] == 97
     assert summary["criteria_by_system"] == {"beers": 23, "stopp_start": 74}
@@ -477,12 +477,12 @@ def test_catalog_and_source_endpoints(client):
     summary = client.get("/api/catalog/v1/summary")
     assert summary.status_code == 200
     assert summary.json()["medication_count"] == 57
-    assert summary.json()["pharmacologic_group_medication_count"] == 1011
+    assert summary.json()["pharmacologic_group_medication_count"] == 1269
 
     medications = client.get("/api/catalog/v1/medications")
     assert medications.status_code == 200
     catalog_rows = medications.json()
-    assert len(catalog_rows) == 1011
+    assert len(catalog_rows) == 1269
     assert sum(item["clinical_rules_validated"] for item in catalog_rows) == 57
     assert all(item["pharmacologic_group"] for item in medications.json())
     raw_catalog_rows = ClinicalCatalogService().medications_catalog()
