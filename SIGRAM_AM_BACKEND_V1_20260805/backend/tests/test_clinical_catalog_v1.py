@@ -489,9 +489,11 @@ def test_catalog_and_source_endpoints(client):
     assert [item["medication"] for item in raw_catalog_rows] == sorted(
         (item["medication"] for item in raw_catalog_rows), key=_canonical
     )
-    by_name = {item["medication"]: item for item in catalog_rows}
-    assert by_name["DOXAZOSINA"]["beers_codes"] == ["B23"]
-    assert by_name["TAMSULOSINA 0.4 MG (LIBERACIÓN PROLONGADA)"]["beers_codes"] == []
+    by_name = {_canonical(item["medication"]): item for item in catalog_rows}
+    assert by_name[_canonical("DOXAZOSINA")]["beers_codes"] == ["B23"]
+    assert by_name[_canonical("TAMSULOSINA 0.4 MG (LIBERACIÓN PROLONGADA)")][
+        "beers_codes"
+    ] == []
 
     sources = client.get("/api/pilot/v1/sources")
     large_sources_present = all(
