@@ -1,18 +1,65 @@
 from pathlib import Path
+import re
+import unicodedata
 
 from fastapi import APIRouter, HTTPException, Query
 
 from backend.app.config import settings
 from backend.app.services.clinical_catalog_service import ClinicalCatalogService
+from backend.app.services.source_criteria_service import SourceCriteriaService
 
 
 router = APIRouter(prefix="/api", tags=["Clinical catalog V1"])
 
 
+def _medication_key(value: str) -> str:
+    normalized = unicodedata.normalize("NFKD", str(value or ""))
+    text = "".join(ch for ch in normalized if not unicodedata.combining(ch))
+    return re.sub(r"[^A-Z0-9]+", "", text.upper())
+
+
+def _merged_medications() -> list[dict]:
+    rows = ClinicalCatalogService().medications_catalog()
+    rows.extend(SourceCriteriaService().source_medications_catalog())
+    merged: dict[str, dict] = {}
+    for item in rows:
+        key = _medication_key(item["medication"])
+        existing = merged.get(key)
+        if not existing:
+            merged[key] = dict(item)
+            continue
+        groups = {
+            value.strip()
+            for value in f"{existing.get('pharmacologic_group', '')} | {item.get('pharmacologic_group', '')}".split("|")
+            if value.strip()
+        }
+        existing["pharmacologic_group"] = " | ".join(sorted(groups))
+        for code_field in ("stopp_codes", "start_codes", "beers_codes"):
+            existing[code_field] = sorted(set(existing.get(code_field, [])) | set(item.get(code_field, [])))
+        existing["clinical_rules_validated"] = bool(
+            existing.get("clinical_rules_validated") or item.get("clinical_rules_validated")
+        )
+        existing["reference_group_only"] = bool(
+            existing.get("reference_group_only") and item.get("reference_group_only")
+        )
+    output = sorted(merged.values(), key=lambda item: _medication_key(item["medication"]))
+    for order, item in enumerate(output, start=1):
+        item["order"] = order
+    return output
+
+
 @router.get("/catalog/v1/summary")
 def get_catalog_summary():
     """Resume el catálogo médico reducido utilizado por el prototipo V1."""
-    return ClinicalCatalogService().summary()
+    legacy = ClinicalCatalogService().summary()
+    direct = SourceCriteriaService().summary()
+    return {
+        **legacy,
+        **direct,
+        "pharmacologic_group_medication_count": len(_merged_medications()),
+        "manual_or_context_dependent_count": 0,
+        "status": "297_source_criteria_implemented",
+    }
 
 
 @router.get("/catalog/v1/criteria")
@@ -20,13 +67,13 @@ def list_catalog_criteria(
     system: str | None = Query(default=None, pattern="^(beers|stopp_start)$"),
 ):
     """Lista criterios, datos requeridos y nivel de automatización V1."""
-    return ClinicalCatalogService().criteria_coverage(system)
+    return SourceCriteriaService().criteria_coverage(system)
 
 
 @router.get("/catalog/v1/medications")
 def list_catalog_medications():
     """Lista grupos ampliados e identifica el subconjunto con reglas validadas."""
-    return ClinicalCatalogService().medications_catalog()
+    return _merged_medications()
 
 
 @router.get("/pilot/v1/sources")

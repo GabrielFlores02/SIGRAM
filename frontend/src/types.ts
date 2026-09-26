@@ -9,6 +9,8 @@ export interface MedicationInput {
   frequency: string;
   duration?: string;
   route: string;
+  indication?: string;
+  recommended_duration_days?: string;
 }
 
 export interface Medication extends MedicationInput {
@@ -206,6 +208,7 @@ export interface EvaluationExecution {
 export interface RequiredData {
   field: string;
   label: string;
+  data_type?: "boolean" | "number" | "text";
 }
 
 export interface CatalogCriterion {
@@ -223,6 +226,8 @@ export interface CatalogCriterion {
   operational_formulation?: string;
   recommendation_type?: string;
   recommendation_text?: string;
+  doctor_review?: string;
+  doctor_observation?: string;
 }
 
 export interface SimulationHistoryEvent {

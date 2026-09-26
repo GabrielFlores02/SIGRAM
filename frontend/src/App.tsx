@@ -509,7 +509,7 @@ function CatalogMedicationTable({ medications }: { medications: CatalogMedicatio
 }
 
 function CatalogCriteriaTable({ criteria }: { criteria: CatalogCriterion[] }) {
-  return <div className="results-card"><div className="results-toolbar"><div><strong>Catálogo de criterios</strong><span>{criteria.length} criterios</span></div></div><div className="table-scroll"><table className="research-table"><thead><tr><th>Código</th><th>Sistema</th><th>Tipo</th><th>Automatización</th><th>Datos requeridos</th><th>Fuente</th></tr></thead><tbody>{criteria.map((item) => <tr key={item.code}><td>{item.code}</td><td>{item.system === "beers" ? "Beers" : "STOPP/START"}</td><td>{item.system === "beers" ? "—" : item.criterion_type}</td><td>{item.automation_status === "automated_v1" ? "Automático V1" : "Contexto / revisión"}</td><td>{item.required_data.map((entry) => entry.label).join(", ") || "—"}</td><td>{item.source_location}</td></tr>)}</tbody></table></div></div>;
+  return <div className="results-card"><div className="results-toolbar"><div><strong>Criterios fuente implementados</strong><span>{criteria.length} criterios</span></div></div><div className="table-scroll"><table className="research-table"><thead><tr><th>Código fuente</th><th>Sistema</th><th>Tipo</th><th>Implementación</th><th>Datos requeridos</th><th>Fuente</th></tr></thead><tbody>{criteria.map((item) => <tr key={item.code}><td>{item.code}</td><td>{item.system === "beers" ? "Beers" : "STOPP/START"}</td><td>{item.criterion_type}</td><td>{item.automation_status === "implemented_source_rule" ? "Regla ejecutable directa" : "Revisión"}</td><td>{item.required_data.map((entry) => entry.label).join(", ") || "Medicamento y edad"}</td><td>{item.source_location}</td></tr>)}</tbody></table></div></div>;
 }
 
 function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase, evaluation: EvaluationExecution) => void }) {
@@ -536,6 +536,7 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
   const [attentionNote, setAttentionNote] = useState("");
   const [historyMedications, setHistoryMedications] = useState<MedicationInput[]>([]);
   const [contextOpen, setContextOpen] = useState(false);
+  const [contextCriterionCode, setContextCriterionCode] = useState("");
   const [clinicalContext, setClinicalContext] = useState<Record<string, string>>(Object.create(null));
   const [committedContextFields, setCommittedContextFields] = useState<Set<string>>(new Set());
   const recordedContextRef = useRef<HTMLDetailsElement>(null);
@@ -585,15 +586,21 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
     criteria.flatMap((criterion) => criterion.required_data).forEach((item) => unique.set(item.field, item));
     return [...unique.values()].sort((a, b) => a.label.localeCompare(b.label, "es"));
   }, [criteria]);
+  const requiredDataTypes = useMemo(() => new Map(requiredContext.map((item) => [item.field, item.data_type])), [requiredContext]);
 
   const editableContext = requiredContext.filter((item) => ![
     "medication_duration_days",
     "creatinine_clearance_ml_min",
-  ].includes(item.field));
-  const recordedContext = editableContext.filter((item) =>
+  ].includes(item.field) && !item.field.startsWith("medication_facts."));
+  const selectedContextCriterion = criteria.find((item) => item.code === contextCriterionCode);
+  const selectedContextFields = new Set(selectedContextCriterion?.required_data.map((item) => item.field) ?? []);
+  const visibleContext = contextCriterionCode
+    ? editableContext.filter((item) => selectedContextFields.has(item.field))
+    : editableContext;
+  const recordedContext = visibleContext.filter((item) =>
     (clinicalContext[item.field] ?? "") !== "" && committedContextFields.has(item.field)
   );
-  const unrecordedContext = editableContext.filter((item) =>
+  const unrecordedContext = visibleContext.filter((item) =>
     (clinicalContext[item.field] ?? "") === "" || !committedContextFields.has(item.field)
   );
 
@@ -761,16 +768,26 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
     const result: Record<string, unknown> = {};
     for (const [field, rawValue] of Object.entries(clinicalContext)) {
       if (rawValue === "") continue;
-      if (BOOLEAN_CONTEXT_FIELDS.has(field)) result[field] = rawValue === "true";
-      else if (NUMERIC_CONTEXT_FIELDS.has(field)) result[field] = Number(rawValue);
+      const dataType = requiredDataTypes.get(field);
+      if (dataType === "boolean" || BOOLEAN_CONTEXT_FIELDS.has(field)) result[field] = rawValue === "true";
+      else if (dataType === "number" || NUMERIC_CONTEXT_FIELDS.has(field)) result[field] = Number(rawValue);
       else result[field] = rawValue;
     }
     const medicationFacts = [...historyMedications, ...medications].flatMap((medication) => {
       const durationMatch = medication.duration?.match(/^\s*(\d+)\s*(?:d[ií]as?)?\s*$/i);
+      const numericDose = Number(String(medication.dose).replace(",", "."));
+      const doseFactor = medication.dose_unit === "g" ? 1000 : medication.dose_unit === "mcg" ? 0.001 : medication.dose_unit === "mg" ? 1 : null;
+      const administrationsPerDay: Record<string, number> = { "C/24h": 1, "C/12h": 2, "C/8h": 3, "C/6h": 4, "C/4h": 6, "C/7d": 1 / 7, "C/30d": 1 / 30 };
+      const dailyDoseMg = Number.isFinite(numericDose) && doseFactor !== null && administrationsPerDay[medication.frequency]
+        ? numericDose * doseFactor * administrationsPerDay[medication.frequency]
+        : undefined;
       return [{
         active_ingredient: medication.normalized_active_ingredient,
         ...(durationMatch ? { duration_days: Number(durationMatch[1]) } : {}),
-        regular_use: medication.frequency !== "Según necesidad",
+        ...(medication.recommended_duration_days?.trim() ? { recommended_duration_days: Number(medication.recommended_duration_days) } : {}),
+        ...(medication.indication?.trim() ? { indication: medication.indication.trim(), indication_confirmed: true } : {}),
+        ...(dailyDoseMg !== undefined ? { daily_dose_mg: dailyDoseMg } : {}),
+        regular_use: !["PRN", "Según necesidad"].includes(medication.frequency),
       }];
     });
     if (medicationFacts.length) result.medication_facts = medicationFacts;
@@ -849,10 +866,10 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
   function renderContextFields(items: RequiredData[]) {
     return <div className="context-grid">
       {items.map((item) => <label key={item.field}>{item.label}
-        {BOOLEAN_CONTEXT_FIELDS.has(item.field) ? (
+        {(item.data_type === "boolean" || BOOLEAN_CONTEXT_FIELDS.has(item.field)) ? (
           <select value={clinicalContext[item.field] ?? ""} onChange={(event) => setContextValue(item.field, event.target.value, true)}><option value="">No registrado</option><option value="true">Sí</option><option value="false">No</option></select>
         ) : (
-          <input type={NUMERIC_CONTEXT_FIELDS.has(item.field) ? "number" : "text"} step="any" value={clinicalContext[item.field] ?? ""} onChange={(event) => setContextValue(item.field, event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); commitContextField(item.field, event.currentTarget.value); } }} placeholder="No registrado" />
+          <input type={(item.data_type === "number" || NUMERIC_CONTEXT_FIELDS.has(item.field)) ? "number" : "text"} step="any" value={clinicalContext[item.field] ?? ""} onChange={(event) => setContextValue(item.field, event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); commitContextField(item.field, event.currentTarget.value); } }} placeholder="No registrado" />
         )}
       </label>)}
     </div>;
@@ -870,7 +887,7 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
       diagnoses: diagnoses.trim(),
       clinical_context: serializeContext(),
       is_simulated: true,
-      medications: [...historyMedications, ...medications].map((item) => ({ ...item, duration: item.duration?.trim() || undefined })),
+      medications: [...historyMedications, ...medications].map(({ indication: _indication, recommended_duration_days: _recommendedDuration, ...item }) => ({ ...item, duration: item.duration?.trim() || undefined })),
     };
     try {
       if (selectedPatientCode === ESSI_SIMULATOR_CODE) {
@@ -900,7 +917,7 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
 
       <div className="catalog-notice compact-notice" role="status">
         <span>▤</span>
-        <div><strong className="heading-with-info">Catálogo farmacológico: {catalogSummary?.pharmacologic_group_medication_count ?? catalogMedications.length} medicamentos; {catalogSummary?.clinical_medication_count ?? 57} con reglas clínicas <InfoTip text="El listado incluye el catálogo disponible y suplementos clínicos revisados aunque no figuren en el stock institucional. También puede escribir un medicamento no listado; solo activará reglas cuando exista una asociación clínica validada." /></strong></div>
+        <div><strong className="heading-with-info">Catálogo farmacológico: {catalogSummary?.pharmacologic_group_medication_count ?? catalogMedications.length} medicamentos; {catalogSummary?.criterion_count ?? 297} criterios fuente implementados <InfoTip text="Cada fila STOPP, START y Beers del Excel médico tiene una regla propia. Puede escribir medicamentos no listados; el motor también compara el principio activo escrito manualmente." /></strong></div>
       </div>
 
       <section className="form-card">
@@ -990,9 +1007,11 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
               <label>Nombre normalizado<input readOnly value={medication.normalized_active_ingredient} placeholder="Se completa desde el catálogo" /></label>
               <label>Dosis<input value={medication.dose} onChange={(event) => updateMedication(index, "dose", event.target.value)} placeholder="10" /></label>
               <label>Unidad<select value={medication.dose_unit} onChange={(event) => updateMedication(index, "dose_unit", event.target.value)}>{medication.dose_unit === "no estructurada" && <option>no estructurada</option>}<option>mg</option><option>mcg</option><option>g</option><option>mL</option></select></label>
-              <label>Frecuencia<select value={medication.frequency} onChange={(event) => updateMedication(index, "frequency", event.target.value)}>{medication.frequency === "no estructurada" && <option>no estructurada</option>}<option>C/24h</option><option>C/12h</option><option>C/8h</option><option>Según necesidad</option></select></label>
+              <label>Frecuencia<select value={medication.frequency} onChange={(event) => updateMedication(index, "frequency", event.target.value)}>{medication.frequency === "no estructurada" && <option>no estructurada</option>}<option>C/24h</option><option>C/12h</option><option>C/8h</option><option>C/6h</option><option>C/4h</option><option>C/7d</option><option>C/30d</option><option>PRN</option></select></label>
               <label>Vía<select value={medication.route} onChange={(event) => updateMedication(index, "route", event.target.value)}>{medication.route === "no estructurada" && <option>no estructurada</option>}<option>Oral</option><option>IV</option><option>SC</option><option>IM</option><option>Tópica</option></select></label>
               <label>Duración (opcional)<input value={medication.duration ?? ""} onChange={(event) => updateMedication(index, "duration", event.target.value)} placeholder="Ej. 30 días" /></label>
+              <label>Indicación clínica<input value={medication.indication ?? ""} onChange={(event) => updateMedication(index, "indication", event.target.value)} placeholder="Ej. fibrilación auricular" /></label>
+              <label>Duración máxima recomendada (días)<input type="number" min="0" value={medication.recommended_duration_days ?? ""} onChange={(event) => updateMedication(index, "recommended_duration_days", event.target.value)} placeholder="Si está definida" /></label>
               <button type="button" className="delete-button" aria-label={`Eliminar medicamento ${index + 1}`} disabled={medications.length === 1} onClick={() => setMedications((current) => current.filter((_, position) => position !== index))}>⌫</button>
             </div>
           ))}
@@ -1013,7 +1032,8 @@ function NewCasePage({ onCompleted }: { onCompleted: (clinicalCase: ClinicalCase
         {contextOpen && <div className="context-groups">
           {requiredContext.length === 0 && <p>Cargando campos requeridos desde el catálogo clínico…</p>}
           {requiredContext.length > 0 && <>
-            <div className="context-scope-compact"><strong>Alcance del contexto clínico</strong><InfoTip text={`El catálogo activo reúne Beers y STOPP/START y requiere ${editableContext.length} campos clínicos únicos. Un dato ausente queda como no evaluable; nunca se interpreta como normal.`} /></div>
+            <div className="context-scope-compact"><strong>Datos para los 297 criterios fuente</strong><InfoTip text={`Cada campo pertenece a una fila concreta del Excel médico. Hay ${editableContext.length} variables únicas. Un dato ausente queda como no evaluable; nunca se interpreta como normal.`} /></div>
+            <label className="criterion-context-filter"><span>Criterio que desea probar</span><select value={contextCriterionCode} onChange={(event) => setContextCriterionCode(event.target.value)}><option value="">Todos los criterios ({editableContext.length} variables)</option>{criteria.map((criterion) => <option key={criterion.code} value={criterion.code}>{criterion.code} — {criterion.statement}</option>)}</select><small>{selectedContextCriterion ? `${selectedContextCriterion.required_data.length} dato(s) requerido(s) por esta fila. Los datos farmacológicos se completan arriba, dentro de cada medicamento.` : "Seleccione una fila para mostrar solo sus variables clínicas."}</small></label>
             <details className="context-group" ref={recordedContextRef} open={recordedContext.length > 0}>
               <summary>Exámenes y datos clínicos realizados ({recordedContext.length})</summary>
               {recordedContext.length ? renderContextFields(recordedContext) : <p>No hay exámenes o datos clínicos registrados en la historia cargada.</p>}

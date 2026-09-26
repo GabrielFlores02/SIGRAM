@@ -167,6 +167,9 @@ textarea { min-height: 84px; resize: vertical; }
 .context-scope-note, .context-entry-help { margin: 2px 2px 12px; color: #52636e; font-size: 12px; line-height: 1.45; }
 .context-entry-help { margin: 10px 2px 0; color: #006c66; }
 .context-scope-compact { display: flex; align-items: center; gap: 7px; margin: 2px 2px 12px; color: #52636e; font-size: 12px; }
+.criterion-context-filter { display: grid; gap: 6px; margin: 0 2px 14px; color: #314957; font-weight: 700; }
+.criterion-context-filter select { width: 100%; }
+.criterion-context-filter small { color: #667985; font-weight: 400; }
 .submit-bar { display: flex; justify-content: flex-end; align-items: center; gap: 16px; padding: 14px; background: white; box-shadow: var(--shadow-md); border: 1px solid #d9dfe3; border-radius: 8px; }
 .submit-bar span { font-size: 12px; }
 .complete { color: #17653a; }

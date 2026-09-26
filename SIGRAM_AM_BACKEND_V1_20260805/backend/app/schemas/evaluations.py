@@ -174,33 +174,33 @@ class EvaluationExecutionRead(BaseModel):
             AnalysisMethodResult(
                 system="beers",
                 label="Beers",
-                status="active_v1_screening_catalog",
+                status="active_297_source_rules",
                 alert_count=counts["beers"],
                 evaluated_count=status_counts["beers"]["evaluated"],
                 out_of_scope_count=status_counts["beers"]["out_of_scope"],
                 not_evaluable_count=status_counts["beers"]["not_evaluable"],
                 manual_review_count=status_counts["beers"]["manual_review"],
                 not_applicable_count=status_counts["beers"]["not_applicable"],
-                catalog="top de medicamentos validado por el equipo médico, 2026-07-30",
+                catalog="107 filas Beers del Excel médico actualizado al 2026-09-25",
                 note=(
-                    "El alcance canónico AGS Beers es 65+; los casos fuera de "
-                    "ese alcance se reportan explícitamente. clinical_findings contiene "
-                    "los hallazgos resueltos para la vista principal."
+                    "Cada fila Beers tiene una regla fuente directa. El alcance es 65+; "
+                    "los casos fuera de alcance y los datos faltantes se reportan "
+                    "explícitamente, sin convertirlos en resultados negativos."
                 ),
             ),
             AnalysisMethodResult(
                 system="stopp_start",
                 label="STOPP/START",
-                status="active_v1_screening_catalog",
+                status="active_297_source_rules",
                 alert_count=counts["stopp_start"],
                 evaluated_count=status_counts["stopp_start"]["evaluated"],
                 not_evaluable_count=status_counts["stopp_start"]["not_evaluable"],
                 manual_review_count=status_counts["stopp_start"]["manual_review"],
-                catalog="top de medicamentos STOPP/START v3, 2026-07-30",
+                catalog="133 filas STOPP y 57 START del Excel médico actualizado al 2026-09-25",
                 note=(
-                    "STOPP y START se conservan como subtipos. criteria_report "
-                    "mantiene el analisis completo; las brechas no se convierten "
-                    "en resultados negativos."
+                    "STOPP y START conservan los identificadores de la fuente. "
+                    "criteria_report contiene las 190 filas y deja como no evaluable "
+                    "todo criterio que todavía necesite un dato clínico explícito."
                 ),
             ),
             AnalysisMethodResult(

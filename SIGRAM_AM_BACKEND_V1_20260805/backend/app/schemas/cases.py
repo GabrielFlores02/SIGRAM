@@ -39,8 +39,10 @@ class MedicationRead(BaseModel):
 class MedicationClinicalFacts(BaseModel):
     active_ingredient: str
     duration_days: Optional[int] = Field(default=None, ge=0)
+    recommended_duration_days: Optional[int] = Field(default=None, ge=0)
     daily_dose_mg: Optional[float] = Field(default=None, ge=0)
     indication: Optional[str] = None
+    indication_confirmed: Optional[bool] = None
     regular_use: Optional[bool] = None
 
 

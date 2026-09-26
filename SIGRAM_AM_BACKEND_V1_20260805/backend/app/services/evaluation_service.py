@@ -9,7 +9,7 @@ from backend.app.models.models import EvaluationExecution, Alert
 from backend.app.repositories.case_repository import CaseRepository
 from backend.app.repositories.evaluation_repository import EvaluationRepository
 from backend.app.services.rule_engine import RuleEngine
-from backend.app.services.clinical_catalog_service import ClinicalCatalogService
+from backend.app.services.source_criteria_service import SourceCriteriaService
 
 
 logger = logging.getLogger(__name__)
@@ -74,11 +74,12 @@ class EvaluationService:
             # 5. Ejecutar el RuleEngine
             active_ingredients = [med.normalized_active_ingredient for med in case.medications]
             engine_alerts = RuleEngine.evaluate(active_ingredients)
-            clinical_alerts, criteria_report = ClinicalCatalogService().evaluate(
+            clinical_alerts, criteria_report = SourceCriteriaService().evaluate(
                 case.medications,
                 age=case.age,
                 sex=case.sex,
                 clinical_context=case.clinical_context or {},
+                diagnoses=case.diagnoses,
             )
             engine_alerts.extend(clinical_alerts)
             severity_priority = {"alta": 1, "moderada": 2, "advertencia": 3}

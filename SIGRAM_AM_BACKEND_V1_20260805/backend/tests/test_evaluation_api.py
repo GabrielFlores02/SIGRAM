@@ -95,8 +95,8 @@ def test_evaluate_demo_a_demo_b_interaction(client):
     assert data["alerts"][0]["rule_code"] == "REG-DEMO-INT-001"
     assert data["alerts"][0]["severity"] == "moderada"
     systems = {item["system"]: item for item in data["analysis_results"]}
-    assert systems["beers"]["status"] == "active_v1_screening_catalog"
-    assert systems["stopp_start"]["status"] == "active_v1_screening_catalog"
+    assert systems["beers"]["status"] == "active_297_source_rules"
+    assert systems["stopp_start"]["status"] == "active_297_source_rules"
     assert systems["ddinter"]["status"] == "active_local_legacy_catalog"
 
 
